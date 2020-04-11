@@ -1,18 +1,48 @@
+
+import 'package:alarm_recorder/databases/RegisterDatabase.dart';
+import 'package:alarm_recorder/model/recordModel.dart';
+import 'package:alarm_recorder/utils/AudioPlayerController.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
+import 'package:audioplayers/audio_cache.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 class RecorderPlayer extends StatefulWidget {
+  String pathfromNotifiction;
+
+  RecorderPlayer(this.pathfromNotifiction);
+
   @override
   _RecorderPlayerState createState() => _RecorderPlayerState();
 }
 
 class _RecorderPlayerState extends State<RecorderPlayer> {
-  int _selectedIndex;
-  bool isSelected=false ;
-Widget cont =Container(width: 10,height: 10,);
-
+  AudioPLayerController audioC = new AudioPLayerController();
+  String repath = "";
+  int pos = 0;
+  bool isSelected = false;
+  Widget cont = Container(
+    width: 10,
+    height: 10,
+  );
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    audioC.dispose();
+  }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    if(widget.pathfromNotifiction!=""){
+      audioC.ButtonPlayPause(widget.pathfromNotifiction);
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,119 +50,302 @@ Widget cont =Container(width: 10,height: 10,);
     fontWidgetSize = WidgetSize(sizeConfig);
     return MaterialApp(
       home: Scaffold(
-       backgroundColor: Colors.white,
+        backgroundColor: Colors.white,
         body: Container(
           height: double.infinity,
           color: Colors.white10,
-          child: Stack(
-            children: <Widget>[
-             Padding(
-               padding:   EdgeInsets.only(top: sizeConfig.screenHeight*.04),
-               child: Container(
-                 height:sizeConfig.screenHeight*.72,
-                 child: ListView.builder(
-                   itemCount: 8,
-                   itemBuilder: (BuildContext context,index){
-                   return  Padding(
-                     padding:   EdgeInsets.only(
-                         right: sizeConfig.screenWidth*.05,
-                         left: sizeConfig.screenWidth*.05),
-                     child: Card(
-                       child: ListTile(
-                         selected:   isSelected,
-                         onTap: (){
-                       setState(() {   });
+          child: FutureBuilder<List<RecordModel>>(
+              future: RegisterDatabaseProvider.db.getAllRecords(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<RecordModel>> futuresnapshot) {
 
-                         },
-                         onLongPress: (){
-                 toggleSelection();
+                if(futuresnapshot.hasData){
+                  return StreamBuilder(
+                      stream: audioC.outPlayer,
+                      builder:
+                          (context, AsyncSnapshot<AudioPlayerObject> snapshot) {
+                        switch(snapshot.connectionState) {
+                          case ConnectionState.none:
+                            return Container();
+                            break;
+                          case ConnectionState.waiting:
+                            return Container();
+                            break;
+                          case ConnectionState.active:
+                            return Stack(
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      top: sizeConfig.screenHeight * .04),
+                                  child: Container(
+                                    height: sizeConfig.screenHeight * .72,
+                                    child:
+                                    getRegisterList(futuresnapshot.data, audioC),
+                                  ),
+                                ),
+                                _player(
+                                    snapshot.data.play,
+                                    snapshot.data.duration.inMinutes.toString(),
+                                    (snapshot.data.duration.inSeconds -
+                                        (snapshot.data.duration.inMinutes * 60))
+                                        .toString(),
+                                    snapshot.data,
+                                    futuresnapshot.data,
+                                    pos)
+                              ],
+                            );
+                            break;
+                          case ConnectionState.done:
+                            return Stack(
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      top: sizeConfig.screenHeight * .04),
+                                  child: Container(
+                                    height: sizeConfig.screenHeight * .72,
+                                    child:
+                                    getRegisterList(futuresnapshot.data, audioC),
+                                  ),
+                                ),
+                                _player(
+                                    snapshot.data.play,
+                                    snapshot.data.duration.inMinutes.toString(),
+                                    (snapshot.data.duration.inSeconds -
+                                        (snapshot.data.duration.inMinutes * 60))
+                                        .toString(),
+                                    snapshot.data,
+                                    futuresnapshot.data,
+                                    pos)
+                              ],
+                            );
+                            break;
+                        }
 
-                         },
-
-                       leading: Icon(Icons.music_note,color: Colors.blueAccent,),
-                         title: Text("2019/2020.mp3"),
-                         trailing: cont,
-                         ),
-                     ),
-                   );
-
-                   },
-                 ),
-               ),
-             ),
-                      _player()
+                        return Container()   ;
+                      });
 
 
 
-            ],
-          ),
+                }else{
+                  return Container()   ;
+                }
+
+              }),
         ),
       ),
     );
   }
+
   void toggleSelection() {
     setState(() {
       if (isSelected) {
-        cont=Container(width: 10,height: 10,);
+        cont = Container(
+          width: 10,
+          height: 10,
+        );
         isSelected = false;
       } else {
-        cont=Icon(Icons.check_box,color: Colors.blueAccent,);
+        cont = Icon(
+          Icons.check_box,
+          color: Colors.blueAccent,
+        );
         isSelected = true;
       }
     });
   }
 
+  Widget _player(
+      isPlay, minute, seconds, object, List<RecordModel> data, int i) {
+    RecordModel recordModel = data[i];
 
-  Widget _player()
-
-  {
-
-
-    return  Positioned(
+    return Positioned(
       bottom: 0,
       left: 0,
       right: 0,
-      height: sizeConfig.screenHeight*.205,
+      height: sizeConfig.screenHeight * .205,
       child: Container(
-        padding: EdgeInsets.only(top:5),
+        padding: EdgeInsets.only(top: 5),
         color: Colors.blueAccent,
         child: Column(
           children: <Widget>[
             Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  IconButton(
-                    onPressed: (){},
-                    iconSize: fontWidgetSize.icone+5,
-                    icon: Icon(Icons.skip_previous),
-                    color: Colors.white,
-                    focusColor: Colors.pinkAccent,
-                  ),
-                  IconButton(
-                    onPressed: (){},
-                    iconSize: fontWidgetSize.icone+15,
-                    icon: Icon(Icons.pause_circle_filled),
-                    color: Colors.white,
-                    focusColor: Colors.pinkAccent,
-                  ),
-                  IconButton(
-                  onPressed: (){},
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  onPressed: () {},
+                  iconSize: fontWidgetSize.icone + 5,
+                  icon: Icon(Icons.skip_previous),
                   color: Colors.white,
-                 iconSize: fontWidgetSize.icone+5,
-                   icon:Icon(Icons.skip_next)),
-
+                  focusColor: Colors.pinkAccent,
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      audioC.ButtonPlayPause(recordModel.pathRec);
+                    });
+                  },
+                  iconSize: fontWidgetSize.icone + 15,
+                  icon: isPlay == true
+                      ? Icon(Icons.pause_circle_filled)
+                      : Icon(Icons.play_circle_filled),
+                  color: Colors.white,
+                  focusColor: Colors.pinkAccent,
+                ),
+                IconButton(
+                    onPressed: () {},
+                    color: Colors.white,
+                    iconSize: fontWidgetSize.icone + 5,
+                    icon: Icon(Icons.skip_next)),
+              ],
+            ),
+            _slider(object),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
+                    '00:00',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  Text(
+                    minute + ':' + seconds,
+                    style: TextStyle(color: Colors.white),
+                  )
                 ],
               ),
-            Slider(
-              onChanged: (double value){
-
-              },
-             activeColor: Colors.white,
-              value: .6,
-            )
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _slider(AudioPlayerObject object) {
+    return Slider(
+      min: 0.0,
+      max: object.duration.inSeconds.toDouble(),
+      onChanged: (newTime) {
+        setState(() {
+          print(newTime);
+          //  audioC.timeSound(newTime);
+        });
+      },
+      value: object.position.inSeconds.toDouble(),
+      inactiveColor: Colors.grey[700],
+      activeColor: Colors.white,
+    );
+  }
+
+  Widget getRegisterList(List<RecordModel> data, AudioPLayerController audioC) {
+    return ListView.builder(
+      itemCount: data.length!=null?data.length:0,
+      itemBuilder: (BuildContext context, index) {
+        RecordModel recordModel = data[index];
+
+        return Padding(
+          padding: EdgeInsets.only(
+              right: sizeConfig.screenWidth * .05,
+              left: sizeConfig.screenWidth * .05),
+          child: Card(
+            child: ListTile(
+              selected: isSelected,
+              onTap: () {
+                setState(() {
+                  pos = index;
+                  audioC.ButtonPlayPause(recordModel.pathRec);
+                });
+              },
+              onLongPress: () {
+                toggleSelection();
+              },
+              leading: Icon(
+                Icons.music_note,
+                color: Colors.blueAccent,
+              ),
+              title: Text("2019/2020.mp3"),
+              trailing: cont,
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class AudioPlayerObject {
+  AudioPlayer _advancedPlayer;
+  AudioCache _audioCache;
+  String _localFilePath;
+  double _sliderVal;
+  Duration _duration;
+  Duration _position;
+  String _tempoMusica = "";
+  bool _play = false;
+  String _musicActual = "";
+
+  AudioCache get audioCache => _audioCache;
+
+  set audioCache(AudioCache value) {
+    _audioCache = value;
+  }
+
+  AudioPlayerObject(
+      this._advancedPlayer,
+      this._audioCache,
+      this._localFilePath,
+      this._sliderVal,
+      this._duration,
+      this._position,
+      this._tempoMusica,
+      this._play,
+      this._musicActual);
+
+  String get musicActual => _musicActual;
+
+  set musicActual(String value) {
+    _musicActual = value;
+  }
+
+  bool get play => _play;
+
+  set play(bool value) {
+    _play = value;
+  }
+
+  String get tempoMusica => _tempoMusica;
+
+  set tempoMusica(String value) {
+    _tempoMusica = value;
+  }
+
+  Duration get position => _position;
+
+  set position(Duration value) {
+    _position = value;
+  }
+
+  Duration get duration => _duration;
+
+  set duration(Duration value) {
+    _duration = value;
+  }
+
+  double get sliderVal => _sliderVal;
+
+  set sliderVal(double value) {
+    _sliderVal = value;
+  }
+
+  String get localFilePath => _localFilePath;
+
+  set localFilePath(String value) {
+    _localFilePath = value;
+  }
+
+  AudioPlayer get advancedPlayer => _advancedPlayer;
+
+  set advancedPlayer(AudioPlayer value) {
+    _advancedPlayer = value;
   }
 }

@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 
 
 
-Future<bool> ShowCoupons(context) {
+Future<bool> ShowCoupons(context,doIt,int i ) {
+
   return showDialog(
       context: context,
       barrierDismissible: true,
@@ -75,7 +76,9 @@ Future<bool> ShowCoupons(context) {
                     children: <Widget>[
                       FlatButton(
                         onPressed: () {
-                       dateRange(context);
+                             i=0;
+                             doIt();
+
                         },
                         color: Colors.teal,
                         child: Center(

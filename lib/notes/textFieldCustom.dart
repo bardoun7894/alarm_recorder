@@ -1,6 +1,7 @@
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
-import 'package:alarm_recorder/utils/database.dart';
+import 'package:alarm_recorder/databases/NoteDatabase.dart';
+import 'package:alarm_recorder/notifi.dart';
 import 'package:alarm_recorder/utils/dateTimePicker.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:flutter/gestures.dart';
@@ -8,60 +9,91 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class MyTextFieldCustom extends StatefulWidget {
-  Note note ;
+  final Note note;
   String title;
-  MyTextFieldCustom(this.note,this.title);
+  final bool edit;
+  MyTextFieldCustom(this.edit, {this.note})
+      : assert(edit != null || note == null);
   @override
-  _MyTextFieldCustomState createState() => _MyTextFieldCustomState(this.note,this.title);
+  _MyTextFieldCustomState createState() =>
+      _MyTextFieldCustomState(this.note, this.title);
 }
-class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
-  DbProvider db =DbProvider();
-  Note note ;
 
+class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
+  LocalNotification _localNotification = LocalNotification();
+  Note note;
+  List<Note> list = [];
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
   String title;
-  TextEditingController descriptionController =TextEditingController();
-  _MyTextFieldCustomState(this.note,this.title);
-  bool cursor =true;
-  DateTime firstDate = DateTime.now();
+  TextEditingController descriptionController = TextEditingController();
+
+  _MyTextFieldCustomState(this.note, this.title);
+
+  bool cursor = true;
+  DateTime firstDate = DateTime.now().add(Duration(minutes: 1));
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.edit == true) {
+      descriptionController.text = widget.note.description;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
-    TextStyle _textStyle = Theme.of(context).textTheme.body1;
+    TextStyle _textStyle = Theme
+        .of(context)
+        .textTheme
+        .body1;
     // descriptionController.text=note.description;
+    bool isEmpty = true;
     return Scaffold(
-
       body: Stack(
-
         children: <Widget>[
-
           Container(
-
-          margin:EdgeInsets.only(top: sizeConfig.screenHeight*.045) ,
-            height: sizeConfig.screenHeight*.1,
+            margin: EdgeInsets.only(top: sizeConfig.screenHeight * .03),
+            height: sizeConfig.screenHeight * .13,
             child: Column(
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween
-                  , children: <Widget>[
-                  Icon(Icons.arrow_back_ios,
-                      color:Color(0xFF417BFb),
-                      size:fontWidgetSize.icone),
-                  InkWell(
-                      onTap: (){
-                        save();
-                        dateRange(context);
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    InkWell(
+                      onTap: () async {
+                        List<Note> p =
+                        await NoteDatabaseProvider.db.getAllNotes();
+                        List<Note> ss = p;
+                        print(ss);
                       },
-                      child: Icon(Icons.save,color:Color(0xFF417BFb),size:fontWidgetSize.icone,)),
-                ],),
+                      child: Icon(Icons.arrow_back_ios,
+                          color: Color(0xFF417BFb),
+                          size: fontWidgetSize.icone - 5),
+                    ),
+                    InkWell(
+                        onTap: () {
+                          save();
+//                        dateRange(context);
+                        },
+                        child: Icon(
+                          Icons.save,
+                          color: Color(0xFF417BFb),
+                          size: fontWidgetSize.icone - 3,
+                        )),
+                  ],
+                ),
                 Row(
                   children: <Widget>[
-                    SizedBox(height:sizeConfig.screenHeight*.017,),
+                    SizedBox(
+                      height: sizeConfig.screenHeight * .06,
+                    ),
                     Text(
                       "${formatDateTime()}",
-                      style: TextStyle(fontSize:fontWidgetSize.bodyFontSize-5,
+                      style: TextStyle(
+                          fontSize: fontWidgetSize.bodyFontSize - 13,
                           color: Colors.black45),
                     ),
                   ],
@@ -69,38 +101,35 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
               ],
             ),
           ),
-
           Padding(
-           padding: EdgeInsets.only(top:sizeConfig.screenHeight*.1,
-               right: sizeConfig.screenWidth*.01,
-               left: sizeConfig.screenWidth*.01,
-               bottom: sizeConfig.screenHeight*.005),
+            padding: EdgeInsets.only(
+                top: sizeConfig.screenHeight * .1,
+                right: sizeConfig.screenWidth * .01,
+                left: sizeConfig.screenWidth * .01,
+                bottom: sizeConfig.screenHeight * .005),
             child: TextField(
-
               maxLengthEnforced: true,
-               readOnly: cursor,
-               onTap: (){
+              readOnly: cursor,
+              onTap: () {
                 setState(() {
-                  cursor=false;
+                  cursor = false;
                 });
-
-               },
-               controller: descriptionController,
+              },
+              controller: descriptionController,
               cursorColor: Colors.amber,
               cursorRadius: Radius.circular(2),
               cursorWidth: 1,
+              autofocus: false,
+              style: _textStyle,
 
-             autofocus: false,
-               style: _textStyle,
               onChanged: (String value) {
-                 updateDescription();
-              //   debugPrint('Current value: $value');
-             },
+//               updateDescription();
+                //   debugPrint('Current value: $value');
+              },
 
-             maxLines:100,
+              maxLines: 100,
 //              maxLength: 99999,
-            keyboardType: TextInputType.multiline,
-
+              keyboardType: TextInputType.multiline,
             ),
           ),
         ],
@@ -108,39 +137,71 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
     );
   }
 
-  String formatDateTime(){
-    String firstD = DateFormat("MM MMMM  HH:mm" ).format(firstDate).toString()+" PM";
+  String formatDateTime() {
+    String firstD =
+        DateFormat("MM MMMM  HH:mm").format(firstDate).toString() + " PM";
     return firstD;
   }
-  void updateDescription(){
-    note.description=descriptionController.text;
+
+  void updateDescription() {
+    note.description = descriptionController.text;
   }
 
-  void save() {
-   // note.date=DateFormat.yMMMd().format(DateTime.now());
-// var firstNote= Note(0,"mohamed","this is me trying to connect","12/04/2020","34:90 PM");
-//  db.insertNote(firstNote);
+  void save() async {
+    int hour;
+    int day;
+    int minute;
+    int month;
 
-
-  }
-
-  void _showAlertDialog(String title, String message) {
-    AlertDialog alertDialog=AlertDialog(
-      title: Text(title),
-      content: Text(message),
-    );
-    showDialog(
+    await  showDatePicker(
       context: context,
-      builder: (_)=>alertDialog
-    );
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2018),
+      lastDate: DateTime(2030),
+      builder: (BuildContext context, Widget child) {
+        return Theme(data: ThemeData.light(), child: child,);
+      },
+    ).then((selectedDate) {
+      month= selectedDate.month-DateTime.now().month;
+      day =  selectedDate.day-DateTime.now().day+(month*30);
+    });
+   await showTimePicker(
+      initialTime: TimeOfDay.now(),
+      context: context,
+    ).then((selectedTime) async {
+      hour = selectedTime.hour-DateTime.now().hour;
+      minute = selectedTime.minute-DateTime.now().minute;
+    });
 
-  }
+    String titleData = descriptionController.text.length > 30
+        ? descriptionController.text.substring(0, 10)
+        : descriptionController.text;
+    String descriptionData = descriptionController.text;
 
-  void moveToLastScreen() {
-
-//    Navigator.of(context)
-//        .push(MaterialPageRoute(builder: (context) {
-//      return NoteList();
-//    }));
+    String s = DateFormat.yMMMd().format(DateTime.now());
+    if (widget.edit == true) {
+      NoteDatabaseProvider.db.updateNote(new Note(
+          id: widget.note.id,
+          title: titleData,
+          description: descriptionData,
+          date: s,
+          time: firstDate.hour.toString()));
+      _localNotification.showNotificationAfter(
+          day,
+          hour,
+          minute,
+          widget.note.id,
+          titleData,
+          descriptionData,
+          titleData);
+    } else if (widget.edit == false) {
+      int id = await NoteDatabaseProvider.db.insertNote(new Note( title: titleData,description: descriptionData,date: s,time: firstDate.hour.toString()));
+print("day $day");
+print("minute $minute");
+print("hour $hour");
+print("month $month");
+      _localNotification.showNotificationAfter(  day,  hour,    minute,  id,    titleData,   descriptionData, titleData);
+      Navigator.pop(context);
+    }
   }
 }

@@ -12,11 +12,9 @@ BuildContext context;
   double screenWidth;
 double screenHeight;
 SizeConfig(BuildContext context){
-
   this.screenHeight=MediaQuery.of(context).size.height;
   this.screenWidth=MediaQuery.of(context).size.width; 
 }
-
 void _setScreen(){
 
 if(this.screenWidth >= 320 && this.screenWidth <375){
@@ -27,7 +25,8 @@ if(this.screenWidth >= 375 && this.screenWidth <414){
 }
 if(this.screenWidth >=414 ){
    this.screenType =ScreenType.LARGE;
-} 
+}
+
 }
 
 }
@@ -41,26 +40,26 @@ WidgetSize(SizeConfig sizeConfig){
   this.sizeConfig=sizeConfig;
   _init();
   }
-  
     void _init() {
+  sizeConfig._setScreen();
      switch(this.sizeConfig.screenType){
-       case ScreenType.LARGE:
-         icone=30;
+       case ScreenType.SMALL:
+         icone=20;
         titleFontSize = 16;
         bodyFontSize = 14;
        break;
-       case ScreenType.SMALL:
-         icone=20;
+       case ScreenType.LARGE:
+         icone=36;
         titleFontSize = 28;
           bodyFontSize = 20;
          break;
        case ScreenType.MEDUIM:
-         icone =20;
-       titleFontSize = 28;
-         bodyFontSize = 20;
+         icone =30;
+       titleFontSize = 35;
+         bodyFontSize = 25;
          break;
        case ScreenType.XLARGE:
-         icone =20;
+         icone =35;
          titleFontSize = 28;
            bodyFontSize = 20;
          break;

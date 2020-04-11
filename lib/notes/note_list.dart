@@ -1,12 +1,10 @@
+
 import 'package:alarm_recorder/model/Note.dart';
-import 'package:alarm_recorder/model/note_inherited_widget.dart';
 import 'package:alarm_recorder/notes/textFieldCustom.dart';
 import 'package:alarm_recorder/theme/myTheme.dart';
-import 'package:alarm_recorder/utils/database.dart';
+import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:sqflite/sqflite.dart';
 
 class NoteList extends StatefulWidget {
   NoteList({Key key}) : super(key: key);
@@ -16,92 +14,155 @@ class NoteList extends StatefulWidget {
 }
 
 class _NoteListState extends State<NoteList> {
-
-  Note note;
-  int count =0;
-  FackNotes fackNotes=FackNotes();
-DbProvider db =DbProvider();
-
-  List<Note> noteList;
-
-//  @override
-//  void initState()   {
-//    getDataList();
-//    // TODO: implement initState
-//    super.initState();
-//  }
-
-  getDataList() async{
-  noteList= await db.notes();
-  return noteList;
+  Widget cont = Container(
+    width: 10,
+    height: 10,
+  );
+  bool isSelected = false;
+  @override
+  void didUpdateWidget(NoteList oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+    setState(() {});
   }
+
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
-          body: Container(
-         child: getNoteList(
-         ),  ),
-         floatingActionButton: FloatingActionButton(onPressed: (){
-            navigateToDetails( note,'');
-         },
-           child: Icon(Icons.add,color: Colors.white),
-           backgroundColor:mainTheme.primaryColorDark,
-         ) ,
-             );
-           }
-        
-          Widget getNoteList() {
-             return new StaggeredGridView.countBuilder(
-               crossAxisCount: 4,
-               itemCount:1,
-               itemBuilder: (BuildContext context, int index) => new Card(
-                   color:index.isEven?Colors.yellow[100]: Colors.blue[300],
-                   child: Stack(
-                      children: <Widget>[
+      body: Container(
+        child: FutureBuilder<List<Note>>(
+          future: NoteDatabaseProvider.db.getAllNotes(),
+          builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
+            switch(snapshot.connectionState){
 
-                      InkWell(
-                        onTap: (){
+              case ConnectionState.none:
+                return Center(
+                  //todo picture no list note
+                  child: CircularProgressIndicator(),
+                );
+                break;
 
-                          print(noteList[0].title);
-                        },
+              case ConnectionState.waiting:
+                return Center(
+                  //todo picture no list note
+                  child: CircularProgressIndicator(),
+                );
+                break;
+              case ConnectionState.active:
+                return Center(
+                  //todo picture no list note
+                  child: CircularProgressIndicator(),
+                );
+                break;
+              case ConnectionState.done:
+                return getNoteList(snapshot.data);
+                break;
+            }
+            return getNoteList(snapshot.data);
+
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+              builder: (BuildContext context) => MyTextFieldCustom(false)));
+        },
+        child: Icon(Icons.add, color: Colors.white),
+        backgroundColor: mainTheme.primaryColorDark,
+      ),
+    );
+  }
+
+  void toggleSelection() {
+    setState(() {
+      if (isSelected) {
+        cont = Container(
+          width: 10,
+          height: 10,
+        );
+        isSelected = false;
+      } else {
+        cont = Icon(
+          Icons.check_box,
+          color: Colors.blueAccent,
+        );
+        isSelected = true;
+      }
+    });
+  }
+
+  Widget getNoteList(List<Note> notelist) {
+    return new StaggeredGridView.countBuilder(
+      crossAxisCount: 4,
+      itemCount: notelist.length,
+      itemBuilder: (BuildContext context, int index) {
+        Note note = notelist[index];
+        return InkWell(
+          onLongPress: () {
+            setState(() {
+              isSelected = true;
+            });
+          },
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                builder: (BuildContext context) => MyTextFieldCustom(
+                      true,
+                      note: note,
+                    )));
+          },
+          child: new Card(
+              color: index.isEven ? Colors.yellow[100] : Colors.blue[300],
+              child: Stack(
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        note.title,
+                        style: TextStyle(
+                            color:
+                                index.isEven ? Colors.blueGrey : Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  Center(
+                    child: Text(
+                      note.description,
+                      style: TextStyle(
+                          color: index.isEven ? Colors.grey : Colors.white),
+                      textAlign: TextAlign.center,
+                      textWidthBasis: TextWidthBasis.parent,
+                    ),
+                  ),
+                  Positioned(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Text("Title",style: TextStyle(color: index.isEven?Colors.blueGrey:Colors.white,fontWeight: FontWeight.bold),),
+                            Text(
+                              note.date,
+                              style: TextStyle(
+                                  color: index.isEven
+                                      ? Colors.grey
+                                      : Colors.white),
+                            ),
+                            isSelected ? Icon(Icons.delete) : cont
                           ],
                         ),
                       ),
-
-                       Center(
-                   child: Text("dd",style: TextStyle(color: index.isEven?Colors.grey:Colors.white),textAlign: TextAlign.center,textWidthBasis: TextWidthBasis.parent,),
-                       ),
-                         Positioned(child: Text("19/2/2019",style: TextStyle( color:index.isEven?Colors.grey:Colors.white),),bottom: 10,left:10)
-
-                     ],
-                   )),
-               staggeredTileBuilder: (int index) =>
-               new StaggeredTile.count(2, index.isEven ? 3 : 2),
-               mainAxisSpacing: 4.0,
-               crossAxisSpacing: 4.0,
-             );
-               }
-
-
-
-  void _showSnackbar(BuildContext context, String message) {
-final snackbar =SnackBar(content: Text(message));
-   Scaffold.of(context).showSnackBar(snackbar);
+                      bottom: 10,
+                      left: 10)
+                ],
+              )),
+        );
+      },
+      staggeredTileBuilder: (int index) =>
+          new StaggeredTile.count(2, index.isEven ? 2.5 : 2),
+      mainAxisSpacing: 4.0,
+      crossAxisSpacing: 4.0,
+    );
   }
-
-
-  void navigateToDetails(Note note,String title) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) {
-      return MyTextFieldCustom(note,title);
-    }));
-  }
-
-
 }
