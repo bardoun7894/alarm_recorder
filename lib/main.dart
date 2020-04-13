@@ -27,7 +27,6 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
   final String title;
 
   @override
@@ -57,7 +56,6 @@ class _MyHomePageState extends State<MyHomePage>
     super.dispose();
     _tabController.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -144,6 +142,7 @@ class _MyHomePageState extends State<MyHomePage>
           ],
         ),
       ),
+
     );
   
  

@@ -38,7 +38,8 @@ dependencies:
   audioplayers: ^0.15.0
   rxdart: ^0.23.1
   bloc_pattern: ^2.5.1
-
+  image_picker: ^0.6.5
+  file_picker: ^1.6.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

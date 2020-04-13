@@ -28,8 +28,8 @@ Future<Database> get database async {
       return await openDatabase(path,
       version: 1,onCreate: (Database db,int version)async{
         await db.execute(
-          "CREATE TABLE note(id INTEGER PRIMARY KEY, title TEXT, description TEXT,date TEXT,time TEXT)",
-          );    }
+          "CREATE TABLE note(id INTEGER PRIMARY KEY,imagePath TEXT, title TEXT, description TEXT,date TEXT,time TEXT)",
+          );}
           );
   }
 Future<List<Note>> getAllNotes() async{
@@ -39,6 +39,7 @@ Future<List<Note>> getAllNotes() async{
     return Note(
         id:map[i]['id'],
         title:map[i]['title'],
+        imagePath:map[i]['imagePath'],
         description:  map[i]['description'],
         date: map[i]['date'],
         time:  map[i]['time']);

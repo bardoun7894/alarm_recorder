@@ -1,7 +1,10 @@
+import 'dart:io';
 
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/notes/textFieldCustom.dart';
 import 'package:alarm_recorder/theme/myTheme.dart';
+import 'package:alarm_recorder/utils/screen_size.dart';
+import 'package:alarm_recorder/utils/utils.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -14,10 +17,10 @@ class NoteList extends StatefulWidget {
 }
 
 class _NoteListState extends State<NoteList> {
-  Widget cont = Container(
-    width: 10,
-    height: 10,
-  );
+  WidgetSize fontWidgetSize;
+  SizeConfig sizeConfig;
+
+  Widget cont = Container();
   bool isSelected = false;
   @override
   void didUpdateWidget(NoteList oldWidget) {
@@ -28,38 +31,40 @@ class _NoteListState extends State<NoteList> {
 
   @override
   Widget build(BuildContext context) {
+    sizeConfig = SizeConfig(context);
+    fontWidgetSize = WidgetSize(sizeConfig);
     return Scaffold(
       body: Container(
+        color: Colors.grey[200],
         child: FutureBuilder<List<Note>>(
           future: NoteDatabaseProvider.db.getAllNotes(),
           builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
-            switch(snapshot.connectionState){
+          if(snapshot.hasData!=null){
+            if(snapshot.data.length==0){
+              return Container(
 
-              case ConnectionState.none:
-                return Center(
-                  //todo picture no list note
-                  child: CircularProgressIndicator(),
-                );
-                break;
-
-              case ConnectionState.waiting:
-                return Center(
-                  //todo picture no list note
-                  child: CircularProgressIndicator(),
-                );
-                break;
-              case ConnectionState.active:
-                return Center(
-                  //todo picture no list note
-                  child: CircularProgressIndicator(),
-                );
-                break;
-              case ConnectionState.done:
-                return getNoteList(snapshot.data);
-                break;
+                  child: Padding(
+                    padding:  EdgeInsets.only(top:sizeConfig.screenHeight*.5),
+                    child: Center(
+                      child: Column(
+                        children: <Widget>[
+                         Icon(Icons.note,color: Colors.blueAccent,size: 30,),
+                          SizedBox(height: 20,),
+                          Text("you don't insert any note ...",style: TextStyle(color: Colors.grey),)
+                        ],
+                      ),
+                    ),
+                  ),
+              );
+            }else{
+              return getNoteList(snapshot.data);
             }
-            return getNoteList(snapshot.data);
 
+          }else{
+            return Container(
+              color: Colors.white,
+            );
+          }
           },
         ),
       ),
@@ -92,77 +97,96 @@ class _NoteListState extends State<NoteList> {
     });
   }
 
+  Widget imageFr(String image) {
+    return imageFromBase64String(
+        image, sizeConfig.screenHeight * .13, sizeConfig.screenWidth * .50);
+  }
+
   Widget getNoteList(List<Note> notelist) {
-    return new StaggeredGridView.countBuilder(
-      crossAxisCount: 4,
-      itemCount: notelist.length,
-      itemBuilder: (BuildContext context, int index) {
-        Note note = notelist[index];
-        return InkWell(
-          onLongPress: () {
-            setState(() {
-              isSelected = true;
-            });
-          },
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (BuildContext context) => MyTextFieldCustom(
-                      true,
-                      note: note,
-                    )));
-          },
-          child: new Card(
-              color: index.isEven ? Colors.yellow[100] : Colors.blue[300],
-              child: Stack(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal:8.0),
+      child: new StaggeredGridView.countBuilder(
+        crossAxisCount: 4,
+        itemCount: notelist.length,
+        itemBuilder: (BuildContext context, int index) {
+
+          Note note = notelist[index];
+          return InkWell(
+            onLongPress: () {
+              setState(() {
+                isSelected = true;
+              });
+            },
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context) => MyTextFieldCustom(
+                        true,
+                        note: note,
+                      )));
+              print(note.imagePath);
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: new Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [BoxShadow(
+                      color: Colors.black
+                    )],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Stack(
                     children: <Widget>[
-                      Text(
-                        note.title,
-                        style: TextStyle(
-                            color:
-                                index.isEven ? Colors.blueGrey : Colors.white,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  Center(
-                    child: Text(
-                      note.description,
-                      style: TextStyle(
-                          color: index.isEven ? Colors.grey : Colors.white),
-                      textAlign: TextAlign.center,
-                      textWidthBasis: TextWidthBasis.parent,
-                    ),
-                  ),
-                  Positioned(
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              note.date,
-                              style: TextStyle(
-                                  color: index.isEven
-                                      ? Colors.grey
-                                      : Colors.white),
+                      Column(
+                        children: <Widget>[
+                          note.imagePath != null
+                              ? ClipRRect(
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12)),
+                              child: note.imagePath ==""? Container():imageFr(note.imagePath))
+                              : Container(),
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              note.imagePath =="" ? Padding(padding: EdgeInsets.only(top:sizeConfig.screenHeight*.04),child: Text(note.description.length > 20
+                                  ? note.description.substring(0, 20)
+                                  :note.description,style: TextStyle( color: Colors.blueGrey,fontWeight: FontWeight.bold,),maxLines: 2)):Text(note.title,style: TextStyle( color: Colors.blueGrey,fontWeight: FontWeight.bold),)
+
+                            ],
+                          ),
+                        ],
+                      )
+                  ,
+
+
+                      Positioned(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  note.date,
+                                  style: TextStyle(
+                                      color:  Colors.grey
+                                        ),
+                                ),
+                                isSelected ? Icon(Icons.delete) : cont
+                              ],
                             ),
-                            isSelected ? Icon(Icons.delete) : cont
-                          ],
-                        ),
-                      ),
-                      bottom: 10,
-                      left: 10)
-                ],
-              )),
-        );
-      },
-      staggeredTileBuilder: (int index) =>
-          new StaggeredTile.count(2, index.isEven ? 2.5 : 2),
-      mainAxisSpacing: 4.0,
-      crossAxisSpacing: 4.0,
+                          ),
+                          bottom: 10,
+                          left: 10)
+                    ],
+                  )),
+            ),
+          );
+        },
+        staggeredTileBuilder: (int index) =>
+            new StaggeredTile.count(2, notelist[index].imagePath ==""? 1.5 : 2),
+        mainAxisSpacing: 4.0,
+        crossAxisSpacing: 4.0,
+      ),
     );
   }
 }

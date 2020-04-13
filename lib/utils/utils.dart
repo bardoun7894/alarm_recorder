@@ -1,11 +1,62 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
+import 'package:alarm_recorder/databases/RegisterDatabase.dart';
+import 'package:alarm_recorder/model/recordModel.dart';
+import 'package:alarm_recorder/notifi.dart';
 import 'package:alarm_recorder/utils/dateTimePicker.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../recorder_player.dart';
 
 
+String base64String(Uint8List data){
+  return base64Encode(data);
+}
+Image imageFromBase64String(String base64String,double height,double width){
+return Image.memory(base64Decode(base64String),fit: BoxFit.fill,height:height,width: width,);
+
+}
+void save(String result,context) async {
+  int hour;
+  int day;
+  int minute;
+  int month;
+  LocalNotification _localNotification = LocalNotification();
+  await  showDatePicker(
+    context: context,
+    initialDate: DateTime.now(),
+    firstDate: DateTime(2018),
+    lastDate: DateTime(2030),
+    builder: (BuildContext context, Widget child) {
+      return Theme(data: ThemeData.light(), child: child,);
+    },
+  ).then((selectedDate) {
+    month= selectedDate.month-DateTime.now().month;
+    day =  selectedDate.day-DateTime.now().day+(month*30);
+  });
+  await showTimePicker(
+    initialTime: TimeOfDay.now(),
+    context: context,
+  ).then((selectedTime) async {
+    hour = selectedTime.hour-DateTime.now().hour;
+    minute = selectedTime.minute-DateTime.now().minute;
+  });
+  String s = DateFormat.yMMMd().format(DateTime.now());
+  int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: result,));
+  print("day $day");
+  print("minute $minute");
+  print("hour $hour");
+  print("month $month");
+  _localNotification.showNotificationAfter(day,hour,minute,id,"record title","record body", result);
+  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
+    return  RecorderPlayer(result);
+  }));
+}
 
 
-
-Future<bool> ShowCoupons(context,doIt,int i ) {
+Future<bool> ShowCoupons(context,result ) {
 
   return showDialog(
       context: context,
@@ -76,8 +127,7 @@ Future<bool> ShowCoupons(context,doIt,int i ) {
                     children: <Widget>[
                       FlatButton(
                         onPressed: () {
-                             i=0;
-                             doIt();
+                          save(result,context);
 
                         },
                         color: Colors.teal,
@@ -118,3 +168,8 @@ Future<bool> ShowCoupons(context,doIt,int i ) {
       });
 }
 
+Widget Drawer(){
+
+
+  
+}

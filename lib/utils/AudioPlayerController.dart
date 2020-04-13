@@ -55,6 +55,8 @@ trocarMusic(String music){
   audioObject.play=true;
   inPlayer.add(audioObject);
 }
+
+
 timeSound(double newValue){
   Duration newDuration =Duration(seconds: newValue.toInt());
   audioObject.advancedPlayer.seek(newDuration);
@@ -62,8 +64,6 @@ timeSound(double newValue){
   audioObject.advancedPlayer.resume();
   audioObject.play=true;
   inPlayer.add(audioObject);
-  print(newValue.toInt());
-
 
 }
 

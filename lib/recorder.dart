@@ -36,7 +36,6 @@ class _RecorderScreenState extends State<RecorderScreen> {
   FlutterAudioRecorder _recorder;
   Recording _current;
   RecordingStatus _currentStatus = RecordingStatus.Unset;
-  LocalNotification _localNotification = LocalNotification();
   String name="";
   @override
   void initState() {
@@ -197,7 +196,9 @@ class _RecorderScreenState extends State<RecorderScreen> {
                   _start();
                   currentIcon = 1;
                 } else {
-                  ShowCoupons(context,_stop,currentIcon);
+                  currentIcon=0;
+                 _stop();
+
 
                   //   ShowCoupons(context);
                 }
@@ -263,49 +264,13 @@ class _RecorderScreenState extends State<RecorderScreen> {
       _current = result;
       _currentStatus = _current.status;
 
-      save(result);
+      ShowCoupons(context,result.path.toString());
+
 
       //todo Date and Time
     });
   }
 
 
-  void save(result) async
-  {
-    int hour;
-    int day;
-    int minute;
-    int month;
 
-    await  showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2018),
-      lastDate: DateTime(2030),
-      builder: (BuildContext context, Widget child) {
-        return Theme(data: ThemeData.light(), child: child,);
-      },
-    ).then((selectedDate) {
-      month= selectedDate.month-DateTime.now().month;
-      day =  selectedDate.day-DateTime.now().day+(month*30);
-    });
-    await showTimePicker(
-      initialTime: TimeOfDay.now(),
-      context: context,
-    ).then((selectedTime) async {
-      hour = selectedTime.hour-DateTime.now().hour;
-      minute = selectedTime.minute-DateTime.now().minute;
-    });
-    String s = DateFormat.yMMMd().format(DateTime.now());
-      int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: result.path,));
-      print("day $day");
-      print("minute $minute");
-      print("hour $hour");
-      print("month $month");
-      _localNotification.showNotificationAfter(day,hour,minute,id,"record title","record body", result.path);
-     Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-      return RecorderPlayer(result.path);
-    }));
-
-  }
 }

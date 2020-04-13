@@ -1,10 +1,13 @@
+import 'dart:io';
 
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
 import 'package:alarm_recorder/utils/AudioPlayerController.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
+import 'package:alarm_recorder/utils/utils.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class RecorderPlayer extends StatefulWidget {
@@ -20,6 +23,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   AudioPLayerController audioC = new AudioPLayerController();
   String repath = "";
   int pos = 0;
+  List l = [];
   bool isSelected = false;
   Widget cont = Container(
     width: 10,
@@ -33,15 +37,15 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     super.dispose();
     audioC.dispose();
   }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
-    if(widget.pathfromNotifiction!=""){
+    if (widget.pathfromNotifiction != "") {
       audioC.ButtonPlayPause(widget.pathfromNotifiction);
     }
-
   }
 
   @override
@@ -58,79 +62,56 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
               future: RegisterDatabaseProvider.db.getAllRecords(),
               builder: (BuildContext context,
                   AsyncSnapshot<List<RecordModel>> futuresnapshot) {
-
-                if(futuresnapshot.hasData){
+                if (futuresnapshot.hasData) {
                   return StreamBuilder(
                       stream: audioC.outPlayer,
                       builder:
                           (context, AsyncSnapshot<AudioPlayerObject> snapshot) {
-                        switch(snapshot.connectionState) {
-                          case ConnectionState.none:
-                            return Container();
-                            break;
-                          case ConnectionState.waiting:
-                            return Container();
-                            break;
-                          case ConnectionState.active:
-                            return Stack(
-                              children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      top: sizeConfig.screenHeight * .04),
-                                  child: Container(
-                                    height: sizeConfig.screenHeight * .72,
-                                    child:
-                                    getRegisterList(futuresnapshot.data, audioC),
-                                  ),
+                        if (snapshot.hasData) {
+                          return Stack(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    top: sizeConfig.screenHeight * .04),
+                                child: Container(
+                                  height: sizeConfig.screenHeight * .72,
+                                  child: getRegisterList(
+                                      futuresnapshot.data, audioC),
                                 ),
-                                _player(
-                                    snapshot.data.play,
-                                    snapshot.data.duration.inMinutes.toString(),
-                                    (snapshot.data.duration.inSeconds -
-                                        (snapshot.data.duration.inMinutes * 60))
-                                        .toString(),
-                                    snapshot.data,
-                                    futuresnapshot.data,
-                                    pos)
-                              ],
-                            );
-                            break;
-                          case ConnectionState.done:
-                            return Stack(
-                              children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                      top: sizeConfig.screenHeight * .04),
-                                  child: Container(
-                                    height: sizeConfig.screenHeight * .72,
-                                    child:
-                                    getRegisterList(futuresnapshot.data, audioC),
-                                  ),
-                                ),
-                                _player(
-                                    snapshot.data.play,
-                                    snapshot.data.duration.inMinutes.toString(),
-                                    (snapshot.data.duration.inSeconds -
-                                        (snapshot.data.duration.inMinutes * 60))
-                                        .toString(),
-                                    snapshot.data,
-                                    futuresnapshot.data,
-                                    pos)
-                              ],
-                            );
-                            break;
+                              ),
+                              _player(
+                                  snapshot.data.play,
+                                  snapshot.data.duration.inMinutes.toString(),
+                                  (snapshot.data.duration.inSeconds -
+                                          (snapshot.data.duration.inMinutes *
+                                              60))
+                                      .toString(),
+                                  snapshot.data,
+                                  futuresnapshot.data,
+                                  pos)
+                            ],
+                          );
+                        } else {
+                          return Container();
                         }
-
-                        return Container()   ;
                       });
-
-
-
-                }else{
-                  return Container()   ;
+                } else {
+                  return Container(
+                    width: sizeConfig.screenWidth,
+                    height: sizeConfig.screenHeight,
+                    color: Colors.white,
+                  );
                 }
-
               }),
+        ),
+        appBar: AppBar(
+          actions: <Widget>[
+            InkWell(onTap: _pickSound, child: Icon(Icons.folder_open)),
+            SizedBox(
+              width: 10,
+            ),
+          ],
+          backgroundColor: Colors.blueAccent,
         ),
       ),
     );
@@ -154,10 +135,8 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     });
   }
 
-  Widget _player(
-      isPlay, minute, seconds, object, List<RecordModel> data, int i) {
-    RecordModel recordModel = data[i];
-
+  Widget _player(isPlay, minute, seconds, AudioPlayerObject object,
+      List<RecordModel> data, int i) {
     return Positioned(
       bottom: 0,
       left: 0,
@@ -181,7 +160,9 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                 IconButton(
                   onPressed: () {
                     setState(() {
-                      audioC.ButtonPlayPause(recordModel.pathRec);
+                      if (data[i].pathRec != "") {
+                        audioC.trocarMusic(data[i].pathRec);
+                      }
                     });
                   },
                   iconSize: fontWidgetSize.icone + 15,
@@ -204,10 +185,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(
-                    '00:00',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  retornarTempoSound(object.position),
                   Text(
                     minute + ':' + seconds,
                     style: TextStyle(color: Colors.white),
@@ -228,7 +206,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       onChanged: (newTime) {
         setState(() {
           print(newTime);
-          //  audioC.timeSound(newTime);
+          audioC.timeSound(newTime);
         });
       },
       value: object.position.inSeconds.toDouble(),
@@ -239,7 +217,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
 
   Widget getRegisterList(List<RecordModel> data, AudioPLayerController audioC) {
     return ListView.builder(
-      itemCount: data.length!=null?data.length:0,
+      itemCount: data.length != null ? data.length : 0,
       itemBuilder: (BuildContext context, index) {
         RecordModel recordModel = data[index];
 
@@ -253,7 +231,11 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
               onTap: () {
                 setState(() {
                   pos = index;
-                  audioC.ButtonPlayPause(recordModel.pathRec);
+                  if (recordModel.pathRec != "") {
+                    print(recordModel.pathRec);
+                    audioC.ButtonPlayPause(recordModel.pathRec);
+                  }
+                  print(recordModel.pathRec);
                 });
               },
               onLongPress: () {
@@ -270,6 +252,31 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
         );
       },
     );
+  }
+
+  Widget retornarTempoSound(Duration position) {
+    String seconds = (position.inMinutes >= 1
+            ? ((position.inSeconds - position.inMinutes * 60))
+            : position.inSeconds)
+        .toString();
+    if (position.inSeconds < 10) {
+      seconds = "0" + seconds;
+    }
+    String tempoSounds = position.inMinutes.toString() + ":" + seconds;
+    return Text(
+      tempoSounds,
+      style: TextStyle(color: Colors.white),
+    );
+  }
+
+  Future _pickSound() {
+    FilePicker.getFile().then((onValue) {
+      if (onValue != null) {
+        repath = onValue.path;
+        print(repath);
+        save(repath, context);
+      }
+    });
   }
 }
 
