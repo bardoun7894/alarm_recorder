@@ -25,21 +25,27 @@
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
-	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Main</string>
+    <key>NSPhotoLibraryUsageDescription</key>
     <string>Need to upload Image</string>
     <key>NSCameraUsageDescription</key>
     <string>Need to upload Image</string>
     <key>NSAppleMusicUsageDescription</key>
     <string>Explain why your app uses music</string>
-	<string>Main</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>This app needs access to location when in the background.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>This app needs access to location when open and in the background.</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>This app needs access to location when open.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>This sample uses the microphone to record your speech </string>
 	<key>UISupportedInterfaceOrientations</key>
 	<key>NSAppTransportSecurity</key>
     <dict>
         <key>NSAllowsArbitraryLoads</key>
         <true/>
     </dict>
-	<key>NSMicrophoneUsageDescription</key>
-    <string>This sample uses the microphone to record your speech </string>
     <key>UIBackgroundModes</key>
     <array>
     	<string>audio</string>

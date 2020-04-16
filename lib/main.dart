@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'notes/note_list.dart';
 import 'notes/textFieldCustom.dart';
-
+import 'package:alarm_recorder/utils/getlocation.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage>
                       InkWell(
                           onTap: () {
                     Navigator.of(context) .push(MaterialPageRoute(builder: (context) {
-                              return NoteList();
+                              return GetLocation();
                             }));
                           },
                           child: locationContainer()),
