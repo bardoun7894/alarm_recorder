@@ -16,7 +16,7 @@ import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'notifi.dart';
+import '../notifi.dart';
 
 class RecorderScreen extends StatefulWidget {
   final LocalFileSystem localFileSystem;
