@@ -2,10 +2,13 @@
 
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
+import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/notifi.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:alarm_recorder/utils/utils.dart';
@@ -14,10 +17,10 @@ import 'package:alarm_recorder/utils/utils.dart';
 
 class MyTextFieldCustom extends StatefulWidget {
   final Note note;
-
   String title;
   final bool edit;
-  MyTextFieldCustom(this.edit, {this.note})
+  bool camera;
+  MyTextFieldCustom(this.edit,this.camera, {this.note})
       : assert(edit != null || note == null);
   @override
   _MyTextFieldCustomState createState() =>
@@ -55,14 +58,38 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
 
   Widget imageFr(String image) {
     return imageFromBase64String( image, sizeConfig.screenHeight * .13, sizeConfig.screenWidth * .50); }
- Future getImage()  async{
-  var image =await ImagePicker.pickImage( source: ImageSource.gallery);
-   setState(() {
-     _image=image;
+ Future getImage(source)  async{
+  var image =await ImagePicker.pickImage( source:source);
+  File croppedFile = await ImageCropper.cropImage(
+
+      sourcePath: image.path,
+      aspectRatioPresets: [
+        CropAspectRatioPreset.square,
+        CropAspectRatioPreset.ratio3x2,
+        CropAspectRatioPreset.original,
+        CropAspectRatioPreset.ratio4x3,
+        CropAspectRatioPreset.ratio16x9
+      ],
+      androidUiSettings: AndroidUiSettings(
+          toolbarTitle: 'Cropper',
+          toolbarColor: Colors.deepOrange,
+          toolbarWidgetColor: Colors.white,
+          initAspectRatio: CropAspectRatioPreset.original,
+          lockAspectRatio: false),
+      iosUiSettings: IOSUiSettings(
+        minimumAspectRatio: 1.0,
+      )
+  );
+  var compressedImage = await FlutterImageCompress.compressAndGetFile(
+    croppedFile.path,
+    image.path,
+    quality: 50,
+  );
+  setState(() {
+     _image=compressedImage;
   if(_image!=null) {
     imgString = base64String(_image.readAsBytesSync());
   }
-
    });
   }
   @override
@@ -118,14 +145,14 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
                       //      save();
 //                        dateRange(context);
                       textAfterGetImage=descriptionController.text;
-                     getImage();
+                    widget.camera==true? getImage(ImageSource.camera):getImage(ImageSource.gallery) ;
 
                      descriptionController.text=textAfterGetImage;
                     },
                     child: Padding(
                       padding: const EdgeInsets.only(right:18.0),
                       child: Icon(
-                        Icons.camera_enhance,
+                        widget.camera==true? Icons.camera_enhance:Icons.image,
                         color: Color(0xFF417BFb),
                         size: fontWidgetSize.icone - 3,
                       ),
@@ -233,10 +260,8 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
         ? descriptionController.text.substring(0, 12)
         : descriptionController.text;
     String descriptionData = descriptionController.text;
-
     String s = DateFormat.yMMMd().format(DateTime.now());
-
-    if (widget.edit == true) {
+    if (widget.edit == true){
       NoteDatabaseProvider.db.updateNote(new Note(
           id: widget.note.id,
           imagePath: imgString,
@@ -255,12 +280,12 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
       Navigator.pop(context);
     } else if (widget.edit == false) {
       int id = await NoteDatabaseProvider.db.insertNote(new Note( imagePath:imgString,title: titleData,description: descriptionData,date: s,time: firstDate.hour.toString()));
-print("day $day");
-print("minute $minute");
-print("hour $hour");
-print("month $month");
+           print("day $day");
+           print("minute $minute");
+           print("hour $hour");
+           print("month $month");
       _localNotification.showNotificationAfter(  day,  hour,    minute,  id,    titleData,   descriptionData, titleData);
-      Navigator.pop(context);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {  return  NoteList(); }));
     }
   }
 }

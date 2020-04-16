@@ -160,9 +160,16 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                 IconButton(
                   onPressed: () {
                     setState(() {
-                      if (data[i].pathRec != "") {
-                        audioC.trocarMusic(data[i].pathRec);
+                      if(data.length==0){
+                        print("data is empty");
+                      }else{
+                        if (data[i].pathRec != "" ) {
+                          print("  djjd : ${data[i].pathRec}");
+                          audioC.ButtonPlayPause(data[i].pathRec);
+
+                        }
                       }
+
                     });
                   },
                   iconSize: fontWidgetSize.icone + 15,
@@ -245,7 +252,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                 Icons.music_note,
                 color: Colors.blueAccent,
               ),
-              title: Text("2019/2020.mp3"),
+              title: Text(recordModel.name),
               trailing: cont,
             ),
           ),
@@ -274,7 +281,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       if (onValue != null) {
         repath = onValue.path;
         print(repath);
-        save(repath, context);
+        save(repath, context,repath.substring(0,7));
       }
     });
   }

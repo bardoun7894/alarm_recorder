@@ -40,6 +40,8 @@ dependencies:
   bloc_pattern: ^2.5.1
   image_picker: ^0.6.5
   file_picker: ^1.6.2
+  image_cropper: ^1.2.1
+  flutter_image_compress: ^0.6.5+1
 dev_dependencies:
   flutter_test:
     sdk: flutter

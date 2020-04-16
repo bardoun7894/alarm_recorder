@@ -39,22 +39,18 @@ class _MyHomePageState extends State<MyHomePage>
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
 
-  final DateFormat _dateFormat = DateFormat('dd MMM');
-  final DateFormat _timeFormat = DateFormat('h:mm');
-
-  TabController _tabController;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _tabController = TabController(initialIndex: 0, length: 3, vsync: this);
+
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
-    _tabController.dispose();
+
   }
   @override
   Widget build(BuildContext context) {
@@ -72,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage>
           children: <Widget>[
             Container(
               width:sizeConfig.screenWidth,
-              height: sizeConfig.screenHeight*.3,
+              height: sizeConfig.screenHeight*.32,
               decoration: BoxDecoration(
                   color:Colors.blueAccent,
                 borderRadius: BorderRadius.only(
@@ -114,28 +110,56 @@ class _MyHomePageState extends State<MyHomePage>
                 ),
                      ),),
 
-            Column(
-              children: <Widget>[
-                SizedBox(height: 20,),
-                InkWell(
-                    onTap: () {
-                      Navigator.of(context)
-                          .push(MaterialPageRoute(builder: (context) {
-                        return NoteList();
-                      }));
-                    },
-                    child: noteContainer()),
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) {
-                      return RecorderScreen();
-                    }));
-                  },
-                  child: recordContainer(),
-                ),
+            Padding(
+              padding:   EdgeInsets.only(top:sizeConfig.screenHeight*0.1),
+              child: Column(
+                children: <Widget>[
 
-                 ],
+
+                  Row(children: <Widget>[
+                    InkWell(
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return NoteList();
+                          }));
+                        },
+                        child: noteContainer()),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return RecorderScreen();
+                        }));
+                      },
+                      child: recordContainer(),
+                    ),
+                  ],)     ,
+                  Padding(
+                    padding:  EdgeInsets.only(left:sizeConfig.screenWidth*.025),
+                    child: Row(children: <Widget>[
+                      InkWell(
+                          onTap: () {
+                    Navigator.of(context) .push(MaterialPageRoute(builder: (context) {
+                              return NoteList();
+                            }));
+                          },
+                          child: locationContainer()),
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context)
+                              .push(MaterialPageRoute(builder: (context) {
+                            return MyTextFieldCustom(false,true);
+                          }));
+                        },
+                        child: cameraContainer(),
+                      ),
+                    ],),
+                  )
+
+
+                   ],
+              ),
             ),
 
 
@@ -152,8 +176,8 @@ class _MyHomePageState extends State<MyHomePage>
                   padding: const EdgeInsets.only(left: 10,right: 10),
                   child: Container(
 
-                    height:sizeConfig.screenHeight*.28,
-                    width:  sizeConfig.screenWidth*.9,
+                    height:sizeConfig.screenHeight*.2,
+                    width:  sizeConfig.screenWidth*.4,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20.0),
                         boxShadow: [
@@ -162,13 +186,13 @@ class _MyHomePageState extends State<MyHomePage>
                               offset: Offset(0, 2),
                               blurRadius: 10.0)
                         ],
-                      color:Colors.blueAccent,),
+                        color: Color(0xFFF5F7FB)),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Image.asset(
-                          "assets/rechome.png",
+                          "assets/recordxd.png",
                           height:sizeConfig.screenHeight*.11,
                           width:  sizeConfig.screenWidth*.25,
                         ),
@@ -178,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage>
                         Text(
                           "Recorder",
                           style: TextStyle(
-                              color: Colors.white,
+                              color: Colors.blueAccent,
                               fontSize:fontWidgetSize.titleFontSize,
                               fontWeight: FontWeight.bold),
                         ),
@@ -188,12 +212,52 @@ class _MyHomePageState extends State<MyHomePage>
                 );
              
   }
+  Widget locationContainer(){
+                return Padding(
+                  padding: const EdgeInsets.only(left: 10,right: 10),
+                  child: Container(
+
+                    height:sizeConfig.screenHeight*.2,
+                    width:  sizeConfig.screenWidth*.4,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20.0),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(0, 2),
+                              blurRadius: 10.0)
+                        ],
+                        color: Color(0xFFF5F7FB),),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Image.asset(
+                          "assets/local.png",
+                          height:sizeConfig.screenHeight*.11,
+                          width:  sizeConfig.screenWidth*.25,
+                                   ),
+                        SizedBox(
+                          width: 50,
+                        ),
+                        Text(
+                          "location",
+                          style: TextStyle(
+                              color: Colors.blueAccent,
+                              fontSize:fontWidgetSize.titleFontSize,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+           }
     Widget noteContainer(){
       return   Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 15),
                 child: Container(
-                  height:sizeConfig.screenHeight*.26,
-                    width:  sizeConfig.screenWidth*.9,
+                  height:sizeConfig.screenHeight*.2,
+                  width:  sizeConfig.screenWidth*.4,
                    decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.0),
                       boxShadow: [
@@ -208,15 +272,14 @@ class _MyHomePageState extends State<MyHomePage>
                     crossAxisAlignment: CrossAxisAlignment.center,
 
                     children: <Widget>[
-                      Image.asset("assets/file.png",
+                      Image.asset("assets/nots.png",
                         height:sizeConfig.screenHeight*.13,
                         width:  sizeConfig.screenWidth*.25,
                       ),
-                     
                          Padding(
                            padding: const EdgeInsets.only(left:25.0,top:10),
                            child: Text(
-                                 "Note    ",
+                                 "Note",
                               style: TextStyle(
                                 color: Color(0xFF417BFb),
                                   fontSize:fontWidgetSize.titleFontSize,
@@ -230,5 +293,46 @@ class _MyHomePageState extends State<MyHomePage>
               );
          
     }
- 
+    Widget cameraContainer(){
+      return   Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 15),
+                child: Container(
+                  height:sizeConfig.screenHeight*.2,
+                  width:  sizeConfig.screenWidth*.4,
+                   decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(0, 2),
+                            blurRadius: 10.0)
+                              ],
+                      color: Color(0xFFF5F7FB)),
+                     child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+
+                    children: <Widget>[
+                      Image.asset("assets/cam.png",
+                        height:sizeConfig.screenHeight*.13,
+                        width:  sizeConfig.screenWidth*.25,
+                      ),
+                         Padding(
+                           padding: const EdgeInsets.only(left:25.0,top:10),
+                           child: Text(
+                                 "Camera    ",
+                              style: TextStyle(
+                                color: Color(0xFF417BFb),
+                                  fontSize:fontWidgetSize.titleFontSize,
+                                fontWeight: FontWeight.bold),
+                      ),
+                         ),
+
+                    ],
+                  ),
+                ),
+              );
+
+    }
+
 }

@@ -28,6 +28,8 @@ class RecorderScreen extends StatefulWidget {
 }
 
 class _RecorderScreenState extends State<RecorderScreen> {
+
+  TextEditingController nameController=new TextEditingController();
   int currentIcon = 0;
   double height;
   double width;
@@ -36,7 +38,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
   FlutterAudioRecorder _recorder;
   Recording _current;
   RecordingStatus _currentStatus = RecordingStatus.Unset;
-  String name="";
+  String name ="myRecord.mp3";
   @override
   void initState() {
     // TODO: implement initState
@@ -62,9 +64,6 @@ class _RecorderScreenState extends State<RecorderScreen> {
             customPath +
             DateTime.now().millisecondsSinceEpoch.toString();
 
-        // .wav <---> AudioFormat.WAV
-        // .mp4 .m4a .aac <---> AudioFormat.AAC
-        // AudioFormat is optional, if given value, will overwrite path extension when there is conflicts.
         _recorder =
             FlutterAudioRecorder(customPath, audioFormat: AudioFormat.WAV);
 
@@ -139,14 +138,33 @@ class _RecorderScreenState extends State<RecorderScreen> {
                 Padding(
                   padding: EdgeInsets.only(top: sizeConfig.screenHeight * .12),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(
-                        name,
-                        style: TextStyle(
-                            fontFamily: 'sans sherif',
-                            fontWeight: FontWeight.normal,
-                            color: Colors.white,
-                            fontSize: fontWidgetSize.titleFontSize),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal:50),
+                        child: TextFormField(
+
+                          controller: nameController,
+                          style: TextStyle(
+                              fontFamily: 'sans sherif',
+                              fontWeight: FontWeight.normal,
+                              color: Colors.white,
+                              fontSize: fontWidgetSize.bodyFontSize+10 ),
+
+
+                          autofocus: false,
+                          decoration: InputDecoration(
+                          icon:Icon( Icons.mode_edit,color: Colors.white,),
+                           hintMaxLines: 1,
+                            border: InputBorder.none,
+                           hintText: "myRecord.mp3"
+                              ,hintStyle: TextStyle(
+                              fontFamily: 'sans sherif',
+                              fontWeight: FontWeight.normal,
+                              color: Colors.white,
+                              fontSize: fontWidgetSize.bodyFontSize+10),
+                          ),
+                        ),
                       ),
                       SizedBox(
                         height: sizeConfig.screenHeight * .05,
@@ -196,9 +214,8 @@ class _RecorderScreenState extends State<RecorderScreen> {
                   _start();
                   currentIcon = 1;
                 } else {
-                  currentIcon=0;
-                 _stop();
-
+                  currentIcon = 0;
+                  _stop();
 
                   //   ShowCoupons(context);
                 }
@@ -258,19 +275,16 @@ class _RecorderScreenState extends State<RecorderScreen> {
     var result = await _recorder.stop();
     print("Stop recording: ${result.path}");
     print("Stop recording: ${result.duration}");
+
     File file = widget.localFileSystem.file(result.path);
     print("File length: ${await file.length()}");
     setState(() {
       _current = result;
       _currentStatus = _current.status;
 
-      ShowCoupons(context,result.path.toString());
-
+      ShowCoupons(context, result.path.toString(),nameController.text!=""?nameController.text+"."+"${result.extension}":name+"."+"${result.extension}");
 
       //todo Date and Time
     });
   }
-
-
-
 }

@@ -1,24 +1,20 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
 import 'package:alarm_recorder/notifi.dart';
 import 'package:alarm_recorder/utils/dateTimePicker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
 import '../recorder_player.dart';
-
 
 String base64String(Uint8List data){
   return base64Encode(data);
 }
 Image imageFromBase64String(String base64String,double height,double width){
 return Image.memory(base64Decode(base64String),fit: BoxFit.fill,height:height,width: width,);
-
 }
-void save(String result,context) async {
+void save(String result,context,String nameRecord) async {
   int hour;
   int day;
   int minute;
@@ -44,19 +40,19 @@ void save(String result,context) async {
     minute = selectedTime.minute-DateTime.now().minute;
   });
   String s = DateFormat.yMMMd().format(DateTime.now());
-  int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: result,));
+  int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: result,name: nameRecord));
   print("day $day");
   print("minute $minute");
   print("hour $hour");
   print("month $month");
-  _localNotification.showNotificationAfter(day,hour,minute,id,"record title","record body", result);
+  _localNotification.showNotificationAfter(day,hour,minute,id,"record title",nameRecord, result);
   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
     return  RecorderPlayer(result);
   }));
 }
 
 
-Future<bool> ShowCoupons(context,result ) {
+Future<bool> ShowCoupons(context,result,String nameRecord ) {
 
   return showDialog(
       context: context,
@@ -127,7 +123,7 @@ Future<bool> ShowCoupons(context,result ) {
                     children: <Widget>[
                       FlatButton(
                         onPressed: () {
-                          save(result,context);
+                          save(result,context,nameRecord);
 
                         },
                         color: Colors.teal,

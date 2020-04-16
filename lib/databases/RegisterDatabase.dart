@@ -26,7 +26,7 @@ class RegisterDatabaseProvider {
     return await openDatabase(path,
         version: 1,onCreate: (Database db,int version)async{
           await db.execute(
-            "CREATE TABLE register(id INTEGER PRIMARY KEY, pathRec TEXT,date TEXT,time TEXT)",
+            "CREATE TABLE register(id INTEGER PRIMARY KEY, name TEXT, pathRec TEXT,date TEXT,time TEXT)",
           );    }
     );
   }
@@ -36,6 +36,7 @@ class RegisterDatabaseProvider {
     return List.generate(map.length, (i) {
       return RecordModel(
           id:map[i]['id'],
+          name:map[i]['name'],
           pathRec:map[i]['pathRec'],
           date: map[i]['date'],
           time:  map[i]['time']);

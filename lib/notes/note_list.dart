@@ -10,7 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class NoteList extends StatefulWidget {
-  NoteList({Key key}) : super(key: key);
+
+  NoteList(  {Key key}) : super(key: key);
 
   @override
   _NoteListState createState() => _NoteListState();
@@ -19,7 +20,7 @@ class NoteList extends StatefulWidget {
 class _NoteListState extends State<NoteList> {
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
-
+  List<Note> lisnote=[];
   Widget cont = Container();
   bool isSelected = false;
   @override
@@ -37,12 +38,12 @@ class _NoteListState extends State<NoteList> {
       body: Container(
         color: Colors.grey[200],
         child: FutureBuilder<List<Note>>(
+
           future: NoteDatabaseProvider.db.getAllNotes(),
           builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
-          if(snapshot.hasData!=null){
+          if(snapshot.hasData){
             if(snapshot.data.length==0){
               return Container(
-
                   child: Padding(
                     padding:  EdgeInsets.only(top:sizeConfig.screenHeight*.5),
                     child: Center(
@@ -58,20 +59,24 @@ class _NoteListState extends State<NoteList> {
               );
             }else{
               return getNoteList(snapshot.data);
+              }
+              }
+
+          else{
+               return Container(
+                 width: sizeConfig.screenWidth,
+                height: sizeConfig.screenHeight,
+                color: Colors.white,
+               );
             }
 
-          }else{
-            return Container(
-              color: Colors.white,
-            );
-          }
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
-              builder: (BuildContext context) => MyTextFieldCustom(false)));
+              builder: (BuildContext context) => MyTextFieldCustom(false,false)));
         },
         child: Icon(Icons.add, color: Colors.white),
         backgroundColor: mainTheme.primaryColorDark,
@@ -121,6 +126,7 @@ class _NoteListState extends State<NoteList> {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (BuildContext context) => MyTextFieldCustom(
                         true,
+                        false,
                         note: note,
                       )));
               print(note.imagePath);

@@ -24,18 +24,13 @@ AudioPLayerController(){
       audioObject.duration=d;
       inPlayer.add(audioObject);
   });
-
-
-
   audioObject.advancedPlayer.onAudioPositionChanged.listen((Duration p){
 audioObject.position=p;
 inPlayer.add(audioObject);
   });
   audioObject.musicActual=audioObject.localFilePath;
   inPlayer.add(audioObject);
-
 }
-
 
 ButtonPlayPause(data){
   if(audioObject.play) {
@@ -47,15 +42,6 @@ ButtonPlayPause(data){
   }
   inPlayer.add(audioObject);
 }
-
-trocarMusic(String music){
-  audioObject.musicActual=music;
-  print(music);
-  audioObject.advancedPlayer.play(audioObject.musicActual,isLocal: true);
-  audioObject.play=true;
-  inPlayer.add(audioObject);
-}
-
 
 timeSound(double newValue){
   Duration newDuration =Duration(seconds: newValue.toInt());
