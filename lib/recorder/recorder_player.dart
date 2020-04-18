@@ -275,13 +275,12 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       style: TextStyle(color: Colors.white),
     );
   }
-
   Future _pickSound() {
     FilePicker.getFile().then((onValue) {
       if (onValue != null) {
         repath = onValue.path;
         print(repath);
-        save(repath, context,repath.substring(0,7));
+        saveRecord(repath, context,repath.substring(0,7));
       }
     });
   }

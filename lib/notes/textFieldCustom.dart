@@ -4,9 +4,11 @@ import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/notifi.dart';
+import 'package:alarm_recorder/utils/getlocation.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
@@ -20,7 +22,9 @@ class MyTextFieldCustom extends StatefulWidget {
   String title;
   final bool edit;
   bool camera;
-  MyTextFieldCustom(this.edit,this.camera, {this.note})
+  bool location;
+
+  MyTextFieldCustom(this.edit,this.camera,this.location, {this.note})
       : assert(edit != null || note == null);
   @override
   _MyTextFieldCustomState createState() =>
@@ -28,9 +32,10 @@ class MyTextFieldCustom extends StatefulWidget {
 }
 
 class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
+  GetLocation getLocation=GetLocation();
   String textAfterGetImage="";
   File _image;
-
+    bool fabClicked =false;
   String imgString="";
   LocalNotification _localNotification = LocalNotification();
   Note note;
@@ -49,7 +54,6 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
   void initState() {
     super.initState();
     if (widget.edit == true) {
-
       descriptionController.text = widget.note.description;
       imgString=widget.note.imagePath;
 
@@ -59,7 +63,9 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
   Widget imageFr(String image) {
     return imageFromBase64String( image, sizeConfig.screenHeight * .13, sizeConfig.screenWidth * .50); }
  Future getImage(source)  async{
+
   var image =await ImagePicker.pickImage( source:source);
+  if(image!=null){
   File croppedFile = await ImageCropper.cropImage(
 
       sourcePath: image.path,
@@ -90,7 +96,9 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
   if(_image!=null) {
     imgString = base64String(_image.readAsBytesSync());
   }
+
    });
+  }
   }
   @override
   Widget build(BuildContext context) {
@@ -101,8 +109,19 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
         .textTheme
         .body1;
     // descriptionController.text=note.description;
-    bool isEmpty = true;
+
     return Scaffold(
+      floatingActionButton: widget.location==true?FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            fabClicked=true;
+           getLocation.getPermissionStatus(context);
+
+          });
+        },
+        backgroundColor: Colors.blueAccent,
+        child: Icon(Icons.gps_fixed,color: Colors.white,size: 30,),
+      ):Container(),
       body: Stack(
         children: <Widget>[
           Container(
@@ -120,25 +139,18 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
                         List<Note> ss = p;
                         print(ss);
                       },
-                      child: Icon(Icons.arrow_back_ios,
-                          color: Color(0xFF417BFb),
-                          size: fontWidgetSize.icone - 5),
+                      child: InkWell(
+                        onTap:()=>Navigator.pop(context),
+                        child: Icon(Icons.arrow_back_ios,
+                            color: Color(0xFF417BFb),
+                            size: fontWidgetSize.icone - 5),
+                      ),
                     ),
               Row(children: <Widget>[
 
                 Padding(
                   padding: const EdgeInsets.only(right:8.0),
-                  child: InkWell(
-                      onTap: () {
-
-                        save();
-//                        dateRange(context);
-                      },
-                      child: Icon(
-                        Icons.save,
-                        color: Color(0xFF417BFb),
-                        size: fontWidgetSize.icone - 3,
-                      )),
+                  child:saveButton()
                 ),
                 InkWell(
                     onTap: () {
@@ -188,14 +200,16 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
             child: ListView(
               children: <Widget>[
                 imgString=="" ?Container():imageFromBase64String(imgString,300, 300),
-                TextField(
+                TextFormField(
+
                   maxLengthEnforced: true,
                   readOnly: cursor,
                   onTap: () {
                     setState(() {
                       cursor = false;
                     });
-                  },
+                     },
+
                   controller: descriptionController,
                   cursorColor: Colors.amber,
                   cursorRadius: Radius.circular(2),
@@ -231,12 +245,11 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
     note.description = descriptionController.text;
   }
 
-  void save() async {
+  void saveNote() async {
     int hour;
     int day;
     int minute;
     int month;
-
     await  showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -269,6 +282,7 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
           description: descriptionData,
           date: s,
           time: firstDate.hour.toString()));
+
       _localNotification.showNotificationAfter(
           day,
           hour,
@@ -276,7 +290,7 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
           widget.note.id,
           titleData,
           descriptionData,
-          titleData);
+          "note $titleData");
       Navigator.pop(context);
     } else if (widget.edit == false) {
       int id = await NoteDatabaseProvider.db.insertNote(new Note( imagePath:imgString,title: titleData,description: descriptionData,date: s,time: firstDate.hour.toString()));
@@ -284,8 +298,50 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
            print("minute $minute");
            print("hour $hour");
            print("month $month");
-      _localNotification.showNotificationAfter(  day,  hour,    minute,  id,    titleData,   descriptionData, titleData);
+      _localNotification.showNotificationAfter(  day,  hour,    minute,  id,    titleData,   descriptionData, "note $titleData");
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {  return  NoteList(); }));
     }
+  }
+saveLocationNote()async{
+
+  String titleData = descriptionController.text.length > 12
+      ? descriptionController.text.substring(0, 12)
+      : descriptionController.text;
+  String descriptionData = descriptionController.text;
+  String s = DateFormat.yMMMd().format(DateTime.now());
+  if (widget.edit == true){
+    NoteDatabaseProvider.db.updateNote(new Note(
+        id: widget.note.id,
+        imagePath: imgString,
+        title: titleData,
+        description: descriptionData,
+        date: s,
+        time: firstDate.hour.toString()));
+   getLocation.getLastPosition(widget.note.id,titleData,descriptionData,"location $titleData", _localNotification);
+    Navigator.pop(context);
+  } else if (widget.edit == false) {
+    int id = await NoteDatabaseProvider.db.insertNote(new Note( imagePath:imgString,title: titleData,description: descriptionData,date: s,time: firstDate.hour.toString()));
+    getLocation.getLastPosition(id,titleData,descriptionData,"location $titleData", _localNotification);
+    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {  return  NoteList(); }));
+  }
+
+}
+
+
+  Widget saveButton() {
+return
+    widget.location==true?
+        fabClicked==true?
+         InkWell( onTap: () {
+           saveLocationNote();
+         },
+        child:
+          Icon(Icons.save,color: Color(0xFF417BFb),size:fontWidgetSize.icone - 3))  :   Container()    :   InkWell(
+          onTap: () {
+          saveNote();
+//                        dateRange(context);
+        },
+        child: Icon(  Icons.save,color: Color(0xFF417BFb),size: fontWidgetSize.icone - 3));
+
   }
 }

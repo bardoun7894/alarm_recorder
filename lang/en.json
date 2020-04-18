@@ -1,0 +1,14 @@
+{
+  "arabic_main": "",
+  "pre_name": "My",
+  "app_name": "Memory",
+  "note_main": "Note",
+  "recorder_main": "Recorder",
+  "location_main": "Location",
+  "camera_main": "Camera",
+  "note_not_found": "you don't insert any note ...",
+  "dialog_save_data": "You want to Save Record",
+  "dialog_settings": "you must active gps to access this service",
+  "yes": "Yes",
+  "no": "no"
+}

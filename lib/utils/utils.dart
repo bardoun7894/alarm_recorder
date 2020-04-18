@@ -3,10 +3,10 @@ import 'dart:typed_data';
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
 import 'package:alarm_recorder/notifi.dart';
-import 'package:alarm_recorder/utils/dateTimePicker.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../recorder_player.dart';
+import '../app_localizations.dart';
+import '../recorder/recorder_player.dart';
 
 String base64String(Uint8List data){
   return base64Encode(data);
@@ -14,7 +14,9 @@ String base64String(Uint8List data){
 Image imageFromBase64String(String base64String,double height,double width){
 return Image.memory(base64Decode(base64String),fit: BoxFit.fill,height:height,width: width,);
 }
-void save(String result,context,String nameRecord) async {
+
+//this for save records to sqlite also for push notification
+void saveRecord(String result,context,String nameRecord) async {
   int hour;
   int day;
   int minute;
@@ -39,19 +41,13 @@ void save(String result,context,String nameRecord) async {
     hour = selectedTime.hour-DateTime.now().hour;
     minute = selectedTime.minute-DateTime.now().minute;
   });
-  String s = DateFormat.yMMMd().format(DateTime.now());
   int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: result,name: nameRecord));
-  print("day $day");
-  print("minute $minute");
-  print("hour $hour");
-  print("month $month");
-  _localNotification.showNotificationAfter(day,hour,minute,id,"record title",nameRecord, result);
+  //push notification
+  _localNotification.showNotificationAfter(day,hour,minute,id,"record",nameRecord, "record $result");
   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
     return  RecorderPlayer(result);
   }));
 }
-
-
 Future<bool> ShowCoupons(context,result,String nameRecord ) {
 
   return showDialog(
@@ -109,7 +105,7 @@ Future<bool> ShowCoupons(context,result,String nameRecord ) {
                 Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    "You want to Save Record",
+                    AppLocalizations.of(context).translate("dialog_save_data"),
                     style: TextStyle(
                         color: Color(0xFF417BFb),
                         fontWeight: FontWeight.w600,
@@ -123,13 +119,13 @@ Future<bool> ShowCoupons(context,result,String nameRecord ) {
                     children: <Widget>[
                       FlatButton(
                         onPressed: () {
-                          save(result,context,nameRecord);
+                          saveRecord(result,context,nameRecord);
 
                         },
                         color: Colors.teal,
                         child: Center(
                           child: Text(
-                            "yes",
+                            AppLocalizations.of(context).translate("yes"),
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20.0,
@@ -145,7 +141,7 @@ Future<bool> ShowCoupons(context,result,String nameRecord ) {
                             color: Colors.grey,
                             child: Center(
                               child: Text(
-                                "No",
+                                AppLocalizations.of(context).translate("no"),
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 20.0,
@@ -164,8 +160,3 @@ Future<bool> ShowCoupons(context,result,String nameRecord ) {
       });
 }
 
-Widget Drawer(){
-
-
-  
-}

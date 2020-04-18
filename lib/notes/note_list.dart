@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:alarm_recorder/app_localizations.dart';
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/notes/textFieldCustom.dart';
 import 'package:alarm_recorder/theme/myTheme.dart';
@@ -10,9 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class NoteList extends StatefulWidget {
-
   NoteList(  {Key key}) : super(key: key);
-
   @override
   _NoteListState createState() => _NoteListState();
 }
@@ -38,7 +37,6 @@ class _NoteListState extends State<NoteList> {
       body: Container(
         color: Colors.grey[200],
         child: FutureBuilder<List<Note>>(
-
           future: NoteDatabaseProvider.db.getAllNotes(),
           builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
           if(snapshot.hasData){
@@ -51,7 +49,7 @@ class _NoteListState extends State<NoteList> {
                         children: <Widget>[
                          Icon(Icons.note,color: Colors.blueAccent,size: 30,),
                           SizedBox(height: 20,),
-                          Text("you don't insert any note ...",style: TextStyle(color: Colors.grey),)
+                          Text(AppLocalizations.of(context).translate('note_not_found'),style: TextStyle(color: Colors.grey),)
                         ],
                       ),
                     ),
@@ -75,8 +73,8 @@ class _NoteListState extends State<NoteList> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-              builder: (BuildContext context) => MyTextFieldCustom(false,false)));
+      Navigator.of(context).push(MaterialPageRoute(
+     builder: (BuildContext context) => MyTextFieldCustom(false,false,false)));
         },
         child: Icon(Icons.add, color: Colors.white),
         backgroundColor: mainTheme.primaryColorDark,
@@ -126,7 +124,7 @@ class _NoteListState extends State<NoteList> {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (BuildContext context) => MyTextFieldCustom(
                         true,
-                        false,
+                        false,false,
                         note: note,
                       )));
               print(note.imagePath);
@@ -154,8 +152,8 @@ class _NoteListState extends State<NoteList> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
-                              note.imagePath =="" ? Padding(padding: EdgeInsets.only(top:sizeConfig.screenHeight*.04),child: Text(note.description.length > 20
-                                  ? note.description.substring(0, 20)
+                              note.imagePath =="" ? Padding(padding: EdgeInsets.only(top:sizeConfig.screenHeight*.04),child: Text(note.description.length > 17
+                                  ? note.description.substring(0, 17)
                                   :note.description,style: TextStyle( color: Colors.blueGrey,fontWeight: FontWeight.bold,),maxLines: 2)):Text(note.title,style: TextStyle( color: Colors.blueGrey,fontWeight: FontWeight.bold),)
 
                             ],

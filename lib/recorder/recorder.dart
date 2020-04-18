@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
-import 'package:alarm_recorder/recorder_player.dart';
+import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
+import 'package:alarm_recorder/utils/settings.dart';
 import 'package:alarm_recorder/utils/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,6 @@ import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../notifi.dart';
 
 class RecorderScreen extends StatefulWidget {
   final LocalFileSystem localFileSystem;
@@ -101,7 +101,16 @@ class _RecorderScreenState extends State<RecorderScreen> {
             width: sizeConfig.screenWidth,
             height: sizeConfig.screenHeight * 0.48,
             decoration: BoxDecoration(
-                color: Color(0xFF417BFb),
+                gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    tileMode: TileMode.clamp,
+                    colors: <Color>[
+                      Colors.blueAccent,
+                      Color(0xFF74b9ff),
+                      Colors.blueAccent,
+
+                    ]),
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(sizeConfig.screenWidth * .2),
                     bottomRight: Radius.circular(sizeConfig.screenWidth * .2))),
@@ -127,10 +136,16 @@ class _RecorderScreenState extends State<RecorderScreen> {
                             color: Colors.white,
                             size: fontWidgetSize.icone,
                           )),
-                      Icon(
-                        Icons.settings,
-                        color: Colors.white,
-                        size: fontWidgetSize.icone,
+                      InkWell(
+                        onTap: (){
+                          Navigator.of(context).push(MaterialPageRoute(
+                   builder: (BuildContext context) {  return MySettings();}));
+                        },
+                        child: Icon(
+                          Icons.settings,
+                          color: Colors.white,
+                          size: fontWidgetSize.icone,
+                        ),
                       ),
                     ],
                   ),

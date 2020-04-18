@@ -1,0 +1,15 @@
+{
+  "arabic_main": "مذكرتي الذكية",
+  "app_name" : " الذكية",
+  "pre_name" : "مذكرتي",
+  "note_main": "مذكرة",
+  "recorder_main": "مسجلة",
+  "location_main": "مكاني",
+  "camera_main": "كاميرا",
+  "note_not_found": "لا يوجد مذكرات المرجو الاضافة ...",
+  "dialog_save_data": "هل تريد الحفظ ",
+  "dialog_settings": "لابد من تنشيط GPS لولوج هذه الخدمة",
+  "yes": "نعم",
+  "no": "لا"
+
+}

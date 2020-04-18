@@ -44,9 +44,11 @@ WidgetSize(SizeConfig sizeConfig){
   sizeConfig._setScreen();
      switch(this.sizeConfig.screenType){
        case ScreenType.SMALL:
-         icone=20;
-        titleFontSize = 16;
-        bodyFontSize = 14;
+         icone=28;
+        titleFontSize = 26;
+        bodyFontSize = 20;
+        print("ddddd");
+
        break;
        case ScreenType.LARGE:
          icone=36;

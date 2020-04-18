@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:alarm_recorder/model/welcomeModel.dart';
-import 'package:alarm_recorder/recorder.dart';
+import 'package:alarm_recorder/recorder/recorder.dart';
 import 'package:alarm_recorder/theme/myTheme.dart';
 import 'package:flutter/material.dart'; 
 import 'screen_size.dart';
