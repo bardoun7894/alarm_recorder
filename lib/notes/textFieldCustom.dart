@@ -19,9 +19,9 @@ import 'package:alarm_recorder/utils/utils.dart';
 
 class MyTextFieldCustom extends StatefulWidget {
   final Note note;
-  String title;
+    String title;
   final bool edit;
-  bool camera;
+    bool camera;
   bool location;
 
   MyTextFieldCustom(this.edit,this.camera,this.location, {this.note})
