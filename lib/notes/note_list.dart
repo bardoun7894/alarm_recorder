@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:alarm_recorder/app_localizations.dart';
 import 'package:alarm_recorder/model/Note.dart';
@@ -23,11 +22,7 @@ class _NoteListState extends State<NoteList> {
   Widget cont = Container();
   bool isSelected = false;
   @override
-  void didUpdateWidget(NoteList oldWidget) {
-    // TODO: implement didUpdateWidget
-    super.didUpdateWidget(oldWidget);
-    setState(() {});
-  }
+   
 
   @override
   Widget build(BuildContext context) {

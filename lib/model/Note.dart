@@ -24,7 +24,7 @@ Note({this.id,this.imagePath,this.title,this.description,this.date,this.time});
 
   @override
   fromMap(Map<String,dynamic > map) {
-    // TODO: implement fromMap
+    
     return new Note(
         id:map['id'],
         imagePath:map['imagePath'],

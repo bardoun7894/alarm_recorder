@@ -3,8 +3,7 @@ import 'dart:typed_data';
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
 import 'package:alarm_recorder/notifi.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter/material.dart'; 
 import '../app_localizations.dart';
 import '../recorder/recorder_player.dart';
 

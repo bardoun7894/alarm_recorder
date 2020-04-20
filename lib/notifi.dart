@@ -1,4 +1,4 @@
-import 'package:alarm_recorder/notes/note_list.dart'; 
+  
 import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
