@@ -1,13 +1,11 @@
   
 import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart'; 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNotification  {
-  final MethodChannel platform =
-  MethodChannel('crossingthestreams.io/resourceResolver');
+   
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin=FlutterLocalNotificationsPlugin();
   AndroidInitializationSettings androidInitializationSettings;
   IOSInitializationSettings iosInitializationSettings;
@@ -39,6 +37,7 @@ Future<void> notificationAfter( int day,int hour ,int minute,int id ,String titl
       playSound: true);
      IOSNotificationDetails iosNotificationDetails=IOSNotificationDetails(
        presentSound: true
+       
      );
      NotificationDetails notificationDetails  =NotificationDetails(androidNotificationDetails,iosNotificationDetails);
      await flutterLocalNotificationsPlugin.schedule(id,title,body,timeDelayed,notificationDetails,payload: payload);
