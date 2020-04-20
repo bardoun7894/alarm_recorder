@@ -125,13 +125,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.5.5"
-  flutter_ffmpeg:
-    dependency: transitive
-    description:
-      name: flutter_ffmpeg
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.2.10"
   flutter_image_compress:
     dependency: "direct main"
     description:
@@ -172,13 +165,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  flutter_sound:
-    dependency: "direct main"
-    description:
-      name: flutter_sound
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.10"
   flutter_spinkit:
     dependency: "direct main"
     description:

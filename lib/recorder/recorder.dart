@@ -1,7 +1,5 @@
 import 'dart:async';
-
-import 'package:alarm_recorder/databases/RegisterDatabase.dart';
-import 'package:alarm_recorder/model/recordModel.dart';
+ 
 import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
@@ -11,10 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'dart:io' as io;
 import 'package:file/file.dart';
-import 'package:file/local.dart';
-import 'package:flutter/services.dart';
+import 'package:file/local.dart'; 
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
 
