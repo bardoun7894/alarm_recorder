@@ -15,7 +15,6 @@ import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
   
 import 'package:path_provider/path_provider.dart';
 
-
 class RecorderScreen extends StatefulWidget {
   final LocalFileSystem localFileSystem;
   RecorderScreen({localFileSystem})
@@ -104,10 +103,9 @@ class _RecorderScreenState extends State<RecorderScreen> {
                     end: Alignment.bottomCenter,
                     tileMode: TileMode.clamp,
                     colors: <Color>[
+                  Colors.blueAccent,               
                       Colors.blueAccent,
-                      Color(0xFF74b9ff),
-                      Colors.blueAccent,
-
+                        Color(0xFF74b9ff),
                     ]),
                 borderRadius: BorderRadius.only(
                     bottomLeft: Radius.circular(sizeConfig.screenWidth * .2),
