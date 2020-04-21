@@ -29,8 +29,19 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     width: 10,
     height: 10,
   );
+  
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
+   List<RecordModel> _recordList = List();
+  List<int> _selectedIndexList = List();
+  bool _selectionMode = false;
+   void _changeSelection({bool enable, int index}) {
+    _selectionMode = enable;
+    _selectedIndexList.add(index);
+    if (index == -1) {
+      _selectedIndexList.clear();
+    }
+  }
   @override
   void dispose() {
     // TODO: implement dispose
@@ -50,6 +61,35 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
 
   @override
   Widget build(BuildContext context) {
+       List<Widget> _buttons = List();
+      if (_selectionMode) {
+      _buttons.add(
+        Padding(
+          padding: const EdgeInsets.only(right:10.0),
+          child: IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+            for(int i =0;i<_selectedIndexList.length;i++){
+             print(_selectedIndexList[i]);
+           RegisterDatabaseProvider.db.deleteRecordWithId(_recordList[i].id) ;
+                   }
+  Navigator.of(context).pushReplacement(MaterialPageRoute(
+           builder: (BuildContext context) {
+           return RecorderPlayer("");
+                 })); 
+              _selectedIndexList.sort();
+              print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
+            }),
+        ));
+      }else{
+      _buttons.add(
+         Padding(
+           padding: const EdgeInsets.only(right:10.0),
+           child: IconButton(
+             onPressed: _pickSound,
+              icon: Icon(Icons.folder_open)),
+         ),
+              );  }
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
     return MaterialApp(
@@ -105,35 +145,14 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
               }),
         ),
         appBar: AppBar(
-          actions: <Widget>[
-            InkWell(onTap: _pickSound, child: Icon(Icons.folder_open)),
-            SizedBox(
-              width: 10,
-            ),
-          ],
+          actions: _buttons,
           backgroundColor: Colors.blueAccent,
         ),
       ),
     );
   }
 
-  void toggleSelection() {
-    setState(() {
-      if (isSelected) {
-        cont = Container(
-          width: 10,
-          height: 10,
-        );
-        isSelected = false;
-      } else {
-        cont = Icon(
-          Icons.check_box,
-          color: Colors.blueAccent,
-        );
-        isSelected = true;
-      }
-    });
-  }
+ 
 
   Widget _player(isPlay, minute, seconds, AudioPlayerObject object,
       List<RecordModel> data, int i) {
@@ -223,43 +242,13 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   }
 
   Widget getRegisterList(List<RecordModel> data, AudioPLayerController audioC) {
-    return ListView.builder(
-      itemCount: data.length != null ? data.length : 0,
-      itemBuilder: (BuildContext context, index) {
-        RecordModel recordModel = data[index];
-
-        return Padding(
-          padding: EdgeInsets.only(
-              right: sizeConfig.screenWidth * .05,
-              left: sizeConfig.screenWidth * .05),
-          child: Card(
-            child: ListTile(
-              selected: isSelected,
-              onTap: () {
-                setState(() {
-                  pos = index;
-                  if (recordModel.pathRec != "") {
-                    print(recordModel.pathRec);
-                    audioC.ButtonPlayPause(recordModel.pathRec);
-                  }
-                  print(recordModel.pathRec);
-                });
-              },
-              onLongPress: () {
-                toggleSelection();
-              },
-              leading: Icon(
-                Icons.music_note,
-                color: Colors.blueAccent,
-              ),
-              title: Text(recordModel.name),
-              trailing: cont,
-            ),
-          ),
-        );
-      },
-    );
-  }
+    if(_selectionMode){
+    return   selectedRecords(data);
+    }else{
+ return listRecords(data);
+    }
+  
+    }
 
   Widget retornarTempoSound(Duration position) {
     String seconds = (position.inMinutes >= 1
@@ -284,6 +273,96 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       }
     });
   }
+
+  Widget listRecords(List<RecordModel> data){
+
+    return ListView.builder(
+      itemCount: data.length != null ? data.length : 0,
+      itemBuilder: (BuildContext context, index) {
+        RecordModel recordModel = data[index];
+        return Padding(
+          padding: EdgeInsets.only(
+              right: sizeConfig.screenWidth * .05,
+              left: sizeConfig.screenWidth * .05),
+          child: Card(
+            child: ListTile( 
+              onTap: () {
+                setState(() {
+                  pos = index;
+                  if (recordModel.pathRec != "") {
+                    print(recordModel.pathRec);
+                    audioC.ButtonPlayPause(recordModel.pathRec);
+                  }
+                  print(recordModel.pathRec);
+                });
+              },
+                onLongPress: () {
+            setState(() {
+              _changeSelection(enable: true, index: index);
+            });
+                },
+              leading: Icon(
+                Icons.music_note,
+                color: Colors.blueAccent,
+              ),
+              title: Text(recordModel.name),
+              trailing: cont,
+            ),
+          ),
+        );
+      },
+    );
+ 
+  }
+
+ Widget selectedRecords(List<RecordModel> data){
+    return ListView.builder(
+      itemCount: data.length != null ? data.length : 0,
+      itemBuilder: (BuildContext context, index) {
+        _recordList=data;
+        RecordModel recordModel = data[index];
+        return Padding(
+          padding: EdgeInsets.only(
+              right: sizeConfig.screenWidth * .05,
+              left: sizeConfig.screenWidth * .05),
+          child: Card(
+            child: ListTile( 
+
+              onTap: () {
+           setState(() {
+                if (_selectedIndexList.contains(index)) {
+                  _selectedIndexList.remove(index);
+                } else {
+                  _selectedIndexList.add(index);
+                }
+              });
+              
+              },
+          onLongPress: (){
+          setState(() {
+             _changeSelection(enable: false,index: -1);
+        
+          });
+             },
+              leading: Icon(
+                Icons.music_note,
+                color: Colors.blueAccent,
+              ),
+              title: Text(recordModel.name),
+              trailing: Icon(
+              _selectedIndexList.contains(index) ? Icons.check_circle_outline : Icons.radio_button_unchecked,
+              color: _selectedIndexList.contains(index) ? Colors.blueAccent : Colors.blueAccent,
+            ),
+            ),
+          ),
+        );
+      },
+    );
+ 
+  }
+
+
+
 }
 
 class AudioPlayerObject {

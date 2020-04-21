@@ -61,7 +61,7 @@ Future<Note> getNoteWithId(int id) async{
   return response.isNotEmpty?note.fromMap(response.first):null;
 }
 
-  deleteNoteWitId(int id) async{
+  deleteNoteWithId(int id) async{
 final db =await database;
 return db.delete("note",where: "id=?",whereArgs: [id]);
   }

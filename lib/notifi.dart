@@ -1,14 +1,13 @@
   
 import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/material.dart'; 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class LocalNotification  {
-  final MethodChannel platform =
-  MethodChannel('crossingthestreams.io/resourceResolver');
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin=FlutterLocalNotificationsPlugin();
+class LocalNotification  { 
+ 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin=
+  FlutterLocalNotificationsPlugin();
   AndroidInitializationSettings androidInitializationSettings;
   IOSInitializationSettings iosInitializationSettings;
   InitializationSettings initializationSettings;
@@ -20,21 +19,17 @@ class LocalNotification  {
     initializationSettings=InitializationSettings(androidInitializationSettings,iosInitializationSettings);
    await flutterLocalNotificationsPlugin.initialize(initializationSettings,onSelectNotification: onSelectNotification);
   }
-
-
 void showNotificationAfter( int day,int hour ,int minute,int id ,String title,String body ,String payload)async{
     await notificationAfter(day,hour,minute, id , title, body , payload);
 }
 Future<void> notificationAfter( int day,int hour ,int minute,int id ,String title,String body ,String payload) async{
-
    var timeDelayed =DateTime.now().add(Duration(days: day,hours: hour,minutes: minute));
   var androidNotificationDetails = AndroidNotificationDetails(
-      'channel_ID', 'channel name', 'channel description',
+      '$id',title,body,
        importance: Importance.Max,
        priority: Priority.High,
        ongoing: true,
        enableVibration: true,
-
        ticker: 'test ticker',
       playSound: true);
      IOSNotificationDetails iosNotificationDetails=IOSNotificationDetails(
@@ -44,13 +39,12 @@ Future<void> notificationAfter( int day,int hour ,int minute,int id ,String titl
      await flutterLocalNotificationsPlugin.schedule(id,title,body,timeDelayed,notificationDetails,payload: payload);
 }
 
-
 void showNotification(int id ,String title,String body ,String payload)async{
     await notification( id , title, body , payload);
 }
 Future<void> notification( int id ,String title,String body ,String payload) async{
   var androidNotificationDetails = AndroidNotificationDetails(
-      'second channel_ID', ' second channel name', 'second channel description',
+     '$id',title,body,
        importance: Importance.Max,
        priority: Priority.High,
        ongoing: true,

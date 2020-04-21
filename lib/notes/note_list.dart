@@ -11,6 +11,8 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class NoteList extends StatefulWidget {
   NoteList(  {Key key}) : super(key: key);
+   
+
   @override
   _NoteListState createState() => _NoteListState();
 }
@@ -19,16 +21,47 @@ class _NoteListState extends State<NoteList> {
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
   List<Note> lisnote=[];
-  Widget cont = Container();
-  bool isSelected = false;
-  @override
-   
+  Widget cont = Container(); 
+
+  List<int> _selectedIndexList = List();
+  bool _selectionMode = false;
+   List<Note> _noteList = List();  
+ void _changeSelection({bool enable, int index}) {
+    _selectionMode = enable;
+    _selectedIndexList.add(index);
+    if (index == -1) {
+    _selectedIndexList.clear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
-    return Scaffold(
+    List<Widget> _buttons = List();
+    if (_selectionMode) {
+      _buttons.add(IconButton(
+        icon: Icon(Icons.delete),
+       onPressed: () {
+         for(int i =0;i<_selectedIndexList.length;i++){
+             print(_selectedIndexList[i]);
+               NoteDatabaseProvider.db.deleteNoteWithId(_noteList[i].id) ;
+                  }
+       Navigator.of(context).pushReplacement(MaterialPageRoute(
+                 builder: (BuildContext context) {
+                  return NoteList();
+                 }));  
+  
+          _selectedIndexList.sort();
+      print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
+          }));
+    }
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.blueAccent,
+            title: Text("noteList"),
+        actions: _buttons,
+      ),
       body: Container(
         color: Colors.grey[200],
         child: FutureBuilder<List<Note>>(
@@ -76,25 +109,7 @@ class _NoteListState extends State<NoteList> {
       ),
     );
   }
-
-  void toggleSelection() {
-    setState(() {
-      if (isSelected) {
-        cont = Container(
-          width: 10,
-          height: 10,
-        );
-        isSelected = false;
-      } else {
-        cont = Icon(
-          Icons.check_box,
-          color: Colors.blueAccent,
-        );
-        isSelected = true;
-      }
-    });
-  }
-
+  
   Widget imageFr(String image) {
     return imageFromBase64String(
         image, sizeConfig.screenHeight * .13, sizeConfig.screenWidth * .50);
@@ -107,17 +122,41 @@ class _NoteListState extends State<NoteList> {
         crossAxisCount: 4,
         itemCount: notelist.length,
         itemBuilder: (BuildContext context, int index) {
-
+    
+          _noteList=notelist;
           Note note = notelist[index];
-          return InkWell(
-            onLongPress: () {
-              setState(() {
-                isSelected = true;
-              });
-            },
-            onTap: () {
+          
+          if(_selectionMode){
+         return  makemultiSelection(note,index);
+          }else{
+          return showNoteContainer(note,index);
+          }
+        
+        },
+        staggeredTileBuilder: (int index) =>
+        
+     new StaggeredTile.count(2, notelist[index].imagePath ==""? 1.5 : 2),
+     
+        mainAxisSpacing: 4.0,
+        crossAxisSpacing: 4.0,
+      ),
+    );
+  }
+
+ 
+  Widget showNoteContainer(Note note,int index){
+
+      return  InkWell(
+        onLongPress: (){
+          setState(() {
+              _changeSelection(enable: true, index: index);
+          });
+       
+        },
+          onTap: () {
+            
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (BuildContext context) => MyTextFieldCustom(
+              builder: (BuildContext context) => MyTextFieldCustom(
                         true,
                         false,false,
                         note: note,
@@ -156,8 +195,6 @@ class _NoteListState extends State<NoteList> {
                         ],
                       )
                   ,
-
-
                       Positioned(
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
@@ -165,12 +202,11 @@ class _NoteListState extends State<NoteList> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 Text(
-                                  note.date,
-                                  style: TextStyle(
+                             note.date,  style: TextStyle(
                                       color:  Colors.grey
                                         ),
                                 ),
-                                isSelected ? Icon(Icons.delete) : cont
+                               cont
                               ],
                             ),
                           ),
@@ -180,12 +216,88 @@ class _NoteListState extends State<NoteList> {
                   )),
             ),
           );
-        },
-        staggeredTileBuilder: (int index) =>
-            new StaggeredTile.count(2, notelist[index].imagePath ==""? 1.5 : 2),
-        mainAxisSpacing: 4.0,
-        crossAxisSpacing: 4.0,
-      ),
-    );
+       
   }
+
+ Widget  makemultiSelection(Note note,int index){
+      return  InkWell(
+        onLongPress: (){
+          setState(() {
+             _changeSelection(enable: false,index: -1);
+        
+          });
+             },
+        onTap: () { 
+                setState(() {
+                if(_selectedIndexList.contains(index)){
+                  _selectedIndexList.remove(index);
+                } else {
+                  _selectedIndexList.add(index);
+                }
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: new Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [BoxShadow(
+                      color: Colors.black
+                    )],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Stack(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          note.imagePath != null
+                              ? ClipRRect(
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12)),
+                              child: note.imagePath ==""? Container():imageFr(note.imagePath))
+                              : Container(),
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              note.imagePath =="" ? Padding(padding: EdgeInsets.only(top:sizeConfig.screenHeight*.04),child: Text(note.description.length > 17
+                                  ? note.description.substring(0, 17)
+                                  :note.description,style: TextStyle( color: Colors.blueGrey,fontWeight: FontWeight.bold,),maxLines: 2)):Text(note.title,style: TextStyle( color: Colors.blueGrey,fontWeight: FontWeight.bold),)
+
+                            ],
+                          ),
+                        ],
+                      )
+                  ,
+                      Positioned(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                             note.date,  style: TextStyle(
+                                      color:  Colors.grey
+                                        ),
+                                ),
+                               Padding(
+                                 padding: const EdgeInsets.only(left: 10),
+                                 child: Icon(
+               _selectedIndexList.contains(index) ? Icons.check_circle_outline : Icons.radio_button_unchecked,
+                 color: _selectedIndexList.contains(index) ? Colors.blueAccent : Colors.blueAccent,
+                        ),
+                               ),
+                              ],
+                            ),
+                          ),
+                          bottom: 10,
+                          left: 10)
+                    ],
+                  )),
+            ),
+          );
+       
+  }
+
+
+
 }

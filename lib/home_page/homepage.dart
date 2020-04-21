@@ -142,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage>
                     end: Alignment.bottomCenter,
                     colors: <Color>[
                       Colors.blueAccent,
-                      Colors.blueAccent,
+                       Colors.blueAccent,
                         Color(0xFF74b9ff),
                     ]),
                 borderRadius: BorderRadius.only(

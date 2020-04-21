@@ -10,8 +10,7 @@ import 'package:permission_handler/permission_handler.dart';
  
 
   class GetLocation {
- 
-
+  
 
   getPermissionStatus(context) async {
     var status = await Permission.locationWhenInUse.status;
@@ -26,6 +25,7 @@ import 'package:permission_handler/permission_handler.dart';
         await Permission.locationWhenInUse.request();
         break;
       case PermissionStatus.granted:
+       
       getCurrentPosition();
         break;
       case PermissionStatus.denied:
@@ -69,11 +69,9 @@ import 'package:permission_handler/permission_handler.dart';
           .distanceBetween(currentlat, currentlong, endlat, endlong);
 
       print("distamce mettter  $distanceInMeters");
-      // _localNotification.showNotification(  0,"3",   "you", "you");
-      print(position == null ? 'Unknown' : "$distanceInMeters");
-      if (distanceInMeters > 15.0) {
+     
+      if (distanceInMeters >= 50.0) {
         print(" you are so far");
-
        _localNotification.showNotification( id,title,body,payload);
       }
     });
@@ -89,7 +87,7 @@ import 'package:permission_handler/permission_handler.dart';
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             child: Container(
-              height: 280.0,
+              height: 320.0,
               width: 200.0,
               decoration:
                   BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
@@ -98,7 +96,7 @@ import 'package:permission_handler/permission_handler.dart';
                   Stack(
                     children: <Widget>[
                       Container(
-                        height: 130.0,
+                        height: 135.0,
                       ),
                       Container(
                         height: 100.0,
