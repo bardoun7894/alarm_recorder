@@ -10,5 +10,14 @@
   "dialog_save_data": "You want to Save Record",
   "dialog_settings": "you must active gps to access this service",
   "yes": "Yes",
-  "no": "no"
+  "no": "no",
+
+  "add_note": "add note",
+  "all_notes": " all notes",
+  "record_voice": "record voice",
+  "recorder_list": "recorder list",
+  "settings": "settings",
+  "notifications": "Notifications",
+  "change_language": "change language ",
+  "about": "about"
 }

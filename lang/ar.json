@@ -10,6 +10,15 @@
   "dialog_save_data": "هل تريد الحفظ ",
   "dialog_settings": "لابد من تنشيط GPS لولوج هذه الخدمة",
   "yes": "نعم",
-  "no": "لا"
+
+  "no": "لا",
+  "add_note": "أضف مذكرة",
+  "all_notes": "تصفح المذكرات",
+  "record_voice": "التسجيل",
+  "recorder_list": "التسجيلات",
+  "settings": "الاعدادات",
+  "notifications": "الاشعارات",
+  "change_language": "تغيير اللغة",
+  "about": "عن"
 
 }
