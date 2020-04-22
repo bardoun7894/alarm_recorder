@@ -5,6 +5,7 @@ import 'package:alarm_recorder/model/recordModel.dart';
 import 'package:alarm_recorder/notifi.dart';
 import 'package:flutter/material.dart'; 
 import '../app_localizations.dart';
+import '../main.dart';
 import '../recorder/recorder_player.dart';
 
 String base64String(Uint8List data){
