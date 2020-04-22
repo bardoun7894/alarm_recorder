@@ -187,6 +187,7 @@ class _MyAppState extends State<MyApp> {
 //    await widget.flutterLocalNotificationsPlugin.initialize(initializationSettings,onSelectNotification: onSelectNotification);
 //  }
   @override
+  
   Widget build(BuildContext context) {
     return MaterialApp(
       initialRoute: '/',
