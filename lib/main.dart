@@ -96,9 +96,9 @@ class _MyAppState extends State<MyApp> {
     // TODO: implement initState
     super.initState();
   //  initializing();
-//    _requestIOSPermissions();
-//    _configureDidReceiveLocalNotificationSubject();
-//    _configureSelectNotificationSubject();
+    _requestIOSPermissions();
+    _configureDidReceiveLocalNotificationSubject();
+    _configureSelectNotificationSubject();
   }
 
   @override
@@ -159,8 +159,8 @@ class _MyAppState extends State<MyApp> {
       print(payload);
       await showDialog(context: context,builder: (BuildContext context){
         return AlertDialog(
-            title: Text(""),
-            content:Text('Test'),
+          title: Text(""),
+          content:Text('Test'),
           actions: <Widget>[
             MaterialButton(
               child: Text("jsdjnjkds"),
@@ -192,8 +192,6 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
-        // When navigating to the "/second" route, build the SecondScreen widget.
         '/noteList': (context) => NoteList(),
          },
       debugShowCheckedModeBanner: false,
