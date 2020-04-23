@@ -1,3 +1,4 @@
+import 'package:alarm_recorder/app_localizations.dart';
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
@@ -51,11 +52,8 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
   void initState() {
     super.initState();
     if (widget.edit == true) {
-      if (widget.note.description != null) {
         descriptionController.text = widget.note.description;
-      }
-
-      imgString = widget.note.imagePath;
+         imgString = widget.note.imagePath;
     }
   }
 
@@ -69,6 +67,7 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
     if (image != null) {
       File croppedFile = await ImageCropper.cropImage(
           sourcePath: image.path,
+          compressQuality: 50,
           aspectRatioPresets: [
             CropAspectRatioPreset.square,
             CropAspectRatioPreset.ratio3x2,
@@ -77,24 +76,25 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
             CropAspectRatioPreset.ratio16x9
           ],
           androidUiSettings: AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              toolbarColor: Colors.deepOrange,
+              toolbarTitle: AppLocalizations.of(context).translate("cropper"),
+              toolbarColor: Colors.blueAccent,
               toolbarWidgetColor: Colors.white,
               initAspectRatio: CropAspectRatioPreset.original,
               lockAspectRatio: false),
           iosUiSettings: IOSUiSettings(
             minimumAspectRatio: 1.0,
           ));
-      var compressedImage = await FlutterImageCompress.compressAndGetFile(
-        croppedFile.path,
-        image.path,
-        quality: 50,
-      );
+
       setState(() {
-        _image = compressedImage;
+        _image = croppedFile;
         if (_image != null) {
           imgString = base64String(_image.readAsBytesSync());
         }
+
+        print(_image.toString());
+        print(image.toString());
+        print(croppedFile.toString());
+        print(imgString);
       });
     }
   }
