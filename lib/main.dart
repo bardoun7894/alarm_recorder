@@ -13,54 +13,34 @@ import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'notes/note_list.dart';
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
-
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
-
-// Streams are created so that app can respond to notification-related events since the plugin is initialised in the `main` function
-final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
-BehaviorSubject<ReceivedNotification>();
-
-final BehaviorSubject<String> selectNotificationSubject =
-BehaviorSubject<String>();
-
-NotificationAppLaunchDetails notificationAppLaunchDetails;
-
-
-Future<void> main()  async{
-  // needed if you intend to initialize in the `main` function
-  WidgetsFlutterBinding.ensureInitialized();
-
-  notificationAppLaunchDetails =
-      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-
-  var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
-  // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
-  // of the `IOSFlutterLocalNotificationsPlugin` class
-  var initializationSettingsIOS = IOSInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-      onDidReceiveLocalNotification:
-          (int id, String title, String body, String payload) async {
-        didReceiveLocalNotificationSubject.add(ReceivedNotification(
-            id: id, title: title, body: body, payload: payload));
-      });
-  var initializationSettings = InitializationSettings(
-      initializationSettingsAndroid, initializationSettingsIOS);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onSelectNotification: (String payload) async {
-        if (payload != null) {
-          debugPrint('notification payload: ' + payload);
-        }
-        selectNotificationSubject.add(payload);
-
-      });
+void main()  {
 
   runApp(MaterialApp(
+    navigatorKey: navigatorKey,
+    initialRoute: '/',
+    routes: {
+
+      // When navigating to the "/second" route, build the SecondScreen widget.
+      '/NoteList': (context) => NoteList(),
+    },
     home: MyApp(),
-  ));
+    debugShowCheckedModeBanner: false,
+    supportedLocales: [
+      Locale('en', 'US'),
+      Locale('ar', ''),
+    ],
+    localizationsDelegates: [
+      // A class which loads the translations from JSON files
+      AppLocalizations.delegate,
+      // Built-in localization of basic text for Material widgets
+      GlobalMaterialLocalizations.delegate,
+      // Built-in localization for text direction LTR/RTL
+      GlobalWidgetsLocalizations.delegate,
+    ],
+  )
+  );
 }
 
 class ReceivedNotification {
@@ -76,8 +56,6 @@ class ReceivedNotification {
     @required this.payload,
   });
 }
-
-
 class MyApp extends StatefulWidget {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin= FlutterLocalNotificationsPlugin();
   // This widget is the root of your application.
@@ -86,32 +64,40 @@ class MyApp extends StatefulWidget {
 }
 class _MyAppState extends State<MyApp> {
 
-  final navigatorKey = GlobalKey<NavigatorState>();
-
-  AndroidInitializationSettings androidInitializationSettings;
-  IOSInitializationSettings iosInitializationSettings;
+  AndroidInitializationSettings initializationSettingsAndroid;
+  IOSInitializationSettings initializationSettingsIOS;
   InitializationSettings initializationSettings;
+
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
   //  initializing();
-    _requestIOSPermissions();
-    _configureDidReceiveLocalNotificationSubject();
-    _configureSelectNotificationSubject();
-  }
+   // _requestIOSPermissions();
 
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    didReceiveLocalNotificationSubject.close();
-    selectNotificationSubject.close();
+ init();
+
   }
+Future init()async{
+
+  initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+  // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
+  // of the `IOSFlutterLocalNotificationsPlugin` class
+  initializationSettingsIOS = IOSInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+      onDidReceiveLocalNotification:onDidReceiveLocalNotification  );
+  initializationSettings = InitializationSettings(
+      initializationSettingsAndroid, initializationSettingsIOS);
+  await widget.flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onSelectNotification: onSelectNotification);
+}
 
 
   void _requestIOSPermissions() {
-    flutterLocalNotificationsPlugin
+    widget.flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
         IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
@@ -121,154 +107,108 @@ class _MyAppState extends State<MyApp> {
     );
   }
 
-  void _configureDidReceiveLocalNotificationSubject() {
-    didReceiveLocalNotificationSubject.stream
-        .listen((ReceivedNotification receivedNotification) async {
-      await showDialog(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: receivedNotification.title != null
-              ? Text(receivedNotification.title)
-              : null,
-          content: receivedNotification.body != null
-              ? Text(receivedNotification.body)
-              : null,
-          actions: [
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              child: Text('Ok'),
-              onPressed: () async {
-                Navigator.of(context, rootNavigator: true).pop();
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        RecorderPlayer(receivedNotification.payload),
-                  ),
-                );
-              },
-            )
-          ],
-        ),
-      );
-    });
-  }
-
-  void _configureSelectNotificationSubject() {
-    selectNotificationSubject.stream.listen((String payload) async {
-      print(payload);
-      await showDialog(context: context,builder: (BuildContext context){
-        return AlertDialog(
-          title: Text(""),
-          content:Text('Test'),
-          actions: <Widget>[
-            MaterialButton(
-              child: Text("jsdjnjkds"),
-                onPressed: ()async{
-              await Navigator.of(context).push( MaterialPageRoute(builder: (context) => NoteList()), );
-            })
-
-          ],
-
-        );
-      });
-
-     //
-    });
-
-  }
-
-
-//  void initializing() async{
-//
-//    androidInitializationSettings=AndroidInitializationSettings('app_icon');
-//    iosInitializationSettings=IOSInitializationSettings(onDidReceiveLocalNotification:onDidReceiveLocalNotification );
-//    initializationSettings=InitializationSettings(androidInitializationSettings,iosInitializationSettings);
-//    await widget.flutterLocalNotificationsPlugin.initialize(initializationSettings,onSelectNotification: onSelectNotification);
+//  void _configureDidReceiveLocalNotificationSubject() {
+//    didReceiveLocalNotificationSubject.stream
+//        .listen((ReceivedNotification receivedNotification) async {
+//      await showDialog(
+//        context: context,
+//        builder: (BuildContext context) => CupertinoAlertDialog(
+//          title: receivedNotification.title != null
+//              ? Text(receivedNotification.title)
+//              : null,
+//          content: receivedNotification.body != null
+//              ? Text(receivedNotification.body)
+//              : null,
+//          actions: [
+//            CupertinoDialogAction(
+//              isDefaultAction: true,
+//              child: Text('Ok'),
+//              onPressed: () async {
+//                Navigator.of(context, rootNavigator: true).pop();
+//                await Navigator.push(
+//                  context,
+//                  MaterialPageRoute(
+//                    builder: (context) =>
+//                        RecorderPlayer(receivedNotification.payload),
+//                  ),
+//                );
+//              },
+//            )
+//          ],
+//        ),
+//      );
+//    });
 //  }
+//
+//  void _configureSelectNotificationSubject() {
+//    selectNotificationSubject.stream.listen((String payload) async {
+//      print("tr"+payload);
+//
+//       await showDialog(context: context,builder: (BuildContext context){
+//         return AlertDialog(
+//           title: Text(""),
+//           content:Text('Test'),
+//           actions: <Widget>[
+//             MaterialButton(
+//                 child: Text("jsdjnjkds"),
+//                 onPressed: ()async{
+//
+//                   await Navigator.of(context).push( MaterialPageRoute(builder: (context) => NoteList()), );
+//
+//                 }) ],  );
+//
+//               });
+//
+//
+//
+//     //
+//    });
+//
+//  }
+
   @override
-  
+
   Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/',
-      routes: {
-        '/noteList': (context) => NoteList(),
-         },
-      debugShowCheckedModeBanner: false,
-      supportedLocales: [
-        Locale('en', 'US'),
-        Locale('ar', ''),
-      ],
-      localizationsDelegates: [
-        // A class which loads the translations from JSON files
-        AppLocalizations.delegate,
-        // Built-in localization of basic text for Material widgets
-        GlobalMaterialLocalizations.delegate,
-        // Built-in localization for text direction LTR/RTL
-        GlobalWidgetsLocalizations.delegate,
-      ],
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyHomePage(),
+    return Scaffold(
+
+      body: MyHomePage(),
     );
   }
 
 
-//    onSelectNotification(String payload) async {
-//    if (payload != null) {  debugPrint('notification payload: ' + payload);  }
-//    showDialog(
-//      context: context,
-//      builder: (BuildContext ctx) => new CupertinoAlertDialog(
-//        title: new Text("title"),
-//        content: new Text("body"),
-//        actions: [
-//          CupertinoDialogAction(
-//            isDefaultAction: true,
-//            child: new Text('Ok'),
-//            onPressed: () async {
-////              Navigator.of(context, rootNavigator: true).pop();
-////              await Navigator.push(
-////                context,
-////                new MaterialPageRoute(
-////                  builder: (context) => new MyTextFieldCustom(),
-////                ),
-////              );
-//            },
-//          )
-//        ],
-//      ),
-//    );
-//
-//  }
-//
-//
-//  Future onDidReceiveLocalNotification(int id,String title,String body,String payload) async {
-//    // display a dialog with the notification details, tap ok to go to another page
-//    showDialog(
-//      context: context,
-//      builder: (BuildContext ctx) => new CupertinoAlertDialog(
-//        title: new Text(title),
-//        content: new Text(body),
-//        actions: [
-//          CupertinoDialogAction(
-//            isDefaultAction: true,
-//            child: new Text('Ok'),
-//            onPressed: () async {
-//              Navigator.of(context, rootNavigator: true).pop();
-//              await Navigator.push(
-//                context,
-//                new MaterialPageRoute(
-//                  builder: (context) => new RecorderPlayer(payload),
-//                ),
-//              );
-//            },
-//          )
-//        ],
-//      ),
-//    );
-//  }
+  Future onSelectNotification(String payload) async {
+    if (payload != null) {  debugPrint('notification payload: ' + payload);  }
+    await navigatorKey.currentState.pushNamed('/NoteList');
 
+
+  }
+
+
+  Future onDidReceiveLocalNotification(int id,String title,String body,String payload) async {
+    // display a dialog with the notification details, tap ok to go to another page
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) => new CupertinoAlertDialog(
+        title: new Text(title),
+        content: new Text(body),
+        actions: [
+          CupertinoDialogAction(
+            isDefaultAction: true,
+            child: new Text('Ok'),
+            onPressed: () async {
+              Navigator.of(context, rootNavigator: true).pop();
+              await Navigator.push(
+                context,
+                new MaterialPageRoute(
+                  builder: (context) => new RecorderPlayer(payload),
+                ),
+              );
+            },
+          )
+        ],
+      ),
+    );
+  }
 
 
 
