@@ -8,10 +8,9 @@
   "camera_main": "Camera",
   "note_not_found": "you don't insert any note ...",
   "dialog_save_data": "You want to Save Record",
-  "dialog_settings": "you must active gps to access this service",
-  "yes": "Yes",
+  "dialog_settings": "   Can't get current location  Please make sure you enable GPS and try again ",
+  "ok": "ok",
   "no": "no",
-
   "add_note": "add note",
   "all_notes": " all notes",
   "record_voice": "record voice",

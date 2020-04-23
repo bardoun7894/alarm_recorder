@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
-import 'package:alarm_recorder/notifi.dart';
 import 'package:flutter/material.dart'; 
 import '../app_localizations.dart';
 import '../main.dart';
@@ -43,7 +42,7 @@ void saveRecord(String result,context,String nameRecord) async {
   });
   int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: result,name: nameRecord));
   //push notification
-  _localNotification.showNotificationAfter(day,hour,minute,id,"record",nameRecord, "record $result");
+  _localNotification.showNotificationAfter(day,hour,minute,id,"","record",nameRecord, "$result");
   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
     return  RecorderPlayer(result);
   }));

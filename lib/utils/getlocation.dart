@@ -1,16 +1,17 @@
 import 'dart:async';
+import 'dart:io';
  
 
 import 'package:alarm_recorder/app_localizations.dart'; 
  
-import 'package:alarm_recorder/app_localizations.dart'; 
+import 'package:alarm_recorder/app_localizations.dart';
+import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
  
 
   class GetLocation {
-  
 
   getPermissionStatus(context) async {
     var status = await Permission.locationWhenInUse.status;
@@ -79,15 +80,17 @@ import 'package:permission_handler/permission_handler.dart';
   }
 
   Future<bool> showSaveDialog(context) {
+
     return showDialog(
         context: context,
         barrierDismissible: true,
         builder: (BuildContext context) {
           return Dialog(
+
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             child: Container(
-              height: 320.0,
+              height: 370.0,
               width: 200.0,
               decoration:
                   BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
@@ -144,13 +147,22 @@ import 'package:permission_handler/permission_handler.dart';
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
                       FlatButton(
-                        onPressed: () {
-                          openAppSettings();
+                        onPressed: () async{
+          if (Platform.isAndroid) {
+            final AndroidIntent intent = AndroidIntent( action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+                   await  intent.launch();
+                    Navigator.of(context, rootNavigator: true).pop();
+                   }
+          else if(Platform.isIOS) {
+            openAppSettings();
+          }
+
+
                         },
                         color: Colors.teal,
                         child: Center(
                           child: Text(
-                            AppLocalizations.of(context).translate("yes"),
+                            AppLocalizations.of(context).translate("ok"),
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20.0,
@@ -181,4 +193,17 @@ import 'package:permission_handler/permission_handler.dart';
           );
         });
   }
+//  title: Text("Can't get gurrent location"),
+//  content:
+//  const Text('Please make sure you enable GPS and try again'),
+//  actions: <Widget>[
+//  FlatButton(
+//  child: Text('Ok'),
+//  onPressed: () {
+//  final AndroidIntent intent = AndroidIntent(
+//  action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+//
+//  intent.launch();
+//  Navigator.of(context, rootNavigator: true).pop();
+//  },
 }

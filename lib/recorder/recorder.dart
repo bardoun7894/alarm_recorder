@@ -36,6 +36,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
   Recording _current;
   RecordingStatus _currentStatus = RecordingStatus.Unset;
   String name ="myRecord.mp3";
+  bool showFab=true;
   @override
   void initState() {
     // TODO: implement initState
@@ -89,6 +90,19 @@ class _RecorderScreenState extends State<RecorderScreen> {
     fontWidgetSize = WidgetSize(sizeConfig);
 
     return Scaffold(
+      floatingActionButton: showFab?FloatingActionButton(
+        child: Icon(Icons.library_music,color: Colors.blueAccent,size: 40,),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        onPressed: () {
+          setState(() {
+            Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+              return RecorderPlayer("");
+            }));
+          });
+        },
+
+      ):Container(),
       body: Container(
         color: Colors.white,
         width: sizeConfig.screenWidth,
@@ -122,13 +136,10 @@ class _RecorderScreenState extends State<RecorderScreen> {
                     children: <Widget>[
                       GestureDetector(
                           onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) {
-                              return RecorderPlayer("");
-                            }));
+                         Navigator.of(context).pop();
                           },
                           child: Icon(
-                            Icons.list,
+                            Icons.arrow_back,
                             color: Colors.white,
                             size: fontWidgetSize.icone,
                           )),
@@ -260,6 +271,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
 
   _start() async {
     try {
+      showFab=false;
       await _recorder.start();
       var recording = await _recorder.current(channel: 0);
       setState(() {
@@ -283,6 +295,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
   }
 
   _stop() async {
+    showFab=true;
     var result = await _recorder.stop();
     print("Stop recording: ${result.path}");
     print("Stop recording: ${result.duration}");
