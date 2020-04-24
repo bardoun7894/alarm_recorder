@@ -1,5 +1,6 @@
 import 'dart:async';
  
+import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
@@ -139,7 +140,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
                     children: <Widget>[
                       GestureDetector(
                           onTap: () {
-                         Navigator.of(context).pop();
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return MyHomePage();}));
                           },
                           child: Icon(
                             Icons.arrow_back,

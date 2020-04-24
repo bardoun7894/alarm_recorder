@@ -1,4 +1,5 @@
 import 'package:alarm_recorder/app_localizations.dart';
+import 'package:alarm_recorder/utils/change_language.dart';
 import 'package:flutter/material.dart';
 
 class MySettings extends StatefulWidget {
@@ -25,16 +26,18 @@ class _MySettingsState extends State<MySettings> {
                 title: Text(AppLocalizations.of(context).translate("notifications"),style: TextStyle(color: Colors.grey),),
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
               ),
-
             ),
             Card(
               child: ListTile(
+                onTap: (){
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return ChangeLanguage();}));
+                         },
                 leading: Icon(Icons.language,color: Colors.blueAccent,),
                 title: Text(AppLocalizations.of(context).translate("change_language"),style: TextStyle(color: Colors.grey)),
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
-              ),
-            ),
-            Card(
+                       ),
+                       ),
+                   Card(
               child: ListTile(
                 leading: Icon(Icons.info_outline,color: Colors.blueAccent,),
                 title: Text(AppLocalizations.of(context).translate("about"),style: TextStyle(color: Colors.grey)),

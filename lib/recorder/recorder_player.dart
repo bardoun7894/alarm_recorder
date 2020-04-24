@@ -2,6 +2,7 @@
 
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
+import 'package:alarm_recorder/recorder/recorder.dart';
 import 'package:alarm_recorder/utils/AudioPlayerController.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/utils.dart';
@@ -89,8 +90,6 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
              onPressed: (){
                _pickSound();
              }
-
-
               ,
               icon: Icon(Icons.folder_open)),
          ),
@@ -150,14 +149,15 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
               }),
         ),
         appBar: AppBar(
+          leading: IconButton(onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return RecorderScreen();}));}, icon: Icon(Icons.arrow_back_ios),
+
+          ),
           actions: _buttons,
           backgroundColor: Colors.blueAccent,
         ),
       ),
     );
   }
-
- 
 
   Widget _player(isPlay, minute, seconds, AudioPlayerObject object,
       List<RecordModel> data, int i) {

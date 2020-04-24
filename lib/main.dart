@@ -1,6 +1,8 @@
 import 'package:alarm_recorder/notes/textFieldCustom.dart';
+import 'package:alarm_recorder/utils/app_language.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'app_localizations.dart';
 //dont remove this unused package ;
@@ -55,7 +57,12 @@ Future<void> main() async {
     }
     selectNotificationSubject.add(payload);
   });
-  runApp(MaterialApp(
+
+    AppLanguage appLanguage = AppLanguage();
+    await appLanguage.fetchLocale();
+
+  runApp(
+      MaterialApp(
     navigatorKey: navigatorKey,
     initialRoute: '/',
     routes: {
@@ -68,7 +75,7 @@ Future<void> main() async {
           ),
       '/recordPlayer': (context) => RecorderPlayer(customPayload),
     },
-    home: MyApp(),
+    home: MyApp(appLanguage: appLanguage),
     debugShowCheckedModeBanner: false,
     supportedLocales: [
       Locale('en', 'US'),
@@ -100,6 +107,8 @@ class ReceivedNotification {
 }
 
 class MyApp extends StatefulWidget {
+final AppLanguage appLanguage;
+MyApp({this.appLanguage});
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   // This widget is the root of your application.
@@ -174,8 +183,23 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: MyHomePage(),
+    return  ChangeNotifierProvider<AppLanguage>(
+      child: Consumer<AppLanguage>(builder: (context, model, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          locale: model.appLocal,
+          supportedLocales: [
+            Locale('en', 'US'),
+            Locale('ar', ''),
+          ],
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+               ],
+          home: MyHomePage(),
+          );
+      }), create:(_) =>  widget.appLanguage,
     );
   }
 }

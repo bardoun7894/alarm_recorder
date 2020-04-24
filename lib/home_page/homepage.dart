@@ -2,11 +2,13 @@ import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/notes/textFieldCustom.dart';
 import 'package:alarm_recorder/recorder/recorder.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart';
+import 'package:alarm_recorder/utils/app_language.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../app_localizations.dart';
 
@@ -24,6 +26,7 @@ class _MyHomePageState extends State<MyHomePage>
   SizeConfig sizeConfig;
   @override
   Widget build(BuildContext context) {
+    var appLanguage = Provider.of<AppLanguage>(context);
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ));
@@ -180,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage>
                           InkWell(
                             onTap: () {
                               _scaffoldKey.currentState.openDrawer();
-                            },
+                                      },
                             child: Icon(
                               Icons.list,
                               color: Colors.white,
@@ -204,7 +207,10 @@ class _MyHomePageState extends State<MyHomePage>
                       ),
                     ),
                     Padding(
-                      padding:   EdgeInsets.only(top: sizeConfig.screenHeight*.09 ,left: 10,right:10),
+                      padding: EdgeInsets.only(
+                          top: sizeConfig.screenHeight * .09,
+                          left: 10,
+                          right: 10),
                       child: Row(
                         children: <Widget>[
                           Text(
