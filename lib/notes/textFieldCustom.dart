@@ -12,6 +12,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:alarm_recorder/utils/utils.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../main.dart';
 
@@ -98,12 +99,54 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
       });
     }
   }
+  putImageText(){
+    textAfterGetImage = descriptionController.text;
+    widget.camera == true ?  getImage(ImageSource.camera) : getImage(ImageSource.gallery);
+    descriptionController.text = textAfterGetImage;
+  }
+  requestPermission()async{
+    await Permission.camera.request();
+    await Permission.photos.request();
+  }
 
+  getPermissionStatus() async {
+    var status;
+        if(widget.camera==true){
+    status = await Permission.camera.status;
+        }
+         if(widget.camera==false){
+           status =   await Permission.photos.status;
+         }
+
+    print("$status ll");
+    switch (status) {
+      case PermissionStatus.undetermined:
+      // TODO: Handle this case.
+        requestPermission();
+         putImageText();
+        break;
+      case PermissionStatus.granted:
+        putImageText();
+        break;
+      case PermissionStatus.denied:
+        requestPermission();
+        putImageText();
+        break;
+      case PermissionStatus.restricted:
+        requestPermission();
+        putImageText();
+        break;
+      case PermissionStatus.permanentlyDenied:
+        requestPermission();
+        putImageText();
+        break;
+    }
+  }
   @override
   Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
-    TextStyle _textStyle = Theme.of(context).textTheme.body1;
+
     // descriptionController.text=note.description;
 
     return Scaffold(
@@ -126,56 +169,43 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
       body: Stack(
         children: <Widget>[
           Container(
-            margin: EdgeInsets.only(top: sizeConfig.screenHeight * .03),
-            height: sizeConfig.screenHeight * .13,
+            margin: EdgeInsets.only(top: sizeConfig.screenHeight * .01),
+            height: sizeConfig.screenHeight * .14,
             child: Column(
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () async {
-                        List<Note> p =
-                            await NoteDatabaseProvider.db.getAllNotes();
-                        List<Note> ss = p;
-                        print(ss);
-                      },
-                      child: InkWell(
-                        onTap: () => Navigator.pop(context),
-                        child: Icon(Icons.arrow_back_ios,
-                            color: Color(0xFF417BFb),
-                            size: fontWidgetSize.icone - 5),
-                      ),
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Padding(
-                            padding: const EdgeInsets.only(right: 8.0),
-                            child: saveButton()),
-                        InkWell(
-                            onTap: () {
-                              //      save();
-//                        dateRange(context);
-                              textAfterGetImage = descriptionController.text;
-                              widget.camera == true
-                                  ? getImage(ImageSource.camera)
-                                  : getImage(ImageSource.gallery);
-
-                              descriptionController.text = textAfterGetImage;
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 18.0),
-                              child: Icon(
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal:5.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      IconButton(  icon: Icon(Icons.arrow_back_ios,
+                                  color: Color(0xFF417BFb),
+                                  size: fontWidgetSize.icone - 5), onPressed: () {
+                   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+                          return NoteList();
+                        }));},
+                            ),
+                      Row(
+                        children: <Widget>[
+                          Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: saveButton()),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 18.0),
+                            child: IconButton(
+                              icon: Icon(
                                 widget.camera == true
                                     ? Icons.camera_enhance
                                     : Icons.image,
                                 color: Color(0xFF417BFb),
                                 size: fontWidgetSize.icone - 3,
-                              ),
-                            )),
-                      ],
-                    )
-                  ],
+                              ), onPressed: () { getPermissionStatus();},
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
                 ),
                 Row(
                   children: <Widget>[
@@ -183,7 +213,7 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
                       height: sizeConfig.screenHeight * .06,
                     ),
                     Text(
-                      "${formatDateTime()}",
+                      "   ${formatDateTime()}   ",
                       style: TextStyle(
                           fontSize: fontWidgetSize.bodyFontSize - 13,
                           color: Colors.black45),
@@ -196,8 +226,8 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
           Padding(
             padding: EdgeInsets.only(
                 top: sizeConfig.screenHeight * .1,
-                right: sizeConfig.screenWidth * .01,
-                left: sizeConfig.screenWidth * .01,
+                right: sizeConfig.screenWidth * .02,
+                left: sizeConfig.screenWidth * .02,
                 bottom: sizeConfig.screenHeight * .005),
             child: ListView(
               children: <Widget>[
@@ -212,18 +242,15 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
                       cursor = false;
                     });
                   },
-
                   controller: descriptionController,
                   cursorColor: Colors.amber,
                   cursorRadius: Radius.circular(2),
                   cursorWidth: 1,
                   autofocus: false,
-                  style: _textStyle,
+                  style: TextStyle(color: Colors.grey[700
+                  ],fontSize: 16),
 
-                  onChanged: (String value) {
-//               updateDescription();
-                    //   debugPrint('Current value: $value');
-                  },
+
 
                   maxLines: 100,
 //              maxLength: 99999,
@@ -248,32 +275,7 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
   }
 
   void saveNote() async {
-    int hour;
-    int day;
-    int minute;
-    int month;
-    await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2018),
-      lastDate: DateTime(2030),
-      builder: (BuildContext context, Widget child) {
-        return Theme(
-          data: ThemeData.light(),
-          child: child,
-        );
-      },
-    ).then((selectedDate) {
-      month = selectedDate.month - DateTime.now().month;
-      day = selectedDate.day - DateTime.now().day + (month * 30);
-    });
-    await showTimePicker(
-      initialTime: TimeOfDay.now(),
-      context: context,
-    ).then((selectedTime) async {
-      hour = selectedTime.hour - DateTime.now().hour;
-      minute = selectedTime.minute - DateTime.now().minute;
-    });
+
     String titleData = descriptionController.text.length > 12
         ? descriptionController.text.substring(0, 12)
         : descriptionController.text;
@@ -285,12 +287,13 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
           imagePath: imgString,
           title: titleData,
           description: descriptionData,
-          date: s,
+          date:s,
           time: firstDate.hour.toString()));
+      reminderDateTime( widget.note.id,imgString,titleData,descriptionData, "note");
 
-      _localNotification.showNotificationAfter(day, hour, minute,
-          widget.note.id, imgString, titleData, descriptionData, "note");
-      Navigator.pop(context);
+//      _localNotification.showNotificationAfter(day,hour,minute,widget.note.id,imgString,titleData,descriptionData, "note");
+//      Navigator.pop(context);
+
     } else if (widget.edit == false) {
       int id = await NoteDatabaseProvider.db.insertNote(new Note(
           imagePath: imgString,
@@ -298,16 +301,11 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
           description: descriptionData,
           date: s,
           time: firstDate.hour.toString()));
-      print("day $day");
-      print("minute $minute");
-      print("hour $hour");
-      print("month $month");
-      _localNotification.showNotificationAfter(
-          day, hour, minute, id, imgString, titleData, descriptionData, "note");
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
-        return NoteList();
-      }));
+      reminderDateTime(id,imgString,titleData,descriptionData, "note");
+//      _localNotification.showNotificationAfter(  day, hour, minute, id, imgString, titleData, descriptionData, "note");
+//      Navigator.of(context) .pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+//        return NoteList();
+//      }));
     }
   }
 
@@ -343,21 +341,49 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
       }));
     }
   }
-
+  reminderDateTime( id,imageString,title,description,payload)async{
+ int hour=0;
+  int day=0;
+   int minute=0;
+   int month=DateTime.now().month;
+    await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+    firstDate: DateTime(2018),
+    lastDate: DateTime(2030),
+    builder: (BuildContext context, Widget child) {
+    return Theme(
+    data: ThemeData.light(),
+    child: child,
+    );
+    },
+    ).then((selectedDate) {
+    month = selectedDate.month - DateTime.now().month;
+    day = selectedDate.day - DateTime.now().day + (month * 30);
+    });
+    await showTimePicker(
+    initialTime: TimeOfDay.now(),
+    context: context,
+    ).then((selectedTime) async {
+    hour = selectedTime.hour - DateTime.now().hour;
+    minute = selectedTime.minute - DateTime.now().minute;
+    });
+    _localNotification.showNotificationAfter(day,hour,minute,id,imageString,title,description,payload);
+    Navigator.pop(context);
+  }
   Widget saveButton() {
     return widget.location == true
         ? fabClicked == true
             ? InkWell(
                 onTap: () {
-                  saveLocationNote();
+              saveLocationNote();
                 },
                 child: Icon(Icons.save,
                     color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3))
             : Container()
-        : InkWell(
+            : InkWell(
             onTap: () {
               saveNote();
-//                        dateRange(context);
             },
             child: Icon(Icons.save,
                 color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3));

@@ -1,5 +1,4 @@
 import 'package:alarm_recorder/notes/textFieldCustom.dart';
-import 'package:alarm_recorder/utils/globalState.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';

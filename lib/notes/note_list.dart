@@ -41,7 +41,7 @@ class _NoteListState extends State<NoteList> {
     List<Widget> _buttons = List();
     if (_selectionMode) {
       _buttons.add(IconButton(
-        icon: Icon(Icons.delete),
+        icon: Icon(Icons.delete,color:Colors.blueAccent,),
        onPressed: () {
          for(int i =0;i<_selectedIndexList.length;i++){
              print(_selectedIndexList[i]);
@@ -58,9 +58,13 @@ class _NoteListState extends State<NoteList> {
     }
         return Scaffold(
           appBar: AppBar(
-            backgroundColor: Colors.blueAccent,
-            title: Text("noteList"),
-        actions: _buttons,
+            leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.blueAccent,), onPressed: () {
+              Navigator.of(context).pop();
+            },),
+            elevation: 0,
+            backgroundColor: Colors.grey[200],
+
+           actions: _buttons,
       ),
       body: Container(
         color: Colors.grey[200],

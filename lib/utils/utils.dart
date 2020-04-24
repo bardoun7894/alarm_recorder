@@ -124,7 +124,7 @@ Future<bool> ShowCoupons(context,result,String nameRecord ) {
                         color: Colors.teal,
                         child: Center(
                           child: Text(
-                            AppLocalizations.of(context).translate("yes"),
+                            AppLocalizations.of(context).translate("ok"),
                             style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 20.0,

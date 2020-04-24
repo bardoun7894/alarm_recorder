@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../app_localizations.dart';
+
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
@@ -55,7 +56,8 @@ class _MyHomePageState extends State<MyHomePage>
                     width: 10,
                   ),
                   Text(
-                    "My Memory",
+                    AppLocalizations.of(context).translate("pre_name") +
+                        AppLocalizations.of(context).translate("app_name"),
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),
@@ -73,7 +75,10 @@ class _MyHomePageState extends State<MyHomePage>
                 Icons.note_add,
                 color: Colors.blueAccent,
               ),
-              title: Text("add note"),
+              title: Text(
+                AppLocalizations.of(context).translate("add_note"),
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
             ListTile(
               onTap: () {
@@ -86,7 +91,10 @@ class _MyHomePageState extends State<MyHomePage>
                 Icons.note,
                 color: Colors.blueAccent,
               ),
-              title: Text("all notes"),
+              title: Text(
+                AppLocalizations.of(context).translate("all_notes"),
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
             ListTile(
               onTap: () {
@@ -99,7 +107,10 @@ class _MyHomePageState extends State<MyHomePage>
                 Icons.record_voice_over,
                 color: Colors.blueAccent,
               ),
-              title: Text("record voice"),
+              title: Text(
+                AppLocalizations.of(context).translate("record_voice"),
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
             ListTile(
               onTap: () {
@@ -112,7 +123,10 @@ class _MyHomePageState extends State<MyHomePage>
                 Icons.queue_music,
                 color: Colors.blueAccent,
               ),
-              title: Text("recorder list "),
+              title: Text(
+                AppLocalizations.of(context).translate("recorder_list"),
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
             ListTile(
               onTap: () {
@@ -125,7 +139,10 @@ class _MyHomePageState extends State<MyHomePage>
                 Icons.settings,
                 color: Colors.blueAccent,
               ),
-              title: Text("Settings"),
+              title: Text(
+                AppLocalizations.of(context).translate("settings"),
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
           ],
         ),
@@ -142,8 +159,8 @@ class _MyHomePageState extends State<MyHomePage>
                     end: Alignment.bottomCenter,
                     colors: <Color>[
                       Colors.blueAccent,
-                       Colors.blueAccent,
-                        Color(0xFF74b9ff),
+                      Colors.blueAccent,
+                      Color(0xFF74b9ff),
                     ]),
                 borderRadius: BorderRadius.only(
                     bottomRight: Radius.circular(raduis),
@@ -154,37 +171,40 @@ class _MyHomePageState extends State<MyHomePage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        InkWell(
-                          onTap: () {
-                            _scaffoldKey.currentState.openDrawer();
-                          },
-                          child: Icon(
-                            Icons.list,
-                            color: Colors.white,
-                            size: fontWidgetSize.icone,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          InkWell(
+                            onTap: () {
+                              _scaffoldKey.currentState.openDrawer();
+                            },
+                            child: Icon(
+                              Icons.list,
+                              color: Colors.white,
+                              size: fontWidgetSize.icone,
+                            ),
                           ),
-                        ),
-                        InkWell(
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (BuildContext context) {
-                                  return MySettings();
-                                }));
-                          },
-                          child: Icon(
-                            Icons.settings,
-                            color: Colors.white,
-                            size: fontWidgetSize.icone,
-                          ),
-                        )
-                      ],
+                          InkWell(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                return MySettings();
+                              }));
+                            },
+                            child: Icon(
+                              Icons.settings,
+                              color: Colors.white,
+                              size: fontWidgetSize.icone,
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(top: 50.0, left: 10),
+                      padding:   EdgeInsets.only(top: sizeConfig.screenHeight*.09 ,left: 10,right:10),
                       child: Row(
                         children: <Widget>[
                           Text(
@@ -219,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage>
                 children: <Widget>[
                   Padding(
                     padding:
-                    EdgeInsets.only(left: sizeConfig.screenWidth * .025),
+                        EdgeInsets.only(left: sizeConfig.screenWidth * .025),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
@@ -245,7 +265,7 @@ class _MyHomePageState extends State<MyHomePage>
                   ),
                   Padding(
                     padding:
-                    EdgeInsets.only(left: sizeConfig.screenWidth * .025),
+                        EdgeInsets.only(left: sizeConfig.screenWidth * .025),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[

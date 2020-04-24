@@ -86,7 +86,12 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
          Padding(
            padding: const EdgeInsets.only(right:10.0),
            child: IconButton(
-             onPressed: _pickSound,
+             onPressed: (){
+               _pickSound();
+             }
+
+
+              ,
               icon: Icon(Icons.folder_open)),
          ),
               );  }

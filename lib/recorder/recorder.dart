@@ -14,6 +14,7 @@ import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
  
   
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class RecorderScreen extends StatefulWidget {
   final LocalFileSystem localFileSystem;
@@ -41,7 +42,9 @@ class _RecorderScreenState extends State<RecorderScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     _init();
+
   }
 
   _init() async {
@@ -232,15 +235,8 @@ class _RecorderScreenState extends State<RecorderScreen> {
             onTap: () {
               _currentStatus != RecordingStatus.Unset ? _stop : null;
               setState(() {
-                if (currentIcon == 0) {
-                  _start();
-                  currentIcon = 1;
-                } else {
-                  currentIcon = 0;
-                  _stop();
+                getPermissionStatus();
 
-                  //   ShowCoupons(context);
-                }
               });
             },
             child: Container(
@@ -267,6 +263,60 @@ class _RecorderScreenState extends State<RecorderScreen> {
       color: Color(0xFF417BFb),
       size: sizeConfig.screenWidth * .92,
     );
+  }
+
+
+
+  getPermissionStatus( ) async {
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.microphone,
+      Permission.storage,
+    ].request();
+switch(statuses[Permission.microphone]){
+  case PermissionStatus.undetermined:
+    await Permission.microphone.request();
+
+    break;
+  case PermissionStatus.granted:
+    // TODO: Handle this case.
+    if (currentIcon == 0) {
+      _start();
+      currentIcon = 1;
+    } else {
+      currentIcon = 0;
+      _stop(); }
+    break;
+  case PermissionStatus.denied:
+    await Permission.microphone.request();
+    // TODO: Handle this case.
+    break;
+  case PermissionStatus.restricted:
+    await Permission.microphone.request();
+    // TODO: Handle this case.
+    break;
+  case PermissionStatus.permanentlyDenied:
+    // TODO: Handle this case.
+    await Permission.microphone.request();
+    break;
+}
+    switch(statuses[Permission.storage]){
+      case PermissionStatus.undetermined:
+        await Permission.storage.request();
+        break;
+      case PermissionStatus.granted:
+      // TODO: Handle this case.
+        break;
+      case PermissionStatus.denied:
+        await Permission.storage.request();
+        break;
+      case PermissionStatus.restricted:
+        await Permission.storage.request();
+        break;
+      case PermissionStatus.permanentlyDenied:
+        await Permission.storage.request();
+        break;
+    }
+
   }
 
   _start() async {

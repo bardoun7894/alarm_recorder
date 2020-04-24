@@ -1,3 +1,4 @@
+import 'package:alarm_recorder/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class MySettings extends StatefulWidget {
@@ -10,8 +11,8 @@ class _MySettingsState extends State<MySettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Settings",style:TextStyle(color: Colors.black,)),
-        leading: InkWell(onTap: ()=>Navigator.pop(context),child: Icon(Icons.arrow_back,color: Colors.black,)),
+        title: Text(AppLocalizations.of(context).translate("settings"),style:TextStyle(color: Colors.grey,)),
+        leading: InkWell(onTap: ()=>Navigator.pop(context),child: Icon(Icons.arrow_back,color: Colors.grey,)),
         backgroundColor: Colors.white,
       ),
       body: Container(
@@ -21,7 +22,7 @@ class _MySettingsState extends State<MySettings> {
             Card(
               child: ListTile(
                 leading: Icon(Icons.notifications,color: Colors.blueAccent,),
-                title: Text("notification"),
+                title: Text(AppLocalizations.of(context).translate("notifications"),style: TextStyle(color: Colors.grey),),
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
               ),
 
@@ -29,14 +30,14 @@ class _MySettingsState extends State<MySettings> {
             Card(
               child: ListTile(
                 leading: Icon(Icons.language,color: Colors.blueAccent,),
-                title: Text("change Language"),
+                title: Text(AppLocalizations.of(context).translate("change_language"),style: TextStyle(color: Colors.grey)),
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
               ),
             ),
             Card(
               child: ListTile(
                 leading: Icon(Icons.info_outline,color: Colors.blueAccent,),
-                title: Text("about"),
+                title: Text(AppLocalizations.of(context).translate("about"),style: TextStyle(color: Colors.grey)),
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
               ),
             ),
