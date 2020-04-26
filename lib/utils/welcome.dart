@@ -14,7 +14,7 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePageState extends State<WelcomePage> {
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
-  String NextText = "Next";
+  String nextext = "Next";
   bool imInLastPage = false;
   int currentPosition = 1;
   List<WelcomeModel> welecomes = [
@@ -108,7 +108,7 @@ class _WelcomePageState extends State<WelcomePage> {
                 elevation: 0,
                 color: mainTheme.primaryColorDark,
                 child: Text(
-                  NextText,
+                  nextext,
                   style: TextStyle(color: Colors.white),
                 ),
                 onPressed: () {
@@ -146,12 +146,12 @@ class _WelcomePageState extends State<WelcomePage> {
                 if (position == welecomes.length - 1) {
                   setState(() {
                     imInLastPage = true;
-                    NextText = "Get Started";
+                    nextext = "Get Started";
                   });
                 } else {
                   setState(() {
                     imInLastPage = false;
-                    NextText = "Next";
+                    nextext = "Next";
                   });
                 }
               },

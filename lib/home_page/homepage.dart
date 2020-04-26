@@ -1,14 +1,12 @@
 import 'package:alarm_recorder/notes/note_list.dart';
-import 'package:alarm_recorder/notes/textFieldCustom.dart';
+import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/recorder/recorder.dart';
-import 'package:alarm_recorder/recorder/recorder_player.dart';
-import 'package:alarm_recorder/utils/app_language.dart';
+import 'package:alarm_recorder/recorder/recorder_player.dart'; 
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/services.dart'; 
 
 import '../app_localizations.dart';
 
@@ -26,8 +24,7 @@ class _MyHomePageState extends State<MyHomePage>
   SizeConfig sizeConfig;
   @override
   Widget build(BuildContext context) {
-    var appLanguage = Provider.of<AppLanguage>(context);
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ));
     sizeConfig = SizeConfig(context);
@@ -71,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage>
               onTap: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (BuildContext context) {
-                  return MyTextFieldCustom(false, false, false);
+                  return AddNotes(false, false, false);
                 }));
               },
               leading: Icon(
@@ -279,7 +276,7 @@ class _MyHomePageState extends State<MyHomePage>
                             onTap: () {
                               Navigator.of(context)
                                   .push(MaterialPageRoute(builder: (context) {
-                                return MyTextFieldCustom(false, true, true);
+                                return AddNotes(false, true, true);
                               }));
                             },
                             child: locationContainer()),
@@ -287,7 +284,7 @@ class _MyHomePageState extends State<MyHomePage>
                           onTap: () {
                             Navigator.of(context)
                                 .push(MaterialPageRoute(builder: (context) {
-                              return MyTextFieldCustom(false, true, false);
+                              return AddNotes(false, true, false);
                             }));
                           },
                           child: cameraContainer(),

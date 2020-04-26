@@ -1,7 +1,7 @@
 
 import 'package:alarm_recorder/app_localizations.dart';
 import 'package:alarm_recorder/model/Note.dart';
-import 'package:alarm_recorder/notes/textFieldCustom.dart';
+import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/theme/myTheme.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/utils.dart';
@@ -106,7 +106,7 @@ class _NoteListState extends State<NoteList> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
       Navigator.of(context).push(MaterialPageRoute(
-     builder: (BuildContext context) => MyTextFieldCustom(false,false,false)));
+     builder: (BuildContext context) => AddNotes(false,false,false)));
         },
         child: Icon(Icons.add, color: Colors.white),
         backgroundColor: mainTheme.primaryColorDark,
@@ -160,7 +160,7 @@ class _NoteListState extends State<NoteList> {
           onTap: () {
             
               Navigator.of(context).push(MaterialPageRoute(
-              builder: (BuildContext context) => MyTextFieldCustom(
+              builder: (BuildContext context) => AddNotes(
                         true,
                         false,false,
                         note: note,

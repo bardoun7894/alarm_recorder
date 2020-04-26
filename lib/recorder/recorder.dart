@@ -40,12 +40,9 @@ class _RecorderScreenState extends State<RecorderScreen> {
   String name ="myRecord.mp3";
   bool showFab=true;
   @override
-  void initState() {
-    // TODO: implement initState
+  void initState() { 
     super.initState();
-
     _init();
-
   }
 
   _init() async {
@@ -234,7 +231,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
         Center(
           child: InkWell(
             onTap: () {
-              _currentStatus != RecordingStatus.Unset ? _stop : null;
+              
               setState(() {
                 getPermissionStatus();
 
@@ -350,16 +347,15 @@ switch(statuses[Permission.microphone]){
     var result = await _recorder.stop();
     print("Stop recording: ${result.path}");
     print("Stop recording: ${result.duration}");
-
     File file = widget.localFileSystem.file(result.path);
     print("File length: ${await file.length()}");
     setState(() {
       _current = result;
       _currentStatus = _current.status;
-
-      ShowCoupons(context, result.path.toString(),nameController.text!=""?nameController.text+"."+"${result.extension}":name+"."+"${result.extension}");
-
-      //todo Date and Time
+      saveRecordDialog(context,
+      result.path.toString(),
+      nameController.text!=""?nameController.text+"."+"${result.extension}":name+"."+"${result.extension}");
     });
   }
+  
 }

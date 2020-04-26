@@ -1,7 +1,8 @@
-import 'package:alarm_recorder/notes/textFieldCustom.dart';
+import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/utils/app_language.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'app_localizations.dart';
@@ -11,9 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'home_page/homepage.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
-import 'model/Note.dart';
-import 'notes/note_list.dart';
+import 'model/Note.dart'; 
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -32,10 +31,9 @@ Note customNote = Note();
 Future<void> main() async {
 // needed if you intend to initialize in the `main` function
   WidgetsFlutterBinding.ensureInitialized();
-
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-
   var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
   // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
   // of the `IOSFlutterLocalNotificationsPlugin` class
@@ -67,7 +65,7 @@ Future<void> main() async {
     initialRoute: '/',
     routes: {
       // When navigating to the "/second" route, build the SecondScreen widget.
-      '/textField': (context) => MyTextFieldCustom(
+      '/textField': (context) => AddNotes(
             true,
             false,
             false,
@@ -132,8 +130,8 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  void dispose() {
-    // TODO: implement dispose
+  void dispose() { 
+    
     super.dispose();
     didReceiveLocalNotificationSubject.close();
     selectNotificationSubject.close();

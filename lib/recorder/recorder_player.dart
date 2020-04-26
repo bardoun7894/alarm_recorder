@@ -44,21 +44,18 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     }
   }
   @override
-  void dispose() {
-    // TODO: implement dispose
+  void dispose() { 
     super.dispose();
     audioC.dispose();
   }
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
+  void initState() { 
+    super.initState(); 
     if (widget.pathfromNotifiction != "") {
       audioC.ButtonPlayPause(widget.pathfromNotifiction);
-    }
-  }
+          }
+      }
 
   @override
   Widget build(BuildContext context) {
@@ -144,21 +141,19 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                     width: sizeConfig.screenWidth,
                     height: sizeConfig.screenHeight,
                     color: Colors.white,
-                  );
-                }
-              }),
+                    );
+                    }
+                   }),
         ),
         appBar: AppBar(
           leading: IconButton(onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return RecorderScreen();}));}, icon: Icon(Icons.arrow_back_ios),
-
           ),
           actions: _buttons,
           backgroundColor: Colors.blueAccent,
-        ),
-      ),
-    );
-  }
-
+          ),
+          ),
+          );
+          }
   Widget _player(isPlay, minute, seconds, AudioPlayerObject object,
       List<RecordModel> data, int i) {
     return Positioned(
@@ -269,22 +264,24 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       style: TextStyle(color: Colors.white),
     );
   }
-  Future _pickSound() {
+   _pickSound() {
     FilePicker.getFile().then((onValue) {
       if (onValue != null) {
         repath = onValue.path;
         print(repath);
-        saveRecord(repath, context,repath.substring(0,7));
+        saveRecord(repath,context,repath.substring(0,7));
       }
     });
   }
 
-  Widget listRecords(List<RecordModel> data){
-
+  Widget listRecords(List<RecordModel> data){ 
     return ListView.builder(
       itemCount: data.length != null ? data.length : 0,
       itemBuilder: (BuildContext context, index) {
         RecordModel recordModel = data[index];
+        // print("recordModel.name"+recordModel.name);
+        // print("recordModel.path"+recordModel.pathRec);
+        // print("recordModel.id ${ recordModel.id}");
         return Padding(
           padding: EdgeInsets.only(
               right: sizeConfig.screenWidth * .05,
@@ -383,9 +380,7 @@ class AudioPlayerObject {
 
   AudioCache get audioCache => _audioCache;
 
-  set audioCache(AudioCache value) {
-    _audioCache = value;
-  }
+  set audioCache(AudioCache value) => _audioCache = value;
 
   AudioPlayerObject(
       this._advancedPlayer,

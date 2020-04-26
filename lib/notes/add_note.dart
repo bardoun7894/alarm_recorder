@@ -6,8 +6,7 @@ import 'package:alarm_recorder/utils/getlocation.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:flutter/widgets.dart'; 
 import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
@@ -16,21 +15,22 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../main.dart';
 
-class MyTextFieldCustom extends StatefulWidget {
-  final Note note;
+class AddNotes extends StatefulWidget {
+
+   Note note;
   String title;
-  final bool edit;
+   bool edit;
   bool camera;
   bool location;
 
-  MyTextFieldCustom(this.edit, this.camera, this.location, {this.note})
-      : assert(edit != null || note == null);
+  AddNotes(this.edit, this.camera, this.location, {this.note})
+                               : assert(edit != null || note == null);
   @override
-  _MyTextFieldCustomState createState() =>
-      _MyTextFieldCustomState(this.note, this.title);
+  _AddNotesState createState() =>
+      _AddNotesState(this.note, this.title);
 }
 
-class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
+class _AddNotesState extends State<AddNotes> {
   GetLocation getLocation = GetLocation();
   String textAfterGetImage = "";
   File _image;
@@ -44,7 +44,7 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
   String title;
   TextEditingController descriptionController = TextEditingController();
 
-  _MyTextFieldCustomState(this.note, this.title);
+  _AddNotesState(this.note, this.title);
 
   bool cursor = true;
   DateTime firstDate = DateTime.now().add(Duration(minutes: 1));
@@ -99,11 +99,13 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
       });
     }
   }
+
   putImageText(){
     textAfterGetImage = descriptionController.text;
     widget.camera == true ?  getImage(ImageSource.camera) : getImage(ImageSource.gallery);
     descriptionController.text = textAfterGetImage;
   }
+
   requestPermission()async{
     await Permission.camera.request();
     await Permission.photos.request();
@@ -121,7 +123,7 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
     print("$status ll");
     switch (status) {
       case PermissionStatus.undetermined:
-      // TODO: Handle this case.
+    
         requestPermission();
          putImageText();
         break;
@@ -142,6 +144,7 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
         break;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
@@ -155,6 +158,11 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
               onPressed: () {
                 setState(() {
                   fabClicked = true;
+                  try{
+
+                  }catch(e){
+
+                  }
                   getLocation.getPermissionStatus(context);
                 });
               },
@@ -199,10 +207,16 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
                                     : Icons.image,
                                 color: Color(0xFF417BFb),
                                 size: fontWidgetSize.icone - 3,
-                              ), onPressed: () { getPermissionStatus();},
-                            ),
+                              ), onPressed: () {
+                                try{
+                             getPermissionStatus();
+                                }catch(e){
+                           print("exception"+e);
+                                }                
+                             },
+                           ),
                           ),
-                        ],
+                       ],
                       )
                     ],
                   ),
@@ -231,6 +245,9 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
                 bottom: sizeConfig.screenHeight * .005),
             child: ListView(
               children: <Widget>[
+                SizedBox(
+                  height: 10,
+                ),
                 imgString == ""
                     ? Container()
                     : imageFromBase64String(imgString, 300, 300),
@@ -249,11 +266,7 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
                   autofocus: false,
                   style: TextStyle(color: Colors.grey[700
                   ],fontSize: 16),
-
-
-
                   maxLines: 100,
-//              maxLength: 99999,
                   keyboardType: TextInputType.multiline,
                 ),
               ],
@@ -274,41 +287,7 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
     note.description = descriptionController.text;
   }
 
-  void saveNote() async {
-
-    String titleData = descriptionController.text.length > 12
-        ? descriptionController.text.substring(0, 12)
-        : descriptionController.text;
-    String descriptionData = descriptionController.text;
-    String s = DateFormat.yMMMd().format(DateTime.now());
-    if (widget.edit == true) {
-      NoteDatabaseProvider.db.updateNote(new Note(
-          id: widget.note.id,
-          imagePath: imgString,
-          title: titleData,
-          description: descriptionData,
-          date:s,
-          time: firstDate.hour.toString()));
-      reminderDateTime( widget.note.id,imgString,titleData,descriptionData, "note");
-
-//      _localNotification.showNotificationAfter(day,hour,minute,widget.note.id,imgString,titleData,descriptionData, "note");
-//      Navigator.pop(context);
-
-    } else if (widget.edit == false) {
-      int id = await NoteDatabaseProvider.db.insertNote(new Note(
-          imagePath: imgString,
-          title: titleData,
-          description: descriptionData,
-          date: s,
-          time: firstDate.hour.toString()));
-      reminderDateTime(id,imgString,titleData,descriptionData, "note");
-//      _localNotification.showNotificationAfter(  day, hour, minute, id, imgString, titleData, descriptionData, "note");
-//      Navigator.of(context) .pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
-//        return NoteList();
-//      }));
-    }
-  }
-
+  
   saveLocationNote() async {
     String titleData = descriptionController.text.length > 12
         ? descriptionController.text.substring(0, 12)
@@ -341,36 +320,9 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
       }));
     }
   }
-  reminderDateTime( id,imageString,title,description,payload)async{
- int hour=0;
-  int day=0;
-   int minute=0;
-   int month=DateTime.now().month;
-    await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-    firstDate: DateTime(2018),
-    lastDate: DateTime(2030),
-    builder: (BuildContext context, Widget child) {
-    return Theme(
-    data: ThemeData.light(),
-    child: child,
-    );
-    },
-    ).then((selectedDate) {
-    month = selectedDate.month - DateTime.now().month;
-    day = selectedDate.day - DateTime.now().day + (month * 30);
-    });
-    await showTimePicker(
-    initialTime: TimeOfDay.now(),
-    context: context,
-    ).then((selectedTime) async {
-    hour = selectedTime.hour - DateTime.now().hour;
-    minute = selectedTime.minute - DateTime.now().minute;
-    });
-    _localNotification.showNotificationAfter(day,hour,minute,id,imageString,title,description,payload);
-    Navigator.pop(context);
-  }
+
+
+
   Widget saveButton() {
     return widget.location == true
         ? fabClicked == true
@@ -379,11 +331,16 @@ class _MyTextFieldCustomState extends State<MyTextFieldCustom> {
               saveLocationNote();
                 },
                 child: Icon(Icons.save,
-                    color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3))
+                color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3))
             : Container()
             : InkWell(
             onTap: () {
-              saveNote();
+          //    saveNote(widget.note.id,widget.edit,descriptionController.text,imgString,context);
+          if(widget.edit==true){
+          saveNoteDialog(widget.note.id,widget.edit,descriptionController.text,imgString,context);
+           }else if (widget.edit==false){
+            saveNoteDialog(0,widget.edit,descriptionController.text,imgString,context);
+            }
             },
             child: Icon(Icons.save,
                 color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3));
