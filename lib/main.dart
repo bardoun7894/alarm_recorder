@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/utils/app_language.dart';
 import 'package:flutter/cupertino.dart';
@@ -31,6 +34,9 @@ Note customNote = Note();
 Future<void> main() async {
 // needed if you intend to initialize in the `main` function
   WidgetsFlutterBinding.ensureInitialized();
+  //TODO Admob
+  Admob.initialize(getAppId());
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
@@ -55,10 +61,8 @@ Future<void> main() async {
     }
     selectNotificationSubject.add(payload);
   });
-
-    AppLanguage appLanguage = AppLanguage();
+ AppLanguage appLanguage = AppLanguage();
     await appLanguage.fetchLocale();
-
   runApp(
       MaterialApp(
     navigatorKey: navigatorKey,
@@ -139,8 +143,8 @@ class _MyAppState extends State<MyApp> {
 
   void _requestIOSPermissions() {
     widget.flutterLocalNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
+         .resolvePlatformSpecificImplementation<
+          IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
           alert: true,
           badge: true,
@@ -155,11 +159,11 @@ class _MyAppState extends State<MyApp> {
         Note note = Note.fromRawJson(receivedNotification.payload);
         customNote = note;
         await navigatorKey.currentState
-            .pushNamed('/textField', arguments: customNote);
+            .popAndPushNamed('/textField', arguments: customNote);
       } else {
         customPayload = receivedNotification.payload;
         await navigatorKey.currentState
-            .pushNamed('/recordPlayer', arguments: customPayload);
+            .popAndPushNamed('/recordPlayer', arguments: customPayload);
       }
     });
   }
@@ -264,4 +268,13 @@ class LocalNotification {
     await myApp.flutterLocalNotificationsPlugin
         .show(id, title, body, notificationDetails, payload: payload);
   }
+}
+String getAppId() {
+  //Todo 
+  if (Platform.isIOS) {
+    return 'ca-app-pub-3940256099942544~1458002511';
+  } else if (Platform.isAndroid) {
+    return 'ca-app-pub-3940256099942544~3347511713';
+  }
+  return null;
 }

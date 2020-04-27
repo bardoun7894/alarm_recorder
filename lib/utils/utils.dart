@@ -60,7 +60,6 @@ reminderDateTime(id,imageString,title,description,payload,context)async{
   });
   _localNotification.showNotificationAfter(day,hour,minute,id,imageString,title,description,payload);
  if(title=="record"){
- 
    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
     return  RecorderPlayer(payload);
   }));
@@ -89,15 +88,12 @@ Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,S
     });
 }
  void saveRecord(String payload,context,String nameRecord) async {
- if(isTimeSet){
+ 
   int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: payload,name: nameRecord));
  reminderDateTime( id,"","record",nameRecord,payload,context);
- }else{
-await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec:payload,name:nameRecord));
-  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
-    return  RecorderPlayer(payload);
-  })); 
- }
+  // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
+  //   return  RecorderPlayer(payload);
+  // }));
 
 }
 void saveNote(int id,bool edit ,String descriptionControllertext,String imgString,context) async {
@@ -107,8 +103,7 @@ void saveNote(int id,bool edit ,String descriptionControllertext,String imgStrin
     String descriptionData = descriptionControllertext;
     String s = DateFormat.yMMMd().format(DateTime.now());
     if (edit == true) {
-      if(isTimeSet){
-          NoteDatabaseProvider.db.updateNote(new Note(
+      NoteDatabaseProvider.db.updateNote(new Note(
           id: id,
           imagePath: imgString,
           title: titleData,
@@ -117,36 +112,16 @@ void saveNote(int id,bool edit ,String descriptionControllertext,String imgStrin
           ));
         // reminderDateTime( id,"","record",nameRecord,payload,context);  
       reminderDateTime( id,imgString,titleData,descriptionData,"note",context);
-      }else{
-   NoteDatabaseProvider.db.updateNote(new Note(
-          id: id,
-          imagePath: imgString,
-          title: titleData,
-          description: descriptionData,
-          date:s,
-          ));
-      Navigator.pop(context);
-      }
+    
     } else if (edit == false) {
-      if(isTimeSet){
-         int id = await NoteDatabaseProvider.db.insertNote(new Note(
+      int id = await NoteDatabaseProvider.db.insertNote(new Note(
           imagePath: imgString,
           title: titleData,
           description: descriptionData,
           date: s,
           ));
-       reminderDateTime(id,imgString,titleData,descriptionData,"note",context);
-      
-      }else{
-         await NoteDatabaseProvider.db.insertNote(new Note(
-          imagePath: imgString,
-          title: titleData,
-          description: descriptionData,
-          date: s,
-          ));
-     Navigator.pop(context);
-      }
-     
+        reminderDateTime(id,imgString,titleData,descriptionData,"note",context);
+  
      }
    
   }

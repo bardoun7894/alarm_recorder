@@ -1,8 +1,7 @@
-import 'package:alarm_recorder/notes/note_list.dart';
+ 
 import 'package:alarm_recorder/utils/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:alarm_recorder/notes/add_note.dart';
+import 'package:shared_preferences/shared_preferences.dart'; 
 import '../app_localizations.dart';
 
 class myChoice extends StatefulWidget {
@@ -42,39 +41,7 @@ class _myChoiceState extends State<myChoice> {
     return dialog(widget.result, context, widget.nameRecord);
   }
 
-  Widget chips() {
-    return Expanded(
-        child: ListView.builder(
-      shrinkWrap: true,
-      itemCount: data.length,
-      itemBuilder: (BuildContext context, int index) {
-        return ChoiceChip(
-          avatar: CircleAvatar(
-              backgroundColor:
-                  _value != index ? Colors.grey[100] : Colors.blueAccent,
-              child: Icon(
-                icons[index],
-                color: _value != index ? Colors.blueAccent : Colors.white,
-              )),
-          label: Text(data[index]),
-          selected: _value == index,
-          selectedColor: Colors.blueAccent,
-          onSelected: (bool value) {
-            setState(() {
-              boolV = value;
-              _value = value ? index : null;
-              shared(_value);
-            });
-          },
-          backgroundColor: Colors.grey[100],
-          labelStyle: TextStyle(
-              color: _value == index ? Colors.white : Colors.blueAccent),
-        );
-      },
-    ));
-  }
-
-  Widget dialog(String result, context, nameRecord) {
+   Widget dialog(String result, context, nameRecord) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Container(
@@ -118,13 +85,7 @@ class _myChoiceState extends State<myChoice> {
             SizedBox(
               height: 10.0,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                chips(),
-              ],
-            ),
-            Padding(
+            Padding(   
               padding: EdgeInsets.all(10.0),
               child: Text( _value ==null?"": AppLocalizations.of(context).translate("dialog_save_data"),
                 style: TextStyle(
@@ -139,29 +100,15 @@ class _myChoiceState extends State<myChoice> {
               children: <Widget>[
             _value ==null?Container(): FlatButton(
                   onPressed: () {
-                    if(_value==0){
+             
                  
                   if(widget.note=="note"){
-                       isTimeSet = true;
-                       saveNote(widget.id,widget.edit,widget.descriptionControllertext,widget.imgString,context);
+                   saveNote(widget.id,widget.edit,widget.descriptionControllertext,widget.imgString,context);
                       }else{
-                     isTimeSet = true;
+                     
                     saveRecord(result, context, nameRecord);
                      }
-                       }
-                    if (_value==1){
-                     if(widget.note=="note"){
-                       isTimeSet = false;
-                       saveNote(widget.id,widget.edit,widget.descriptionControllertext,widget.imgString,context);
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){  return  NoteList();}));
-                          }else{
-                     isTimeSet = false;
-                    saveRecord(result, context, nameRecord);
-                    
-                          }
-                    }
-                   
-                  },
+                     },
                   color: Colors.teal,
                   child: Center(
                     child: Text(

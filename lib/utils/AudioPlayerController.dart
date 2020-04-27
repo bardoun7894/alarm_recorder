@@ -31,16 +31,21 @@ inPlayer.add(audioObject);
   audioObject.musicActual=audioObject.localFilePath;
   inPlayer.add(audioObject);
 }
+  audioStop(){
+  audioObject.advancedPlayer.stop();
+  }
+  
 
-ButtonPlayPause(data){
-  if(audioObject.play) {
+buttonPlayPause(data){
+
+  if(audioObject.play){
    audioObject.play = false;
     audioObject.advancedPlayer.pause();
-  }else{
+     }else{
     audioObject.play=true;
     audioObject.advancedPlayer.play(data ,isLocal: true);
-  }
-  inPlayer.add(audioObject);
+      }
+     inPlayer.add(audioObject);
 }
 
 timeSound(double newValue){

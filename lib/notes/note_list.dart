@@ -1,5 +1,6 @@
 
 import 'package:alarm_recorder/app_localizations.dart';
+import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/theme/myTheme.dart';
@@ -33,7 +34,11 @@ class _NoteListState extends State<NoteList> {
     _selectedIndexList.clear();
     }
   }
-
+ Future<bool> _onBackPressed() {
+          return Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
+          return MyHomePage();
+        }));
+  }
   @override
   Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
@@ -44,74 +49,79 @@ class _NoteListState extends State<NoteList> {
         icon: Icon(Icons.delete,color:Colors.blueAccent,),
        onPressed: () {
          for(int i =0;i<_selectedIndexList.length;i++){
-             print(_selectedIndexList[i]);
+        print(_selectedIndexList[i]);
                NoteDatabaseProvider.db.deleteNoteWithId(_noteList[i].id) ;
                   }
        Navigator.of(context).pushReplacement(MaterialPageRoute(
                  builder: (BuildContext context) {
                   return NoteList();
                  }));  
-  
           _selectedIndexList.sort();
-      print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
+           print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
           }));
     }
-        return Scaffold(
-          appBar: AppBar(
-            leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.blueAccent,), onPressed: () {
-              Navigator.of(context).pop();
-            },),
-            elevation: 0,
-            backgroundColor: Colors.grey[200],
+        return WillPopScope(
+            child: Scaffold(
+            appBar: AppBar(
+              leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.blueAccent,), onPressed: () {
+                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                      builder: (BuildContext context) {
+                                return MyHomePage();
+                              }));
+              },),
+              elevation: 0,
+              backgroundColor: Colors.grey[200],
 
-           actions: _buttons,
+             actions: _buttons,
       ),
       body: Container(
-        color: Colors.grey[200],
-        child: FutureBuilder<List<Note>>(
-          future: NoteDatabaseProvider.db.getAllNotes(),
-          builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
-          if(snapshot.hasData){
-            if(snapshot.data.length==0){
-              return Container(
-                  child: Padding(
-                    padding:  EdgeInsets.only(top:sizeConfig.screenHeight*.5),
-                    child: Center(
-                      child: Column(
-                        children: <Widget>[
-                         Icon(Icons.note,color: Colors.blueAccent,size: 30,),
-                          SizedBox(height: 20,),
-                          Text(AppLocalizations.of(context).translate('note_not_found'),style: TextStyle(color: Colors.grey),)
-                        ],
+          color: Colors.grey[200],
+          child: FutureBuilder<List<Note>>(
+            future: NoteDatabaseProvider.db.getAllNotes(),
+            builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
+            if(snapshot.hasData){
+              if(snapshot.data.length==0){
+                return Container(
+                    child: Padding(
+                      padding:  EdgeInsets.only(top:sizeConfig.screenHeight*.5),
+                      child: Center(
+                        child: Column(
+                          children: <Widget>[
+                           Icon(Icons.note,color: Colors.blueAccent,size: 30,),
+                            SizedBox(height: 20,),
+                            Text(AppLocalizations.of(context).translate('note_not_found'),style: TextStyle(color: Colors.grey),)
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-              );
-            }else{
-              return getNoteList(snapshot.data);
-              }
+                );
+              }else{
+                return getNoteList(snapshot.data);
+                }
+                }
+
+            else{
+                 return Container(
+                   width: sizeConfig.screenWidth,
+                  height: sizeConfig.screenHeight,
+                  color: Colors.white,
+                 );
               }
 
-          else{
-               return Container(
-                 width: sizeConfig.screenWidth,
-                height: sizeConfig.screenHeight,
-                color: Colors.white,
-               );
-            }
-
-          },
-        ),
+            },
+          ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-      Navigator.of(context).push(MaterialPageRoute(
+          onPressed: () {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
      builder: (BuildContext context) => AddNotes(false,false,false)));
-        },
-        child: Icon(Icons.add, color: Colors.white),
-        backgroundColor: mainTheme.primaryColorDark,
+          },
+          child: Icon(Icons.add, color: Colors.white),
+          backgroundColor: mainTheme.primaryColorDark,
       ),
-    );
+    ), onWillPop:_onBackPressed,
+        );
   }
   
   Widget imageFr(String image) {
@@ -159,7 +169,7 @@ class _NoteListState extends State<NoteList> {
         },
           onTap: () {
             
-              Navigator.of(context).push(MaterialPageRoute(
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (BuildContext context) => AddNotes(
                         true,
                         false,false,

@@ -27,6 +27,11 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<!-- TODO Add real Admob Key-->
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<key>io.flutter.embedded_views_preview</key>
+      <true/>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Explain why your app uses music</string>
 	<key>NSCameraUsageDescription</key>

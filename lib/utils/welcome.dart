@@ -31,15 +31,13 @@ class _WelcomePageState extends State<WelcomePage> {
 
   double transitionFactor = 1;
   @override
-  void dispose() {
-    // TODO: implement dispose
+  void dispose() { 
     super.dispose();
     _pageController.dispose();
   }
 
   @override
-  void initState() {
-    // TODO: implement initState
+  void initState() { 
     super.initState();
 
     _pageController = PageController(initialPage: 0, viewportFraction: 0.7);

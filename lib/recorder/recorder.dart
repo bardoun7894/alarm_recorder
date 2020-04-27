@@ -90,131 +90,137 @@ class _RecorderScreenState extends State<RecorderScreen> {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
 
-    return Scaffold(
-      floatingActionButton: showFab?FloatingActionButton(
-        child: Icon(Icons.library_music,color: Colors.blueAccent,size: 40,),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        onPressed: () {
-          setState(() {
-            Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
-              return RecorderPlayer("");
-            }));
-          });
-        },
+    return WillPopScope(
+          child: Scaffold(
+        floatingActionButton: showFab?FloatingActionButton(
+          child: Icon(Icons.library_music,color: Colors.blueAccent,size: 40,),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          onPressed: () {
+            setState(() {
+              Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+                return RecorderPlayer("");
+              }));
+            });
+          },
 
-      ):Container(),
-      body: Container(
-        color: Colors.white,
-        width: sizeConfig.screenWidth,
-        height: sizeConfig.screenHeight,
-        child: Stack(children: <Widget>[
-          Container(
-            width: sizeConfig.screenWidth,
-            height: sizeConfig.screenHeight * 0.48,
-            decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    tileMode: TileMode.clamp,
-                    colors: <Color>[
-                  Colors.blueAccent,               
-                      Colors.blueAccent,
-                        Color(0xFF74b9ff),
-                    ]),
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(sizeConfig.screenWidth * .2),
-                    bottomRight: Radius.circular(sizeConfig.screenWidth * .2))),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(
-                      top: sizeConfig.screenHeight * .05,
-                      left: sizeConfig.screenWidth * .02,
-                      right: sizeConfig.screenWidth * .02),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      GestureDetector(
-                          onTap: () {
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return MyHomePage();}));
+        ):Container(),
+        body: Container(
+          color: Colors.white,
+          width: sizeConfig.screenWidth,
+          height: sizeConfig.screenHeight,
+          child: Stack(children: <Widget>[
+            Container(
+              width: sizeConfig.screenWidth,
+              height: sizeConfig.screenHeight * 0.48,
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      tileMode: TileMode.clamp,
+                      colors: <Color>[
+                    Colors.blueAccent,               
+                        Colors.blueAccent,
+                          Color(0xFF74b9ff),
+                      ]),
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(sizeConfig.screenWidth * .2),
+                      bottomRight: Radius.circular(sizeConfig.screenWidth * .2))),
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: sizeConfig.screenHeight * .05,
+                        left: sizeConfig.screenWidth * .02,
+                        right: sizeConfig.screenWidth * .02),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        GestureDetector(
+                            onTap: () {
+                              Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return MyHomePage();}));
+                            },
+                            child: Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                              size: fontWidgetSize.icone,
+                            )),
+                        InkWell(
+                          onTap: (){
+                            Navigator.of(context).push(MaterialPageRoute(
+                     builder: (BuildContext context) {  return MySettings();}));
                           },
                           child: Icon(
-                            Icons.arrow_back,
+                            Icons.settings,
                             color: Colors.white,
                             size: fontWidgetSize.icone,
-                          )),
-                      InkWell(
-                        onTap: (){
-                          Navigator.of(context).push(MaterialPageRoute(
-                   builder: (BuildContext context) {  return MySettings();}));
-                        },
-                        child: Icon(
-                          Icons.settings,
-                          color: Colors.white,
-                          size: fontWidgetSize.icone,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: sizeConfig.screenHeight * .12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal:50),
-                        child: TextFormField(
+                  Padding(
+                    padding: EdgeInsets.only(top: sizeConfig.screenHeight * .12),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal:50),
+                          child: TextFormField(
 
-                          controller: nameController,
+                            controller: nameController,
+                            style: TextStyle(
+                                fontFamily: 'sans sherif',
+                                fontWeight: FontWeight.normal,
+                                color: Colors.white,
+                                fontSize: fontWidgetSize.bodyFontSize+10 ),
+
+
+                            autofocus: false,
+                            decoration: InputDecoration(
+                            icon:Icon( Icons.mode_edit,color: Colors.white,),
+                             hintMaxLines: 1,
+                              border: InputBorder.none,
+                             hintText: "myRecord.mp3"
+                                ,hintStyle: TextStyle(
+                                fontFamily: 'sans sherif',
+                                fontWeight: FontWeight.normal,
+                                color: Colors.white,
+                                fontSize: fontWidgetSize.bodyFontSize+10),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: sizeConfig.screenHeight * .05,
+                        ),
+                        Text(
+                          _current?.duration.toString().split(".")[0],
                           style: TextStyle(
                               fontFamily: 'sans sherif',
                               fontWeight: FontWeight.normal,
                               color: Colors.white,
-                              fontSize: fontWidgetSize.bodyFontSize+10 ),
-
-
-                          autofocus: false,
-                          decoration: InputDecoration(
-                          icon:Icon( Icons.mode_edit,color: Colors.white,),
-                           hintMaxLines: 1,
-                            border: InputBorder.none,
-                           hintText: "myRecord.mp3"
-                              ,hintStyle: TextStyle(
-                              fontFamily: 'sans sherif',
-                              fontWeight: FontWeight.normal,
-                              color: Colors.white,
-                              fontSize: fontWidgetSize.bodyFontSize+10),
-                          ),
+                              fontSize: fontWidgetSize.titleFontSize + 10),
                         ),
-                      ),
-                      SizedBox(
-                        height: sizeConfig.screenHeight * .05,
-                      ),
-                      Text(
-                        _current?.duration.toString().split(".")[0],
-                        style: TextStyle(
-                            fontFamily: 'sans sherif',
-                            fontWeight: FontWeight.normal,
-                            color: Colors.white,
-                            fontSize: fontWidgetSize.titleFontSize + 10),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Positioned(
-              bottom: sizeConfig.screenHeight * -0.1,
-              left: sizeConfig.screenWidth * (1 / 20),
-              child: reco()),
-        ]),
-      ),
+            Positioned(
+                bottom: sizeConfig.screenHeight * -0.1,
+                left: sizeConfig.screenWidth * (1 / 20),
+                child: reco()),
+          ]),
+        ),
+      ), onWillPop:_onBackPressed,
     );
   }
-
+ Future<bool> _onBackPressed() {
+          return Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
+          return MyHomePage();
+        }));
+  }
   reco() {
     return Stack(
       alignment: Alignment.center,

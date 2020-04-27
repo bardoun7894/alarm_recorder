@@ -1,6 +1,7 @@
  
 
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
+import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
 import 'package:alarm_recorder/recorder/recorder.dart';
 import 'package:alarm_recorder/utils/AudioPlayerController.dart';
@@ -23,6 +24,7 @@ class RecorderPlayer extends StatefulWidget {
 class _RecorderPlayerState extends State<RecorderPlayer> {
   AudioPLayerController audioC = new AudioPLayerController();
   String repath = "";
+  bool inPicked=false;
   int pos = 0;
   List l = [];
   bool isSelected = false;
@@ -53,7 +55,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   void initState() { 
     super.initState(); 
     if (widget.pathfromNotifiction != "") {
-      audioC.ButtonPlayPause(widget.pathfromNotifiction);
+      audioC.buttonPlayPause(widget.pathfromNotifiction);
           }
       }
 
@@ -71,7 +73,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
              print(_selectedIndexList[i]);
            RegisterDatabaseProvider.db.deleteRecordWithId(_recordList[i].id) ;
                    }
-  Navigator.of(context).pushReplacement(MaterialPageRoute(
+           Navigator.of(context).pushReplacement(MaterialPageRoute(
            builder: (BuildContext context) {
            return RecorderPlayer("");
                  })); 
@@ -85,7 +87,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
            padding: const EdgeInsets.only(right:10.0),
            child: IconButton(
              onPressed: (){
-               _pickSound();
+              _pickSound();
              }
               ,
               icon: Icon(Icons.folder_open)),
@@ -94,66 +96,86 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
     return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: Container(
-          height: double.infinity,
-          color: Colors.white10,
-          child: FutureBuilder<List<RecordModel>>(
-              future: RegisterDatabaseProvider.db.getAllRecords(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<List<RecordModel>> futuresnapshot) {
-                if (futuresnapshot.hasData) {
-                  return StreamBuilder(
-                      stream: audioC.outPlayer,
-                      builder:
-                          (context, AsyncSnapshot<AudioPlayerObject> snapshot) {
-                        if (snapshot.hasData) {
-                          return Stack(
-                            children: <Widget>[
-                              Padding(
-                                padding: EdgeInsets.only(
-                                    top: sizeConfig.screenHeight * .04),
-                                child: Container(
-                                  height: sizeConfig.screenHeight * .72,
-                                  child: getRegisterList(
-                                      futuresnapshot.data, audioC),
+      home: WillPopScope(
+           child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Container(
+            height: double.infinity,
+            color: Colors.white10,
+            child: FutureBuilder<List<RecordModel>>(
+                future: RegisterDatabaseProvider.db.getAllRecords(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<List<RecordModel>> futuresnapshot) {
+                  if (futuresnapshot.hasData) {
+                    return StreamBuilder(
+                        stream: audioC.outPlayer,
+                        builder:
+                            (context, AsyncSnapshot<AudioPlayerObject> snapshot) {
+                          if (snapshot.hasData) {
+                            return Stack(
+                              children: <Widget>[
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                      top: sizeConfig.screenHeight * .04),
+                                  child: Container(
+                                    height: sizeConfig.screenHeight * .72,
+                                    child: getRegisterList(
+                                        futuresnapshot.data, audioC),
+                                  ),
                                 ),
-                              ),
-                              _player(
-                                  snapshot.data.play,
-                                  snapshot.data.duration.inMinutes.toString(),
-                                  (snapshot.data.duration.inSeconds -
-                                          (snapshot.data.duration.inMinutes *
-                                              60))
-                                      .toString(),
-                                  snapshot.data,
-                                  futuresnapshot.data,
-                                  pos)
-                            ],
-                          );
-                        } else {
-                          return Container();
-                        }
-                      });
-                } else {
-                  return Container(
-                    width: sizeConfig.screenWidth,
-                    height: sizeConfig.screenHeight,
-                    color: Colors.white,
-                    );
-                    }
-                   }),
-        ),
-        appBar: AppBar(
-          leading: IconButton(onPressed: () { Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return RecorderScreen();}));}, icon: Icon(Icons.arrow_back_ios),
+                                _player(
+                                    snapshot.data.play,
+                                    snapshot.data.duration.inMinutes.toString(),
+                                    (snapshot.data.duration.inSeconds -
+                                            (snapshot.data.duration.inMinutes *
+                                                60))
+                                        .toString(),
+                                    snapshot.data,
+                                    futuresnapshot.data,
+                                    pos)
+                              ],
+                            );
+                          } else {
+                            return Container();
+                          }
+                        });
+                  } else {
+                    return Container(
+                      width: sizeConfig.screenWidth,
+                      height: sizeConfig.screenHeight,
+                      color: Colors.white,
+                      );
+                      }
+                     }),
           ),
-          actions: _buttons,
-          backgroundColor: Colors.blueAccent,
-          ),
-          ),
-          );
-          }
+          appBar: AppBar(
+            leading: IconButton(onPressed: () {
+              audioC.audioStop();
+             _onBackPressed();
+                },
+         icon: Icon(Icons.arrow_back_ios),
+            ),
+            actions: _buttons,
+            backgroundColor: Colors.blueAccent,
+            ),
+            ),
+             onWillPop:() async{
+          return  Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(
+                   builder: (context) {
+                  return MyHomePage();
+                        },
+  ),
+  (Route<dynamic> route) => false,
+);
+            }
+               ), 
+             );
+             }
+        Future _onBackPressed() {
+       return  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {    return RecorderScreen();
+          }));
+         }
   Widget _player(isPlay, minute, seconds, AudioPlayerObject object,
       List<RecordModel> data, int i) {
     return Positioned(
@@ -184,8 +206,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                       }else{
                         if (data[i].pathRec != "" ) {
                           print("  djjd : ${data[i].pathRec}");
-                          audioC.ButtonPlayPause(data[i].pathRec);
-
+                          audioC.buttonPlayPause(data[i].pathRec);
                         }
                       }
 
@@ -265,8 +286,10 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     );
   }
    _pickSound() {
+    
     FilePicker.getFile().then((onValue) {
       if (onValue != null) {
+        audioC.audioStop();
         repath = onValue.path;
         print(repath);
         saveRecord(repath,context,repath.substring(0,7));
@@ -293,7 +316,8 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                   pos = index;
                   if (recordModel.pathRec != "") {
                     print(recordModel.pathRec);
-                    audioC.ButtonPlayPause(recordModel.pathRec);
+                    
+                    audioC.buttonPlayPause(recordModel.pathRec);
                   }
                   print(recordModel.pathRec);
                 });
