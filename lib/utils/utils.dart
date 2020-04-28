@@ -14,38 +14,32 @@ import '../main.dart';
 import '../recorder/recorder_player.dart';
 import 'choicechip.dart';
 
-LocalNotification _localNotification = LocalNotification();
+LocalNotification  _localNotification = LocalNotification() ;
 bool isTimeSet=false;
 Color backgroundColor=Colors.grey[100] ;
 Color fColor ;
- 
-bool isSel=false;
-bool isSela=true;
 String base64String(Uint8List data){
   return base64Encode(data);
 }
 Image imageFromBase64String(String base64String,double height,double width){
 return Image.memory(base64Decode(base64String),fit: BoxFit.fill,height:height,width: width,);
 }
-
 //this for save records to sqlite also for push notification
 reminderDateTime(id,imageString,title,description,payload,context)async{
   int hour=0;
-  String tit="note";
   int day=0;
   int minute=0;
   int month=DateTime.now().month;
   await showDatePicker(
+
     context: context,
     initialDate: DateTime.now(),
     firstDate: DateTime(2018),
     lastDate: DateTime(2030),
-    builder: (BuildContext context, Widget child) {
-      return Theme(
+    builder: (BuildContext context, Widget child) { return Theme(
         data: ThemeData.light(), 
         child: child,
-      );
-    },
+      ); },
   ).then( 
     (selectedDate) async{
     month = selectedDate.month - DateTime.now().month;
@@ -53,7 +47,7 @@ reminderDateTime(id,imageString,title,description,payload,context)async{
     await showTimePicker(
     initialTime: TimeOfDay.now(),
     context: context,
-  ).then((selectedTime) async {
+     ).then((selectedTime) async {
     hour = selectedTime.hour - DateTime.now().hour;
     minute = selectedTime.minute - DateTime.now().minute;
   });
@@ -69,7 +63,6 @@ reminderDateTime(id,imageString,title,description,payload,context)async{
  }
   
 }
- 
 Future<bool> saveRecordDialog(context,String result,String nameRecord )async {
   return showDialog(
       context: context,
@@ -87,7 +80,7 @@ Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,S
       return myChoice(id:id,edit: edit,descriptionControllertext: descriptionControllertext,imgString: imgString,note:note);
     });
 }
- void saveRecord(String payload,context,String nameRecord) async {
+void saveRecord(String payload,context,String nameRecord) async {
  
   int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: payload,name: nameRecord));
  reminderDateTime( id,"","record",nameRecord,payload,context);

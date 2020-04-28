@@ -41,7 +41,10 @@ class _AddNotesState extends State<AddNotes> {
   SizeConfig sizeConfig;
   String title;
   TextEditingController descriptionController = TextEditingController();
+  var data = [' حفظ مع تذكير ', 'حفظ بدون تذكير'];
+  var icons = [Icons.access_alarm, Icons.timer_off];
 
+  int _value = 1;
   _AddNotesState(this.note, this.title);
 
   bool cursor = true;
@@ -60,7 +63,6 @@ class _AddNotesState extends State<AddNotes> {
     return imageFromBase64String(
         image, sizeConfig.screenHeight * .13, sizeConfig.screenWidth * .50);
   }
-
   Future getImage(source) async {
     var image = await ImagePicker.pickImage(source: source);
     if (image != null) {
@@ -149,12 +151,9 @@ class _AddNotesState extends State<AddNotes> {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
 
-    // descriptionController.text=note.description;
-
     return WillPopScope(
           child: Scaffold(
-        floatingActionButton: widget.location == true
-            ? FloatingActionButton(
+        floatingActionButton: widget.location == true   ? FloatingActionButton(
                 onPressed: () {
                   setState(() {
                     fabClicked = true;
@@ -277,21 +276,18 @@ class _AddNotesState extends State<AddNotes> {
         ),
       ), onWillPop: _onBackPressed,
           );
-       
-       
         }
       
-        String formatDateTime() {
-          String firstD =
-              DateFormat("MM MMMM  HH:mm").format(firstDate).toString() + " PM";
-          return firstD;
-        }
+  String formatDateTime() {
+   String firstD =  DateFormat("MM MMMM  HH:mm").format(firstDate).toString() + " PM";
+   return firstD;
+   }
       
-        void updateDescription() {
-          note.description = descriptionController.text;
-        }
+  void updateDescription() {
+    note.description = descriptionController.text;
+   }
       
-        saveLocationNote() async {
+   saveLocationNote(double xmeter) async {
           String titleData = descriptionController.text.length > 12
               ? descriptionController.text.substring(0, 12)
               : descriptionController.text;
@@ -305,8 +301,7 @@ class _AddNotesState extends State<AddNotes> {
                 description: descriptionData,
                 date: s,
                 time: firstDate.hour.toString()));
-            getLocation.getLastPosition(widget.note.id, titleData, descriptionData,
-                "location $titleData", _localNotification);
+            getLocation.getLastPosition(widget.note.id, titleData, descriptionData,imgString,"location",_localNotification,xmeter);
             Navigator.pop(context);
           } else if (widget.edit == false) {
             int id = await NoteDatabaseProvider.db.insertNote(new Note(
@@ -315,21 +310,163 @@ class _AddNotesState extends State<AddNotes> {
                 description: descriptionData,
                 date: s,
                 time: firstDate.hour.toString()));
-            getLocation.getLastPosition(id, titleData, descriptionData,
-                "location $titleData", _localNotification);
+            getLocation.getLastPosition(id, titleData, descriptionData,imgString,"location $titleData", _localNotification,xmeter);
             Navigator.of(context)
                 .pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
               return NoteList();
             }));
           }
         }
-      
-        Widget saveButton() {
+
+  Widget dialog() {
+
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+            child: Container(
+              height: 370.0,
+              width: 200.0,
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
+              child: Column(
+                children: <Widget>[
+                  Stack(
+                    children: <Widget>[
+                      Container(
+                        height: 130.0,
+                      ),
+                      Container(
+                        height: 100.0,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(10.0),
+                            topRight: Radius.circular(10.0),
+                          ),
+                          color: Color(0xFF417BFb),
+                        ),
+                      ),
+                      Positioned(
+                        top: 50.0,
+                        left: 94.0,
+                        child: Container(
+                          height: 90.0,
+                          width: 90.0,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              fit: BoxFit.cover,
+                              image: AssetImage('assets/noteSound.png'),
+                            ),
+                            borderRadius: BorderRadius.circular(45.0),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      chips(),
+                    ],
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(10.0),
+                    child: Text(  AppLocalizations.of(context).translate("dialog_save_data"),
+                      style: TextStyle(
+                          color: Color(0xFF417BFb),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 18.0),
+                    ),
+                  ),
+                  SizedBox(height: 18),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: <Widget>[
+                      FlatButton(
+                        onPressed: () {
+                          saveLocationNote(20);
+                        },
+                        color: Colors.teal,
+                        child: Center(
+                          child: Text(
+                            AppLocalizations.of(context).translate("ok"),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      FlatButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        color: Colors.grey,
+                        child: Center(
+                          child: Text(
+                            AppLocalizations.of(context).translate("no"),
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          );
+        });
+
+  }
+
+
+  Widget chips(){
+    return Expanded(
+        child: ListView.builder(
+          shrinkWrap: true,
+          itemCount: data.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ChoiceChip(
+              avatar: CircleAvatar(
+                  backgroundColor:
+                  _value != index ? Colors.grey[100] : Colors.blueAccent,
+                  child: Icon(
+                    icons[index],
+                    color: _value != index ? Colors.blueAccent : Colors.white,
+                  )),
+              label: Text(data[index]),
+              selected: _value == index,
+              selectedColor: Colors.blueAccent,
+              onSelected: (bool value) {
+                setState(() {
+                  _value = value ? index : null;
+                });
+              },
+              backgroundColor: Colors.grey[100],
+              labelStyle: TextStyle(
+                  color: _value == index ? Colors.white : Colors.blueAccent),
+            );
+          },
+        ));
+  }
+ Widget saveButton() {
           return widget.location == true
               ? fabClicked == true
                   ? InkWell(
                       onTap: () {
-                        saveLocationNote();
+                        //TODO incleade choice meters
+
+                        dialog();
+
+
                       },
                       child: Icon(Icons.save,
                           color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3))

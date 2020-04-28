@@ -1,24 +1,23 @@
 import 'dart:async';
 import 'dart:io';
- 
 
-import 'package:alarm_recorder/app_localizations.dart'; 
- 
+import 'package:alarm_recorder/app_localizations.dart';
+
 import 'package:alarm_recorder/app_localizations.dart';
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
- 
 
-  class GetLocation {
-
+class GetLocation {
+  StreamSubscription<Position> positionStream;
   getPermissionStatus(context) async {
     var status = await Permission.locationWhenInUse.status;
-    var isDisabled = await Permission.locationWhenInUse.serviceStatus.isDisabled;
-       if (isDisabled){
-         showSaveDialog(context);
-       }
+    var isDisabled =
+        await Permission.locationWhenInUse.serviceStatus.isDisabled;
+    if (isDisabled) {
+      showSaveDialog(context);
+    }
     print("$status ll");
     switch (status) {
       case PermissionStatus.undetermined:
@@ -26,8 +25,7 @@ import 'package:permission_handler/permission_handler.dart';
         await Permission.locationWhenInUse.request();
         break;
       case PermissionStatus.granted:
-       
-      getCurrentPosition();
+        getCurrentPosition();
         break;
       case PermissionStatus.denied:
         await Permission.locationWhenInUse.request();
@@ -36,57 +34,53 @@ import 'package:permission_handler/permission_handler.dart';
         // TODO: Handle this case.
         break;
       case PermissionStatus.permanentlyDenied:
-           openAppSettings();
+        openAppSettings();
         print("slsls");
         break;
     }
   }
 
   Future<Position> getCurrentPosition() async {
-    Position startPosition = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position startPosition = await Geolocator() .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     return startPosition;
   }
-
-
-
-  getLastPosition(int id,String title,String body,String payload,_localNotification) async {
+  bool isListening() => !(positionStream == null || positionStream.isPaused);
+  getLastPosition(int id, String title, String body,String imgString, String payload, _localNotification,double xMeter) async {
     Position p = await getCurrentPosition();
     double currentlat = p.latitude;
     double currentlong = p.longitude;
-
     var geolocator = Geolocator();
-    var locationOptions =
-        LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 5);
-    StreamSubscription<Position> positionStream = geolocator
-        .getPositionStream(locationOptions)
-        .listen((Position position) async {
-
+    var locationOptions =  LocationOptions(accuracy: LocationAccuracy.high, distanceFilter:50);
+   positionStream = geolocator.getPositionStream(locationOptions).listen((Position position) async {
       double endlat = position.latitude;
       double endlong = position.longitude;
-      print("${position.longitude}  movee    ");
-      print("${p.longitude}  current ");
-       double distanceInMeters = await Geolocator()
-          .distanceBetween(currentlat, currentlong, endlat, endlong);
 
-      print("distamce mettter  $distanceInMeters");
-     
-      if (distanceInMeters >= 50.0) {
-        print(" you are so far");
-       _localNotification.showNotification( id,title,body,payload);
-      }
-    });
-    return positionStream;
+      print("${position.longitude} movee ");
+      print("${p.longitude}  current ");
+
+      double distanceInMeters = await Geolocator() .distanceBetween(currentlat, currentlong, endlat, endlong);
+      print("distance meter  $distanceInMeters");
+      if (distanceInMeters >= xMeter) {
+           print(" you are so far");
+        _localNotification.showNotification(id, title, body,imgString,payload);
+         }
+    }
+    ) ;
+  }
+  disposeLocation(){
+    if (positionStream != null) {
+      positionStream.cancel();
+      positionStream = null;
+    }
+
   }
 
   Future<bool> showSaveDialog(context) {
-
     return showDialog(
         context: context,
         barrierDismissible: true,
         builder: (BuildContext context) {
           return Dialog(
-
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10.0)),
             child: Container(
@@ -147,17 +141,16 @@ import 'package:permission_handler/permission_handler.dart';
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: <Widget>[
                       FlatButton(
-                        onPressed: () async{
-          if (Platform.isAndroid) {
-            final AndroidIntent intent = AndroidIntent( action: 'android.settings.LOCATION_SOURCE_SETTINGS');
-                   await  intent.launch();
-                    Navigator.of(context, rootNavigator: true).pop();
-                   }
-          else if(Platform.isIOS) {
-            openAppSettings();
-          }
-
-
+                        onPressed: () async {
+                          if (Platform.isAndroid) {
+                            final AndroidIntent intent = AndroidIntent(
+                                action:
+                                    'android.settings.LOCATION_SOURCE_SETTINGS');
+                            await intent.launch();
+                            Navigator.of(context, rootNavigator: true).pop();
+                          } else if (Platform.isIOS) {
+                            openAppSettings();
+                          }
                         },
                         color: Colors.teal,
                         child: Center(
@@ -193,17 +186,9 @@ import 'package:permission_handler/permission_handler.dart';
           );
         });
   }
-//  title: Text("Can't get gurrent location"),
-//  content:
-//  const Text('Please make sure you enable GPS and try again'),
-//  actions: <Widget>[
-//  FlatButton(
-//  child: Text('Ok'),
-//  onPressed: () {
-//  final AndroidIntent intent = AndroidIntent(
-//  action: 'android.settings.LOCATION_SOURCE_SETTINGS');
-//
-//  intent.launch();
-//  Navigator.of(context, rootNavigator: true).pop();
-//  },
+
+  void Function() handleDone(){
+
+  }
+
 }

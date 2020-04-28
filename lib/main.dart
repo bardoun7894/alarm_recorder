@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/utils/app_language.dart';
+import 'package:alarm_recorder/utils/getlocation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -123,6 +124,8 @@ class _MyAppState extends State<MyApp> {
   IOSInitializationSettings initializationSettingsIOS;
   InitializationSettings initializationSettings;
 
+  GetLocation getLocation=GetLocation();
+
   @override
   void initState() {
     super.initState();
@@ -134,8 +137,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
-  void dispose() { 
-    
+  void dispose() {
     super.dispose();
     didReceiveLocalNotificationSubject.close();
     selectNotificationSubject.close();
@@ -153,6 +155,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _configureDidReceiveLocalNotificationSubject() {
+    if(getLocation.isListening()){
+      getLocation.disposeLocation();
+      getLocation.positionStream.pause();
+      print("listning");
+    }
+
     didReceiveLocalNotificationSubject.stream
         .listen((ReceivedNotification receivedNotification) async {
       if (receivedNotification.payload.startsWith("{")) {
@@ -169,6 +177,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _configureSelectNotificationSubject() {
+    if(getLocation.isListening()){
+      getLocation.disposeLocation();
+      getLocation.positionStream.pause();
+      print("listning");
+    }
+   // getLocation.positionStream.pause();
     selectNotificationSubject.stream.listen((String payload) async {
       if (payload.startsWith("{")) {
         Note note = Note.fromRawJson(payload);
@@ -177,9 +191,10 @@ class _MyAppState extends State<MyApp> {
             .pushNamed('/textField', arguments: customNote);
       } else {
         customPayload = payload;
+        print(payload);
         await navigatorKey.currentState
             .pushNamed('/recordPlayer', arguments: customPayload);
-      }
+          }
     });
   }
 
@@ -215,11 +230,9 @@ class LocalNotification {
         day, hour, minute, id, imgPath, title, body, payload);
   }
 
-  Future<void> notificationAfter(int day, int hour, int minute, int id,
-      String imgPath, String title, String body, String payload) async {
+  Future<void> notificationAfter(int day, int hour, int minute, int id,  String imgPath, String title, String body, String payload) async {
     String customPayload = "";
-    var timeDelayed =
-        DateTime.now().add(Duration(days: day, hours: hour, minutes: minute));
+    var timeDelayed =  DateTime.now().add(Duration(days: day, hours: hour, minutes: minute));
     var androidNotificationDetails = AndroidNotificationDetails(
         '$id', title, body,
         importance: Importance.Max,
@@ -228,12 +241,9 @@ class LocalNotification {
         enableVibration: true,
         ticker: 'test ticker',
         playSound: true);
-    IOSNotificationDetails iosNotificationDetails =
-        IOSNotificationDetails(presentSound: true);
-
+    IOSNotificationDetails iosNotificationDetails =   IOSNotificationDetails(presentSound: true);
     if (payload == "note") {
-      Note newNote =
-          Note(id: id, imagePath: imgPath, title: title, description: body);
+      Note newNote = Note(id: id, imagePath: imgPath, title: title, description: body);
       customPayload = newNote.toRawJson();
     } else {
       customPayload = payload;
@@ -247,12 +257,11 @@ class LocalNotification {
   }
 
   void showNotification(
-      int id, String title, String body, String payload) async {
-    await notification(id, title, body, payload);
+      int id, String title, String body,imgString,String payload) async {   await notification(id, title, body,imgString,payload);
   }
 
-  Future<void> notification(
-      int id, String title, String body, String payload) async {
+  Future<void> notification(  int id, String title, String body,String imgPath, String payload) async {
+
     var androidNotificationDetails = AndroidNotificationDetails(
         '$id', title, body,
         importance: Importance.Max,
@@ -261,12 +270,11 @@ class LocalNotification {
         enableVibration: true,
         ticker: 'test ticker',
         playSound: true);
-    IOSNotificationDetails iosNotificationDetails =
-        IOSNotificationDetails(presentSound: true);
-    NotificationDetails notificationDetails =
-        NotificationDetails(androidNotificationDetails, iosNotificationDetails);
-    await myApp.flutterLocalNotificationsPlugin
-        .show(id, title, body, notificationDetails, payload: payload);
+    IOSNotificationDetails iosNotificationDetails =  IOSNotificationDetails(presentSound: true);
+    NotificationDetails notificationDetails =  NotificationDetails(androidNotificationDetails, iosNotificationDetails);
+    Note newNote = Note(id: id, imagePath: imgPath, title: title, description: body);
+    payload = newNote.toRawJson();
+    await myApp.flutterLocalNotificationsPlugin.show(id, title, body, notificationDetails, payload: payload);
   }
 }
 String getAppId() {

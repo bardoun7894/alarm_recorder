@@ -18,24 +18,9 @@ myChoice({this.result, this.nameRecord,this.id,this.edit,this.descriptionControl
   _myChoiceState createState() => _myChoiceState();
 }
 
+
 class _myChoiceState extends State<myChoice> {
-  var data = [' حفظ مع تذكير ', 'حفظ بدون تذكير'];
-  var icons = [Icons.access_alarm, Icons.timer_off];
 
-  shared(_value) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    if (_value == 0) {
-      prefs.setString("select", "remember");
-    }
-    if (_value == 1) {
-      prefs.setString("select", "notRemember");
-    } else {
-      prefs.setString("select", "nothing");
-    }
-  }
-
-  bool boolV = false;
-  int _value = 1;
   @override
   Widget build(BuildContext context) {
     return dialog(widget.result, context, widget.nameRecord);
@@ -87,7 +72,7 @@ class _myChoiceState extends State<myChoice> {
             ),
             Padding(   
               padding: EdgeInsets.all(10.0),
-              child: Text( _value ==null?"": AppLocalizations.of(context).translate("dialog_save_data"),
+              child: Text(  AppLocalizations.of(context).translate("dialog_save_data"),
                 style: TextStyle(
                     color: Color(0xFF417BFb),
                      fontWeight: FontWeight.w600,
@@ -98,7 +83,7 @@ class _myChoiceState extends State<myChoice> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-            _value ==null?Container(): FlatButton(
+          FlatButton(
                   onPressed: () {
              
                  
@@ -120,7 +105,7 @@ class _myChoiceState extends State<myChoice> {
                     ),
                   ),
                 ),
-               _value ==null?Container():  FlatButton(
+           FlatButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
