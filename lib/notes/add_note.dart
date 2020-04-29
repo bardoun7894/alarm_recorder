@@ -4,14 +4,17 @@ import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/utils/getlocation.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
+import 'package:flutter/cupertino.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:alarm_recorder/utils/utils.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main.dart';
 
@@ -29,6 +32,8 @@ class AddNotes extends StatefulWidget {
 }
 
 class _AddNotesState extends State<AddNotes> {
+
+  final _formKey =GlobalKey<FormState>();
   GetLocation getLocation = GetLocation();
   String textAfterGetImage = "";
   File _image;
@@ -36,15 +41,14 @@ class _AddNotesState extends State<AddNotes> {
   String imgString = "";
   LocalNotification _localNotification = LocalNotification();
   Note note;
+  String te ="";
   List<Note> list = [];
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
   String title;
+  TextEditingController meterController=TextEditingController();
   TextEditingController descriptionController = TextEditingController();
-  var data = [' حفظ مع تذكير ', 'حفظ بدون تذكير'];
-  var icons = [Icons.access_alarm, Icons.timer_off];
-
-  int _value = 1;
+  bool _validate = false;
   _AddNotesState(this.note, this.title);
 
   bool cursor = true;
@@ -57,6 +61,7 @@ class _AddNotesState extends State<AddNotes> {
       descriptionController.text = widget.note.description;
       imgString = widget.note.imagePath;
     }
+    activateFab();
   }
 
   Widget imageFr(String image) {
@@ -112,6 +117,16 @@ class _AddNotesState extends State<AddNotes> {
     await Permission.camera.request();
     await Permission.photos.request();
   }
+activateFab()async{
+  SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
+  bool fab = sharedPreferences.getBool("fabClicked");
+  if(fab==true){
+    fabClicked=true;
+  }else{
+    fabClicked=false;
+  }
+
+}
 
   getPermissionStatus() async {
     var status;
@@ -147,21 +162,27 @@ class _AddNotesState extends State<AddNotes> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)  {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
 
     return WillPopScope(
           child: Scaffold(
-        floatingActionButton: widget.location == true   ? FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    fabClicked = true;
-                    try {} catch (e) {}
-                    getLocation.getPermissionStatus(context);
+        floatingActionButton:widget.location == true   ? FloatingActionButton(
+                onPressed: ()async {
+
+                  setState(()  {
+                    try {
+       getLocation.getPermissionStatus(context);
+
+                    } catch (e)
+                    {
+                      print(e);
+                    }
+
                   });
                 },
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: fabClicked? Colors.blue:Colors.grey[500],
                 child: Icon(
                   Icons.gps_fixed,
                   color: Colors.white,
@@ -326,136 +347,145 @@ class _AddNotesState extends State<AddNotes> {
         builder: (BuildContext context) {
           return Dialog(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-            child: Container(
-              height: 370.0,
-              width: 200.0,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
-              child: Column(
-                children: <Widget>[
-                  Stack(
-                    children: <Widget>[
-                      Container(
-                        height: 130.0,
-                      ),
-                      Container(
-                        height: 100.0,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10.0),
-                            topRight: Radius.circular(10.0),
-                          ),
-                          color: Color(0xFF417BFb),
+            child: Form(
+              key: _formKey,
+              child: Container(
+                height:sizeConfig.screenHeight*.55,
+                width: sizeConfig.screenHeight*.4,
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
+                child: Column(
+                  children: <Widget>[
+                    Stack(
+                      children: <Widget>[
+                        Container(
+                          height:sizeConfig.screenHeight*.22,
                         ),
-                      ),
-                      Positioned(
-                        top: 50.0,
-                        left: 94.0,
-                        child: Container(
-                          height: 90.0,
-                          width: 90.0,
+                        Container(
+                          height:sizeConfig.screenHeight*.15,
                           decoration: BoxDecoration(
-                            image: DecorationImage(
-                              fit: BoxFit.cover,
-                              image: AssetImage('assets/noteSound.png'),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(10.0),
+                              topRight: Radius.circular(10.0),
                             ),
-                            borderRadius: BorderRadius.circular(45.0),
+                            color: Color(0xFF417BFb),
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      chips(),
-                    ],
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: Text(  AppLocalizations.of(context).translate("dialog_save_data"),
-                      style: TextStyle(
-                          color: Color(0xFF417BFb),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 18.0),
+                        Positioned(
+                          top: sizeConfig.screenHeight*.09,
+                          left: sizeConfig.screenWidth*.23,
+                          child: Container(
+                            height: 90.0,
+                            width: 90.0,
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: AssetImage('assets/noteSound.png'),
+                              ),
+                              borderRadius: BorderRadius.circular(45.0),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
-                  ),
-                  SizedBox(height: 18),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: <Widget>[
-                      FlatButton(
-                        onPressed: () {
-                          saveLocationNote(20);
-                        },
-                        color: Colors.teal,
-                        child: Center(
-                          child: Text(
-                            AppLocalizations.of(context).translate("ok"),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                     textMeterField(),
+                    Padding(
+                      padding: EdgeInsets.all(10.0),
+                      child: Text(  AppLocalizations.of(context).translate("dialog_save_data"),
+                        style: TextStyle(
+                            color: Color(0xFF417BFb),
+                            fontWeight: FontWeight.w600,
+                            fontSize:fontWidgetSize.bodyFontSize-8),
                       ),
+                    ),
+                    SizedBox(height: sizeConfig.screenHeight*.01),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
                       FlatButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        color: Colors.grey,
-                        child: Center(
-                          child: Text(
-                            AppLocalizations.of(context).translate("no"),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold),
+                          onPressed: () {
+                            setState(() {
+                     if (_formKey.currentState.validate()) {
+                       saveLocationNote(double.parse(meterController?.text));
+                          }
+
+
+                            });
+
+
+                             },
+                          color: Colors.teal,
+                          child: Center(
+                            child: Text(
+                              AppLocalizations.of(context).translate("ok"),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize:fontWidgetSize.bodyFontSize-8,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                ],
+                        FlatButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          color: Colors.grey,
+                          child: Center(
+                            child: Text(
+                              AppLocalizations.of(context).translate("no"),
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize:fontWidgetSize.bodyFontSize-8,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );
         });
 
   }
+  Widget textMeterField(){
 
-
-  Widget chips(){
-    return Expanded(
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: data.length,
-          itemBuilder: (BuildContext context, int index) {
-            return ChoiceChip(
-              avatar: CircleAvatar(
-                  backgroundColor:
-                  _value != index ? Colors.grey[100] : Colors.blueAccent,
-                  child: Icon(
-                    icons[index],
-                    color: _value != index ? Colors.blueAccent : Colors.white,
-                  )),
-              label: Text(data[index]),
-              selected: _value == index,
-              selectedColor: Colors.blueAccent,
-              onSelected: (bool value) {
-                setState(() {
-                  _value = value ? index : null;
-                });
-              },
-              backgroundColor: Colors.grey[100],
-              labelStyle: TextStyle(
-                  color: _value == index ? Colors.white : Colors.blueAccent),
-            );
+    return SingleChildScrollView(
+      child: Container(
+        height: 50,
+        child: TextFormField(
+       keyboardType: TextInputType.number,
+          controller:meterController,
+             textInputAction: TextInputAction.done,
+             style: TextStyle(
+              fontFamily: 'sans sherif',
+              fontWeight: FontWeight.normal,
+              color: Colors.blueAccent,
+              fontSize: fontWidgetSize.bodyFontSize-5 ),
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'المرجو ادخال المسافة';
+            }
+            return null;
           },
-        ));
+            decoration: InputDecoration(
+       //    errorText: _validate ? 'المرجو ادخال المسافة' : null,
+            icon:Icon( Icons.location_on,color: Colors.blueAccent,),
+            hintMaxLines:1,
+       hintText: !_validate ? "أضف المسافة بالمتر":null,
+           hintStyle: TextStyle(
+            fontFamily: 'sans sherif',
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+            fontSize: fontWidgetSize.bodyFontSize-10),
+          ),
+            ),
+      ),
+    );
   }
  Widget saveButton() {
           return widget.location == true
@@ -463,10 +493,7 @@ class _AddNotesState extends State<AddNotes> {
                   ? InkWell(
                       onTap: () {
                         //TODO incleade choice meters
-
-                        dialog();
-
-
+                      dialog() ;
                       },
                       child: Icon(Icons.save,
                           color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3))
@@ -485,8 +512,7 @@ class _AddNotesState extends State<AddNotes> {
                   child: Icon(Icons.save,
                       color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3));
         }
-      
-        Future<bool> _onBackPressed() {
+  Future<bool> _onBackPressed() {
           return Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
           return NoteList();
         }));

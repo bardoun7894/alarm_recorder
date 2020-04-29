@@ -1,4 +1,5 @@
  
+import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart'; 
@@ -20,9 +21,13 @@ myChoice({this.result, this.nameRecord,this.id,this.edit,this.descriptionControl
 
 
 class _myChoiceState extends State<myChoice> {
+  WidgetSize fontWidgetSize;
+  SizeConfig sizeConfig;
 
   @override
   Widget build(BuildContext context) {
+    sizeConfig = SizeConfig(context);
+    fontWidgetSize = WidgetSize(sizeConfig);
     return dialog(widget.result, context, widget.nameRecord);
   }
 
@@ -30,18 +35,18 @@ class _myChoiceState extends State<myChoice> {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Container(
-        height: 350.0,
-        width: 200.0,
+        height:sizeConfig.screenHeight*.40,
+        width: sizeConfig.screenHeight*.4,
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
         child: Column(
           children: <Widget>[
             Stack(
               children: <Widget>[
                 Container(
-                  height: 130.0,
+                  height:sizeConfig.screenHeight*.2,
                 ),
                 Container(
-                  height: 100.0,
+                  height:sizeConfig.screenHeight*.15,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10.0),
@@ -51,13 +56,14 @@ class _myChoiceState extends State<myChoice> {
                   ),
                 ),
                 Positioned(
-                  top: 50.0,
-                  left: 94.0,
+                  top: sizeConfig.screenHeight*.08,
+                  left: sizeConfig.screenWidth*.23,
                   child: Container(
                     height: 90.0,
                     width: 90.0,
                     decoration: BoxDecoration(
                       image: DecorationImage(
+
                         fit: BoxFit.cover,
                         image: AssetImage('assets/clo.png'),
                       ),
@@ -72,21 +78,19 @@ class _myChoiceState extends State<myChoice> {
             ),
             Padding(   
               padding: EdgeInsets.all(10.0),
-              child: Text(  AppLocalizations.of(context).translate("dialog_save_data"),
+              child: Text( AppLocalizations.of(context).translate("dialog_save_data"),
                 style: TextStyle(
                     color: Color(0xFF417BFb),
                      fontWeight: FontWeight.w600,
-                    fontSize: 18.0),
+                    fontSize:fontWidgetSize.bodyFontSize-8),
               ),
             ),
-            SizedBox(height: 18),
+            SizedBox(height: sizeConfig.screenHeight*.015),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
           FlatButton(
                   onPressed: () {
-             
-                 
                   if(widget.note=="note"){
                    saveNote(widget.id,widget.edit,widget.descriptionControllertext,widget.imgString,context);
                       }else{
@@ -100,7 +104,7 @@ class _myChoiceState extends State<myChoice> {
                       AppLocalizations.of(context).translate("ok"),
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20.0,
+                          fontSize:fontWidgetSize.bodyFontSize-8,
                           fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -115,7 +119,7 @@ class _myChoiceState extends State<myChoice> {
                       AppLocalizations.of(context).translate("no"),
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20.0,
+                          fontSize:fontWidgetSize.bodyFontSize-8,
                           fontWeight: FontWeight.bold),
                     ),
                   ),

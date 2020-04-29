@@ -167,21 +167,18 @@ class _RecorderScreenState extends State<RecorderScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal:50),
                           child: TextFormField(
-
                             controller: nameController,
                             style: TextStyle(
                                 fontFamily: 'sans sherif',
                                 fontWeight: FontWeight.normal,
                                 color: Colors.white,
                                 fontSize: fontWidgetSize.bodyFontSize+10 ),
-
-
                             autofocus: false,
                             decoration: InputDecoration(
                             icon:Icon( Icons.mode_edit,color: Colors.white,),
                              hintMaxLines: 1,
                               border: InputBorder.none,
-                             hintText: "myRecord.mp3"
+                             hintText: "اضف اسم للمقطع"
                                 ,hintStyle: TextStyle(
                                 fontFamily: 'sans sherif',
                                 fontWeight: FontWeight.normal,

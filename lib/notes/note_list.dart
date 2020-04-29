@@ -165,16 +165,10 @@ class _NoteListState extends State<NoteList> {
           setState(() {
               _changeSelection(enable: true, index: index);
           });
-       
         },
           onTap: () {
-            
               Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (BuildContext context) => AddNotes(
-                        true,
-                        false,false,
-                        note: note,
-                      )));
+              builder: (BuildContext context) => AddNotes( true,  false,false, note: note )));
               print(note.imagePath);
             },
             child: Padding(

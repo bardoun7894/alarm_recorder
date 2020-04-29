@@ -138,6 +138,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    getLocation.disposeLocation();
     super.dispose();
     didReceiveLocalNotificationSubject.close();
     selectNotificationSubject.close();
@@ -177,18 +178,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _configureSelectNotificationSubject() {
-    if(getLocation.isListening()){
-      getLocation.disposeLocation();
-      getLocation.positionStream.pause();
-      print("listning");
-    }
-   // getLocation.positionStream.pause();
+
     selectNotificationSubject.stream.listen((String payload) async {
       if (payload.startsWith("{")) {
+        getLocation.stopLocation();
         Note note = Note.fromRawJson(payload);
         customNote = note;
-        await navigatorKey.currentState
-            .pushNamed('/textField', arguments: customNote);
+        await navigatorKey.currentState  .pushNamed('/textField', arguments: customNote);
+
       } else {
         customPayload = payload;
         print(payload);
