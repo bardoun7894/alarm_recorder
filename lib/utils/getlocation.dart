@@ -1,10 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-
+ 
 import 'package:alarm_recorder/app_localizations.dart';
-
-import 'package:alarm_recorder/app_localizations.dart';
+ 
 import 'package:alarm_recorder/utils/screen_size.dart';
+  
+   
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
