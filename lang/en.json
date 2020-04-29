@@ -15,9 +15,10 @@
   "all_notes": " all notes",
   "record_voice": "record voice",
   "recorder_list": "recorder list",
-  "settings": "settings",
+  "settings": "Ssettings",
   "notifications": "Notifications",
   "change_language": "change language ",
   "about": "about",
-  "cropper": "Crop Image"
+  "cropper": "Crop Image",
+  "disable_ads": "disable ads"
 }

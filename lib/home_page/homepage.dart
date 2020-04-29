@@ -22,10 +22,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
- 
-  AdmobBannerSize bannerSize;
-  AdmobInterstitial interstitialAd;
-  AdmobReward rewardAd;
+  //TODO add ads
+//  AdmobBannerSize bannerSize;
+//  AdmobInterstitial interstitialAd;
+//  AdmobReward rewardAd;
 
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
 
@@ -36,70 +36,32 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
   void initState() {
     // TODO: ADmob 
     super.initState();
-    bannerSize = AdmobBannerSize.BANNER;
 
-    interstitialAd = AdmobInterstitial(
-      adUnitId: getInterstitialAdUnitId(),
-      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-        if (event == AdmobAdEvent.closed) interstitialAd.load(); 
-      },
-    );
-    rewardAd = AdmobReward(
-        adUnitId: getRewardBasedVideoAdUnitId(),
-        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-          if (event == AdmobAdEvent.closed) rewardAd.load();
-        });
-
-    interstitialAd.load();
-    rewardAd.load();
+//    bannerSize = AdmobBannerSize.BANNER;
+//
+//    interstitialAd = AdmobInterstitial(
+//      adUnitId: getInterstitialAdUnitId(),
+//      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+//        if (event == AdmobAdEvent.closed) interstitialAd.load();
+//      },
+//    );
+//    rewardAd = AdmobReward(
+//        adUnitId: getRewardBasedVideoAdUnitId(),
+//        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+//          if (event == AdmobAdEvent.closed) rewardAd.load();
+//        });
+//
+//    interstitialAd.load();
+//    rewardAd.load();
   }
     @override
   void dispose() {
-    interstitialAd.dispose();
-    rewardAd.dispose();
+    //TODO add ads
+//    interstitialAd.dispose();
+//    rewardAd.dispose();
     super.dispose();
   }
-  
-  void handleEvent(AdmobAdEvent event, Map<String, dynamic> args, String adType) {
-    switch (event) {
-      case AdmobAdEvent.loaded:
-        showSnackBar('New Admob $adType Ad loaded!');
-        break;
-      case AdmobAdEvent.opened:
-        showSnackBar('Admob $adType Ad opened!');
-        break;
-      case AdmobAdEvent.closed:
-        showSnackBar('Admob $adType Ad closed!');
-                break;
-              case AdmobAdEvent.failedToLoad:
-                showSnackBar('Admob $adType failed to load. :(');
-                break;
-              case AdmobAdEvent.rewarded:
-                showDialog(
-                  context: scaffoldState.currentContext,
-                  builder: (BuildContext context) {
-                    return WillPopScope(
-                      child: AlertDialog(
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Text('Reward callback fired. Thanks Andrew!'),
-                            Text('Type: ${args['type']}'),
-                            Text('Amount: ${args['amount']}'),
-                          ],
-                        ),
-                      ),
-                      onWillPop: () async {
-                        scaffoldState.currentState.hideCurrentSnackBar();
-                        return true;
-                      },
-                    );
-                  },
-                );
-                break;
-              default:
-            }
-          }
+
         String getBannerAdUnitId() {
           if (Platform.isIOS) {
             return 'ca-app-pub-3940256099942544/2934735716';
@@ -276,7 +238,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Padding(
-                              padding: const EdgeInsets.only(top: 10.0),
+                              padding:   EdgeInsets.only(top:sizeConfig.screenWidth * .03),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,7 +248,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                                       _scaffoldKey.currentState.openDrawer();
                                               },
                                     child: Icon(
-                                      Icons.list,
+                                      Icons.sort,
                                       color: Colors.white,
                                       size: fontWidgetSize.icone,
                                     ),
@@ -403,99 +365,10 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                   ],
                 ),
               ),
-         bottomNavigationBar: Builder(
-          builder: (BuildContext context) {
-            return Container(
-              color: Colors.blueGrey,
-              child: SafeArea(
-                child: SizedBox(
-                  height: 50,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Expanded(
-                        child: FlatButton(
-                          child: Text(
-                            'Show Interstitial',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () async {
-                            if (await interstitialAd.isLoaded) {
-                              interstitialAd.show();
-                            } else {
-                              showSnackBar("Interstitial ad is still loading...");
-                            }
-                          },
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                        ),
-                      ),
-                      Expanded(
-                        child: FlatButton(
-                          child: Text(
-                            'Show Reward',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          onPressed: () async {
-                            if (await rewardAd.isLoaded) {
-                              rewardAd.show();
-                            } else {
-                              showSnackBar("Reward ad is still loading...");
-                            }
-                          },
-                        ),
-                      ),
-                      Expanded(
-                        child: PopupMenuButton(
-                          initialValue: bannerSize,
-                          child: Center(
-                            child: Text(
-                              'Banner size',
-                              style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white),
-                            ),
-                          ),
-                          offset: Offset(0, 20),
-                          onSelected: (AdmobBannerSize newSize) {
-                            setState(() {
-                              bannerSize = newSize;
-                            });
-                          },
-                          itemBuilder: (BuildContext context) => <PopupMenuEntry<AdmobBannerSize>>[
-                            PopupMenuItem(
-                              value: AdmobBannerSize.BANNER,
-                              child: Text('BANNER'),
-                            ),
-                            PopupMenuItem(
-                              value: AdmobBannerSize.LARGE_BANNER,
-                              child: Text('LARGE_BANNER'),
-                            ),
-                            PopupMenuItem(
-                              value: AdmobBannerSize.MEDIUM_RECTANGLE,
-                              child: Text('MEDIUM_RECTANGLE'),
-                            ),
-                            PopupMenuItem(
-                              value: AdmobBannerSize.FULL_BANNER,
-                              child: Text('FULL_BANNER'),
-                            ),
-                            PopupMenuItem(
-                              value: AdmobBannerSize.LEADERBOARD,
-                              child: Text('LEADERBOARD'),
-                            ),
-                           
-                             
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
+
               );
           }
-        
+
           Widget locationContainer() {
             return Padding(
               padding: EdgeInsets.only(top: 20),
@@ -637,11 +510,6 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
             );
           }
         
-  void showSnackBar(String content) {
-    scaffoldState.currentState.showSnackBar(SnackBar(
-      content: Text(content),
-      duration: Duration(milliseconds: 1500),
-    ));
-  }
+
 
 }

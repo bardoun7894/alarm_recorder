@@ -19,14 +19,11 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'model/Note.dart'; 
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
-final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-    FlutterLocalNotificationsPlugin();
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =  FlutterLocalNotificationsPlugin();
 // Streams are created so that app can respond to notification-related events since the plugin is initialised in the `main` function
-final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =
-    BehaviorSubject<ReceivedNotification>();
+final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =   BehaviorSubject<ReceivedNotification>();
 
-final BehaviorSubject<String> selectNotificationSubject =
-    BehaviorSubject<String>();
+final BehaviorSubject<String> selectNotificationSubject =  BehaviorSubject<String>();
 
 NotificationAppLaunchDetails notificationAppLaunchDetails;
 String customPayload = "";
@@ -112,8 +109,7 @@ class ReceivedNotification {
 class MyApp extends StatefulWidget {
 final AppLanguage appLanguage;
 MyApp({this.appLanguage});
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   // This widget is the root of your application.
   @override
   _MyAppState createState() => _MyAppState();
@@ -159,8 +155,7 @@ class _MyAppState extends State<MyApp> {
     if(getLocation.isListening()){
       getLocation.disposeLocation();
       getLocation.positionStream.pause();
-      print("listning");
-    }
+     }
 
     didReceiveLocalNotificationSubject.stream
         .listen((ReceivedNotification receivedNotification) async {

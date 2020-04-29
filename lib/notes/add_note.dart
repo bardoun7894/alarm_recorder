@@ -19,6 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 
 class AddNotes extends StatefulWidget {
+
   Note note;
   String title;
   bool edit;
@@ -32,7 +33,6 @@ class AddNotes extends StatefulWidget {
 }
 
 class _AddNotesState extends State<AddNotes> {
-
   final _formKey =GlobalKey<FormState>();
   GetLocation getLocation = GetLocation();
   String textAfterGetImage = "";
@@ -194,11 +194,11 @@ activateFab()async{
           children: <Widget>[
             Container(
               margin: EdgeInsets.only(top: sizeConfig.screenHeight * .01),
-              height: sizeConfig.screenHeight * .14,
+              height: sizeConfig.screenHeight * .15,
               child: Column(
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                    padding:   EdgeInsets.only( top:  sizeConfig.screenWidth * .03,left: 5),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[

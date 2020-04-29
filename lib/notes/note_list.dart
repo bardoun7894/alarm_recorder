@@ -65,8 +65,8 @@ class _NoteListState extends State<NoteList> {
             appBar: AppBar(
               leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.blueAccent,), onPressed: () {
                 Navigator.of(context).pushReplacement(
-                                  MaterialPageRoute(
-                                      builder: (BuildContext context) {
+                  MaterialPageRoute(
+                  builder: (BuildContext context) {
                                 return MyHomePage();
                               }));
               },),

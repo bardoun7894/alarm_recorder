@@ -22,22 +22,31 @@ class _MySettingsState extends State<MySettings> {
           children: <Widget>[
             Card(
               child: ListTile(
-                leading: Icon(Icons.notifications,color: Colors.blueAccent,),
-                title: Text(AppLocalizations.of(context).translate("notifications"),style: TextStyle(color: Colors.grey),),
+                onTap: (){
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return ChangeLanguage();}));
+                },
+                leading: Icon(Icons.language,color: Colors.blueAccent,),
+                title: Text(AppLocalizations.of(context).translate("change_language"),style: TextStyle(color: Colors.grey)),
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
               ),
             ),
             Card(
               child: ListTile(
-                onTap: (){
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return ChangeLanguage();}));
-                         },
-                leading: Icon(Icons.language,color: Colors.blueAccent,),
-                title: Text(AppLocalizations.of(context).translate("change_language"),style: TextStyle(color: Colors.grey)),
+                leading: Icon(Icons.notifications,color: Colors.blueAccent,),
+
+                title: Text(AppLocalizations.of(context).translate("notifications"),style: TextStyle(color: Colors.grey),),
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
-                       ),
-                       ),
-                   Card(
+              ),
+            ),
+           Card(
+              child: ListTile(
+                leading: Icon(Icons.monetization_on,color: Colors.blueAccent,),
+                title: Text(AppLocalizations.of(context).translate("disable_ads"),style: TextStyle(color: Colors.grey),),
+                trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
+              ),
+            ),
+
+            Card(
               child: ListTile(
                 leading: Icon(Icons.info_outline,color: Colors.blueAccent,),
                 title: Text(AppLocalizations.of(context).translate("about"),style: TextStyle(color: Colors.grey)),
