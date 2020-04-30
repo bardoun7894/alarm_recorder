@@ -13,11 +13,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class GetLocation {
- bool isDon=false;
-  StreamSubscription<Position> positionStream;
+  StreamSubscription<Position> _positionStream;
   getPermissionStatus(context) async {
     SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
-
     var status = await Permission.locationWhenInUse.status;
     var isDisabled =  await Permission.locationWhenInUse.serviceStatus.isDisabled;
     if (isDisabled) {   showSaveDialog(context);   }
@@ -48,7 +46,7 @@ class GetLocation {
     Position startPosition = await Geolocator() .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     return startPosition;
   }
-  bool isListening() => !(positionStream == null || positionStream.isPaused);
+  bool isListening() => !(_positionStream == null || _positionStream.isPaused);
   getLastPosition(int id, String title, String body,String imgString, String payload, _localNotification,double xMeter) async {
     Position p = await getCurrentPosition();
     double currentlat = p.latitude;
@@ -56,9 +54,9 @@ class GetLocation {
     var geolocator = Geolocator();
     var locationOptions =  LocationOptions(accuracy: LocationAccuracy.high, distanceFilter:50);
 
-    if(positionStream==null){
+    if(_positionStream==null){
 
-       positionStream = geolocator.getPositionStream(locationOptions).listen((Position position) async {
+       _positionStream = geolocator.getPositionStream(locationOptions).listen((Position position) async {
         double endlat = position.latitude;
         double endlong = position.longitude;
         print("${position.longitude} movee ");
@@ -66,10 +64,10 @@ class GetLocation {
         double distanceInMeters = await Geolocator().distanceBetween(currentlat, currentlong, endlat, endlong);
         print("distance meter  $distanceInMeters");
         if (distanceInMeters >= xMeter) {
-          isDon=true;
+
           print(" you are so far");
           _localNotification.showNotification(id, title, body,imgString,payload);
-          positionStream.pause();
+          _positionStream.pause();
         }
       }
       ) ;
@@ -77,17 +75,17 @@ class GetLocation {
 
     }
 
- bool _isListening() => !(positionStream == null || positionStream.isPaused);
+ bool _isListening() => !(_positionStream == null || _positionStream.isPaused);
 
 
   stopLocation(){
     if  (_isListening()){
-      positionStream.pause(); }
+      _positionStream.pause(); }
   }
-  disposeLocation(){
-    if (positionStream != null) {
-      positionStream.cancel();
-      positionStream = null;
+   disposeLocation(){
+    if(_positionStream != null) {
+      _positionStream.cancel();
+      _positionStream = null;
     }
 //    if (positionStream != null) {
 //      positionStream.pause();
@@ -100,9 +98,6 @@ class GetLocation {
   Future<bool> showSaveDialog(context) {
     SizeConfig sizeConfig = SizeConfig(context);
     WidgetSize fontWidgetSize= WidgetSize(sizeConfig);
-
-
-
     return showDialog(
         context: context,
         barrierDismissible: true,

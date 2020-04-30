@@ -144,7 +144,8 @@ class _MyAppState extends State<MyApp> {
   void _configureDidReceiveLocalNotificationSubject() {
     if(getLocation.isListening()){
       getLocation.disposeLocation();
-      getLocation.positionStream.pause();
+      //TODO check if still work
+    //  getLocation.positionStream.pause();
      }
 
     didReceiveLocalNotificationSubject.stream
@@ -180,7 +181,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return  ChangeNotifierProvider<AppLanguage>(
-      child: Consumer<AppLanguage>(builder: (context, model, child) {
+      child: Consumer<AppLanguage>(
+          builder: (context, model, child) {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           locale: model.appLocal,

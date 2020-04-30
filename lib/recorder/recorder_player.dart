@@ -52,7 +52,8 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   }
 
   @override
-  void initState() { 
+  void initState() {
+
     super.initState(); 
     if (widget.pathfromNotifiction != "") {
       audioC.buttonPlayPause(widget.pathfromNotifiction);
@@ -119,8 +120,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                                       top: sizeConfig.screenHeight * .04),
                                   child: Container(
                                     height: sizeConfig.screenHeight * .72,
-                                    child: getRegisterList(
-                                        futuresnapshot.data, audioC),
+                                    child: getRegisterList(  futuresnapshot.data, audioC),
                                   ),
                                 ),
                                 _player(
@@ -266,7 +266,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     if(_selectionMode){
     return   selectedRecords(data);
     }else{
- return listRecords(data);
+      return listRecords(data);
     }
   
     }
@@ -292,7 +292,8 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
         audioC.audioStop();
         repath = onValue.path;
         print(repath);
-        saveRecord(repath,context,repath.substring(0,7));
+        List<String> namePickedFile= repath.split('/');
+        saveRecord(repath,context,namePickedFile[namePickedFile.length-1]);
       }
     });
   }
@@ -302,9 +303,6 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       itemCount: data.length != null ? data.length : 0,
       itemBuilder: (BuildContext context, index) {
         RecordModel recordModel = data[index];
-        // print("recordModel.name"+recordModel.name);
-        // print("recordModel.path"+recordModel.pathRec);
-        // print("recordModel.id ${ recordModel.id}");
         return Padding(
           padding: EdgeInsets.only(
               right: sizeConfig.screenWidth * .05,
@@ -316,10 +314,10 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                   pos = index;
                   if (recordModel.pathRec != "") {
                     print(recordModel.pathRec);
-                    
                     audioC.buttonPlayPause(recordModel.pathRec);
                   }
                   print(recordModel.pathRec);
+                  print(recordModel.name);
                 });
               },
                 onLongPress: () {
@@ -349,17 +347,16 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
         RecordModel recordModel = data[index];
         return Padding(
           padding: EdgeInsets.only(
-              right: sizeConfig.screenWidth * .05,
+            right: sizeConfig.screenWidth * .05,
               left: sizeConfig.screenWidth * .05),
           child: Card(
-            child: ListTile( 
-
+            child: ListTile(
               onTap: () {
            setState(() {
-                if (_selectedIndexList.contains(index)) {
-                  _selectedIndexList.remove(index);
-                } else {
-                  _selectedIndexList.add(index);
+           if (_selectedIndexList.contains(index)) {
+                    _selectedIndexList.remove(index);
+            } else {
+                   _selectedIndexList.add(index);
                 }
               });
               

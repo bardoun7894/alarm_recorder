@@ -1,5 +1,7 @@
 import 'dart:async';
  
+import 'package:alarm_recorder/Translate/app_language.dart';
+import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
@@ -37,7 +39,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
   FlutterAudioRecorder _recorder;
   Recording _current;
   RecordingStatus _currentStatus = RecordingStatus.Unset;
-  String name ="myRecord.mp3";
+  String name ="";
   bool showFab=true;
   @override
   void initState() { 
@@ -168,22 +170,23 @@ class _RecorderScreenState extends State<RecorderScreen> {
                             padding: const EdgeInsets.symmetric(horizontal:50),
                             child: TextFormField(
                               controller: nameController,
+                              cursorColor: Colors.tealAccent,
                               style: TextStyle(
-                                  fontFamily: 'sans sherif',
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white,
-                                  fontSize: fontWidgetSize.bodyFontSize+10 ),
+                              fontFamily: 'sans sherif',
+                              fontWeight: FontWeight.normal,
+                              color: Colors.white,
+                               fontSize: fontWidgetSize.bodyFontSize ),
                               autofocus: false,
                               decoration: InputDecoration(
                               icon:Icon( Icons.mode_edit,color: Colors.white,),
                                hintMaxLines: 1,
                                 border: InputBorder.none,
-                               hintText: "اضف اسم للمقطع"
-                                  ,hintStyle: TextStyle(
+                               hintText:  AppLocalizations.of(context).translate('name_the_record'),
+                                hintStyle: TextStyle(
                                   fontFamily: 'sans sherif',
                                   fontWeight: FontWeight.normal,
                                   color: Colors.white,
-                                  fontSize: fontWidgetSize.bodyFontSize+10),
+                                  fontSize: fontWidgetSize.bodyFontSize),
                               ),
                             ),
                           ),
@@ -192,7 +195,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
                           ),
                           Text(
                             _current?.duration.toString().split(".")[0],
-                            style: TextStyle(
+                          style: TextStyle(
                                 fontFamily: 'sans sherif',
                                 fontWeight: FontWeight.normal,
                                 color: Colors.white,
@@ -357,9 +360,7 @@ switch(statuses[Permission.microphone]){
     setState(() {
       _current = result;
       _currentStatus = _current.status;
-      saveRecordDialog(context,
-      result.path.toString(),
-      nameController.text!=""?nameController.text+"."+"${result.extension}":name+"."+"${result.extension}");
+      saveRecordDialog(context, result.path.toString(), nameController.text!=""?nameController.text+"${result.extension}":name+"."+"${result.extension}");
     });
   }
   
