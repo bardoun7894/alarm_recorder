@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
  
-import 'package:alarm_recorder/app_localizations.dart';
+import 'package:alarm_recorder/Translate/app_localizations.dart';
  
 import 'package:alarm_recorder/utils/screen_size.dart';
   

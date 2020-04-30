@@ -4,7 +4,7 @@ import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
 import 'package:alarm_recorder/recorder/recorder.dart';
-import 'package:alarm_recorder/utils/AudioPlayerController.dart';
+import 'package:alarm_recorder/recorder/AudioPlayerController.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/utils.dart';
 import 'package:audioplayers/audio_cache.dart';

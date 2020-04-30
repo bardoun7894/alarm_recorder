@@ -11,7 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; 
 import 'package:admob_flutter/admob_flutter.dart';
 
-import '../app_localizations.dart';
+import '../Translate/app_localizations.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -62,40 +62,19 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
     super.dispose();
   }
 
-        String getBannerAdUnitId() {
-          if (Platform.isIOS) {
-            return 'ca-app-pub-3940256099942544/2934735716';
-          } else if (Platform.isAndroid) {
-            return 'ca-app-pub-3940256099942544/6300978111';
-          }
-          return null;
-        }
-        
-        String getInterstitialAdUnitId() {
-          if (Platform.isIOS) {
-            return 'ca-app-pub-3940256099942544/4411468910';
-          } else if (Platform.isAndroid) {
-            return 'ca-app-pub-3940256099942544/1033173712';
-          }
-          return null;
-        }
-        
-        String getRewardBasedVideoAdUnitId() {
-          if (Platform.isIOS) {
-            return 'ca-app-pub-3940256099942544/1712485313';
-          } else if (Platform.isAndroid) {
-            return 'ca-app-pub-3940256099942544/5224354917';
-          }
-          return null;
-        }
-          @override
-          Widget build(BuildContext context) {
-             SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+
+   @override
+   Widget build(BuildContext context) {
+     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
             ));
+
             sizeConfig = SizeConfig(context);
             fontWidgetSize = WidgetSize(sizeConfig);
             double raduis = sizeConfig.screenWidth * 0.10;
+
+
+
             return Scaffold(
               key: _scaffoldKey,
               drawer: Drawer(
@@ -300,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                     Padding(
                       padding: EdgeInsets.only(
                           top: sizeConfig.screenHeight * 0.1,
-                          right: sizeConfig.screenWidth * 0.01, 
+                          right: sizeConfig.screenWidth * 0.01,
                           left: sizeConfig.screenWidth * 0.01),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -361,15 +340,13 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                         ],
                       ),
                     ),
-                         
                   ],
                 ),
               ),
-
               );
           }
 
-          Widget locationContainer() {
+  Widget locationContainer() {
             return Padding(
               padding: EdgeInsets.only(top: 20),
               child: Container(
@@ -408,7 +385,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
             );
           }
         
-          Widget recordContainer() {
+  Widget recordContainer() {
             return Container(
               height: sizeConfig.screenHeight * .2,
               width: sizeConfig.screenWidth * .4,
@@ -443,7 +420,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
             );
           }
         
-          Widget noteContainer() {
+  Widget noteContainer() {
             return Container(
               height: sizeConfig.screenHeight * .2,
               width: sizeConfig.screenWidth * .4,
@@ -475,7 +452,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
             );
           }
         
-          Widget cameraContainer() {
+  Widget cameraContainer() {
             return Padding(
               padding: EdgeInsets.only(top: 20),
               child: Container(
@@ -509,7 +486,32 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
               ),
             );
           }
-        
 
+  String getBannerAdUnitId() {
+    if (Platform.isIOS) {
+      return 'ca-app-pub-3940256099942544/2934735716';
+    } else if (Platform.isAndroid) {
+      return 'ca-app-pub-3940256099942544/6300978111';
+    }
+    return null;
+  }
+
+  String getInterstitialAdUnitId() {
+    if (Platform.isIOS) {
+      return 'ca-app-pub-3940256099942544/4411468910';
+    } else if (Platform.isAndroid) {
+      return 'ca-app-pub-3940256099942544/1033173712';
+    }
+    return null;
+  }
+
+  String getRewardBasedVideoAdUnitId() {
+    if (Platform.isIOS) {
+      return 'ca-app-pub-3940256099942544/1712485313';
+    } else if (Platform.isAndroid) {
+      return 'ca-app-pub-3940256099942544/5224354917';
+    }
+    return null;
+  }
 
 }

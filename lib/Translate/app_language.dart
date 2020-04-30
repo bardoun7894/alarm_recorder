@@ -3,8 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AppLanguage extends ChangeNotifier {
-  Locale _appLocale = Locale('en');
+class AppLanguage extends ChangeNotifier {  Locale _appLocale = Locale('en');
   Locale get appLocal => _appLocale ?? Locale("en");
   fetchLocale() async {
     var prefs = await SharedPreferences.getInstance();

@@ -3,7 +3,7 @@ import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart'; 
-import '../app_localizations.dart';
+import '../Translate/app_localizations.dart';
 
 class myChoice extends StatefulWidget {
   String result;

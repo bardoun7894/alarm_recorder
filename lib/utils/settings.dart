@@ -1,5 +1,5 @@
-import 'package:alarm_recorder/app_localizations.dart';
-import 'package:alarm_recorder/utils/change_language.dart';
+import 'package:alarm_recorder/Translate/app_localizations.dart';
+import 'package:alarm_recorder/Translate/change_language.dart';
 import 'package:flutter/material.dart';
 
 class MySettings extends StatefulWidget {

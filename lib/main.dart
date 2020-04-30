@@ -2,14 +2,14 @@ import 'dart:io';
 
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
-import 'package:alarm_recorder/utils/app_language.dart';
+import 'package:alarm_recorder/Translate/app_language.dart';
 import 'package:alarm_recorder/utils/getlocation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
-import 'app_localizations.dart';
+import 'Translate/app_localizations.dart';
 //dont remove this unused package ;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -28,17 +28,15 @@ final BehaviorSubject<String> selectNotificationSubject =  BehaviorSubject<Strin
 NotificationAppLaunchDetails notificationAppLaunchDetails;
 String customPayload = "";
 Note customNote = Note();
-
 Future<void> main() async {
 // needed if you intend to initialize in the `main` function
   WidgetsFlutterBinding.ensureInitialized();
   //TODO Admob
-  Admob.initialize(getAppId());
-
+ // Admob.initialize(getAppId());
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   notificationAppLaunchDetails =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-  var initializationSettingsAndroid = AndroidInitializationSettings('app_icon');
+  var initializationSettingsAndroid = AndroidInitializationSettings('my_smart_note');
   // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
   // of the `IOSFlutterLocalNotificationsPlugin` class
   var initializationSettingsIOS = IOSInitializationSettings(
@@ -91,7 +89,6 @@ Future<void> main() async {
     ],
   ));
 }
-
 class ReceivedNotification {
   final int id;
   final String title;
@@ -105,7 +102,6 @@ class ReceivedNotification {
     @required this.payload,
   });
 }
-
 class MyApp extends StatefulWidget {
 final AppLanguage appLanguage;
 MyApp({this.appLanguage});
@@ -119,18 +115,14 @@ class _MyAppState extends State<MyApp> {
   AndroidInitializationSettings initializationSettingsAndroid;
   IOSInitializationSettings initializationSettingsIOS;
   InitializationSettings initializationSettings;
-
   GetLocation getLocation=GetLocation();
-
   @override
   void initState() {
     super.initState();
-  
     _requestIOSPermissions();
     _configureDidReceiveLocalNotificationSubject();
     _configureSelectNotificationSubject();
   }
-
   @override
   void dispose() {
     getLocation.disposeLocation();
@@ -138,7 +130,6 @@ class _MyAppState extends State<MyApp> {
     didReceiveLocalNotificationSubject.close();
     selectNotificationSubject.close();
   }
-
   void _requestIOSPermissions() {
     widget.flutterLocalNotificationsPlugin
          .resolvePlatformSpecificImplementation<
@@ -172,14 +163,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _configureSelectNotificationSubject() {
-
     selectNotificationSubject.stream.listen((String payload) async {
       if (payload.startsWith("{")) {
         getLocation.stopLocation();
         Note note = Note.fromRawJson(payload);
         customNote = note;
         await navigatorKey.currentState  .pushNamed('/textField', arguments: customNote);
-
       } else {
         customPayload = payload;
         print(payload);
@@ -188,7 +177,6 @@ class _MyAppState extends State<MyApp> {
           }
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return  ChangeNotifierProvider<AppLanguage>(
@@ -197,9 +185,8 @@ class _MyAppState extends State<MyApp> {
           debugShowCheckedModeBanner: false,
           locale: model.appLocal,
           supportedLocales: [
-            Locale('en', 'US'),
-            Locale('ar', ''),
-          ],
+            Locale('en','US'),
+            Locale('ar',''),  ],
           localizationsDelegates: [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
@@ -211,7 +198,6 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
 class LocalNotification {
   MyApp myApp = MyApp();
 
@@ -240,12 +226,8 @@ class LocalNotification {
       customPayload = payload;
     }
 
-    NotificationDetails notificationDetails =
-        NotificationDetails(androidNotificationDetails, iosNotificationDetails);
-    await myApp.flutterLocalNotificationsPlugin.schedule(
-        id, title, body, timeDelayed, notificationDetails,
-        payload: customPayload);
-  }
+    NotificationDetails notificationDetails =  NotificationDetails(androidNotificationDetails, iosNotificationDetails);
+    await myApp.flutterLocalNotificationsPlugin.schedule(  id, title, body, timeDelayed, notificationDetails, payload: customPayload);}
 
   void showNotification(
       int id, String title, String body,imgString,String payload) async {   await notification(id, title, body,imgString,payload);

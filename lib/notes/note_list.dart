@@ -1,5 +1,5 @@
 
-import 'package:alarm_recorder/app_localizations.dart';
+import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/notes/add_note.dart';

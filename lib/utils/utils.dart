@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
  
 import '../main.dart';
 import '../recorder/recorder_player.dart';
-import 'choicechip.dart';
+import 'dialogNoteRec.dart';
 
 LocalNotification  _localNotification = LocalNotification() ;
 bool isTimeSet=false;

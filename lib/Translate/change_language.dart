@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../app_localizations.dart';
+import 'app_localizations.dart';
 import 'app_language.dart';
 
 class ChangeLanguage extends StatefulWidget {
@@ -10,14 +10,11 @@ class ChangeLanguage extends StatefulWidget {
 }
 
 class _ChangeLanguageState extends State<ChangeLanguage> {
-
  @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
   }
-
   @override
   Widget build(BuildContext context) {
     var appLanguage = Provider.of<AppLanguage>(context);
