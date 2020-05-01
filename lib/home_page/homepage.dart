@@ -8,8 +8,7 @@ import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; 
-import 'package:admob_flutter/admob_flutter.dart';
+import 'package:flutter/services.dart';  
 
 import '../Translate/app_localizations.dart';
 

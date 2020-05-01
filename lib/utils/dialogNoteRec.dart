@@ -1,26 +1,25 @@
  
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/utils.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:flutter/material.dart'; 
 import '../Translate/app_localizations.dart';
 
-class myChoice extends StatefulWidget {
-  String result;
-  String nameRecord;
-  String note;
-int id;
-bool edit ;
-String descriptionControllertext;
-String imgString;
-myChoice({this.result, this.nameRecord,this.id,this.edit,this.descriptionControllertext,this.imgString,this.note});
+class MyChoice extends StatefulWidget {
+  final String result;
+  final String nameRecord;
+  final String note;
+final int id;
+final bool edit ;
+final String descriptionControllertext;
+final String imgString;
+MyChoice({this.result, this.nameRecord,this.id,this.edit,this.descriptionControllertext,this.imgString,this.note});
 
   @override
-  _myChoiceState createState() => _myChoiceState();
+  _MyChoiceState createState() => _MyChoiceState();
 }
 
 
-class _myChoiceState extends State<myChoice> {
+class _MyChoiceState extends State<MyChoice> {
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
 

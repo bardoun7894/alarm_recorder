@@ -1,6 +1,5 @@
 import 'dart:async';
- 
-import 'package:alarm_recorder/Translate/app_language.dart';
+  
 import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart';

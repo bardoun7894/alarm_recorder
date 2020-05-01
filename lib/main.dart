@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:admob_flutter/admob_flutter.dart';
+ 
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/Translate/app_language.dart';
 import 'package:alarm_recorder/utils/getlocation.dart';
@@ -9,9 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
-import 'Translate/app_localizations.dart';
-//dont remove this unused package ;
-import 'package:easy_localization/easy_localization.dart';
+import 'Translate/app_localizations.dart'; 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'home_page/homepage.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart';
@@ -105,7 +101,7 @@ class ReceivedNotification {
 class MyApp extends StatefulWidget {
 final AppLanguage appLanguage;
 MyApp({this.appLanguage});
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   // This widget is the root of your application.
   @override
   _MyAppState createState() => _MyAppState();
@@ -205,15 +201,16 @@ class LocalNotification {
 
   void showNotificationAfter(int day, int hour, int minute, int id,
       String imgPath, String title, String body, String payload) async {
-    await notificationAfter(
-        day, hour, minute, id, imgPath, title, body, payload);
+    await notificationAfter(  day, hour, minute, id, imgPath, title, body, payload);
   }
 
   Future<void> notificationAfter(int day, int hour, int minute, int id,  String imgPath, String title, String body, String payload) async {
     String customPayload = "";
     var timeDelayed =  DateTime.now().add(Duration(days: day, hours: hour, minutes: minute));
     var androidNotificationDetails = AndroidNotificationDetails(
-        '$id', title, body,
+        '$id',
+         title,
+           body,
         importance: Importance.Max,
         priority: Priority.High,
         ongoing: true,
@@ -222,6 +219,7 @@ class LocalNotification {
         playSound: true);
     IOSNotificationDetails iosNotificationDetails =   IOSNotificationDetails(presentSound: true);
     if (payload == "note") {
+    
       Note newNote = Note(id: id, imagePath: imgPath, title: title, description: body);
       customPayload = newNote.toRawJson();
     } else {

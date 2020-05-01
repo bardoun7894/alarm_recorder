@@ -7,8 +7,7 @@ import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:flutter/material.dart'; 
  
 import '../main.dart';
 import '../recorder/recorder_player.dart';
@@ -51,6 +50,7 @@ reminderDateTime(id,imageString,title,description,payload,context)async{
     hour = selectedTime.hour - DateTime.now().hour;
     minute = selectedTime.minute - DateTime.now().minute;
   });
+
   });
   _localNotification.showNotificationAfter(day,hour,minute,id,imageString,title,description,payload);
  if(title=="record"){
@@ -68,7 +68,7 @@ Future<bool> saveRecordDialog(context,String result,String nameRecord )async {
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) { 
-      return myChoice(result:result,nameRecord:nameRecord,);
+      return MyChoice(result:result,nameRecord:nameRecord,);
         });
 }
 Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,String imgString,context)async {
@@ -77,7 +77,7 @@ Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,S
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) { 
-      return myChoice(id:id,edit: edit,descriptionControllertext: descriptionControllertext,imgString: imgString,note:note);
+      return MyChoice(id:id,edit: edit,descriptionControllertext: descriptionControllertext,imgString: imgString,note:note);
     });
 }
 void saveRecord(String payload,context,String nameRecord) async {
@@ -107,13 +107,13 @@ void saveNote(int id,bool edit ,String descriptionControllertext,String imgStrin
       reminderDateTime( id,imgString,titleData,descriptionData,"note",context);
     
     } else if (edit == false) {
-      int id = await NoteDatabaseProvider.db.insertNote(new Note(
+      int ids = await NoteDatabaseProvider.db.insertNote(new Note(
           imagePath: imgString,
           title: titleData,
           description: descriptionData,
           date: s,
           ));
-        reminderDateTime(id,imgString,titleData,descriptionData,"note",context);
+        reminderDateTime(ids,imgString,titleData,descriptionData,"note",context);
   
      }
    

@@ -20,19 +20,19 @@ import '../main.dart';
 
 class AddNotes extends StatefulWidget {
 
-  Note note;
-  String title;
-  bool edit;
-  bool camera;
-  bool location;
+  final Note note; 
+  final bool edit;
+  final bool camera;
+  final bool location;
 
   AddNotes(this.edit, this.camera, this.location, {this.note})
       : assert(edit != null || note == null);
   @override
-  _AddNotesState createState() => _AddNotesState(this.note, this.title);
+  _AddNotesState createState() => _AddNotesState(this.note);
 }
 
 class _AddNotesState extends State<AddNotes> {
+    final _scaffoldKey = GlobalKey<ScaffoldState>(); 
   final _formKey =GlobalKey<FormState>();
   GetLocation getLocation = GetLocation();
   String textAfterGetImage = "";
@@ -49,7 +49,7 @@ class _AddNotesState extends State<AddNotes> {
   TextEditingController meterController=TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   bool _validate = false;
-  _AddNotesState(this.note, this.title);
+  _AddNotesState(this.note);
 
   bool cursor = true;
   DateTime firstDate = DateTime.now().add(Duration(minutes: 1));
@@ -73,7 +73,9 @@ class _AddNotesState extends State<AddNotes> {
     if (image != null) {
       File croppedFile = await ImageCropper.cropImage(
           sourcePath: image.path,
-          compressQuality: 50,
+          compressQuality: 100,
+          maxWidth: 480,
+          maxHeight: 480,
           aspectRatioPresets: [
             CropAspectRatioPreset.square,
             CropAspectRatioPreset.ratio3x2,
@@ -91,14 +93,16 @@ class _AddNotesState extends State<AddNotes> {
             minimumAspectRatio: 1.0,
           ));
       setState(() {
-        _image = croppedFile;
-        if (_image != null) {
+        if(croppedFile!=null){
+         _image = croppedFile;
+         if (_image != null) {
           imgString = base64String(_image.readAsBytesSync());
         }
-        print(_image.toString());
-        print(image.toString());
-        print(croppedFile.toString());
-        print(imgString);
+        } else{
+          return;
+        }
+     
+    
       });
     }
   }
@@ -165,6 +169,7 @@ activateFab()async{
 
     return WillPopScope(
           child: Scaffold(
+            key: _scaffoldKey,
         floatingActionButton:widget.location == true   ? FloatingActionButton(
                 onPressed: ()async {
 
@@ -336,7 +341,7 @@ activateFab()async{
           }
         }
 
-  Widget dialog() {
+  Widget locationDialog() {
 
     showDialog(
         context: context,
@@ -484,27 +489,40 @@ activateFab()async{
       ),
     );
   }
+
+  _displaySnackBar()  {
+    final snackBar = SnackBar(
+      backgroundColor: Colors.blueAccent,
+    
+      content: Text('The text is empty please write anything?'));
+    _scaffoldKey.currentState.showSnackBar(snackBar);  
+  }
  Widget saveButton() {
           return widget.location == true
               ? fabClicked == true
                   ? InkWell(
-                      onTap: () {
-                        //TODO incleade choice meters
-                      dialog() ;
+                      onTap: () { 
+                        //
+                      locationDialog() ;
                       },
                       child: Icon(Icons.save,
                           color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3))
-                  : Container()
-              : InkWell(
-                  onTap: () {
-                    //    saveNote(widget.note.id,widget.edit,descriptionController.text,imgString,context);
-                    if (widget.edit == true) {
-                      saveNoteDialog(widget.note.id, widget.edit,
-                          descriptionController.text, imgString, context);
-                    } else if (widget.edit == false) {
+                     : Container()
+                     : InkWell(
+                      onTap: () {
+                        if(descriptionController.text==""){
+                       _displaySnackBar();
+                        }else{
+                              if (widget.edit == true) {
+                      saveNoteDialog(widget.note.id,widget.edit,
+                          descriptionController.text, 
+                           imgString, context);
+                        } else if (widget.edit == false) {
                       saveNoteDialog(0, widget.edit, descriptionController.text,
                           imgString, context);
-                    }
+                         }
+                        }
+                   
                   },
                   child: Icon(Icons.save,
                       color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3));

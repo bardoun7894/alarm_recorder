@@ -208,8 +208,5 @@ class GetLocation {
         });
   }
 
-  void Function() handleDone(){
-
-  }
-
+  
 }
