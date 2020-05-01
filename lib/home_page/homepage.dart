@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                             width: 10,
                           ),
                           Text(
-                            AppLocalizations.of(context).translate("pre_name") +
+                           AppLocalizations.of(context).translate("pre_name")  +
                                 AppLocalizations.of(context).translate("app_name"),
                             style: TextStyle(
                                 color: Colors.white, fontWeight: FontWeight.bold),

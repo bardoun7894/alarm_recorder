@@ -21,6 +21,10 @@
   "about": "عن",
   "cropper": "قص الصورة ",
   "disable_ads": "أزل الاعلانات",
-  "name_the_record": "اضف اسم للمقطع"
+  "name_the_record": "اضف اسم للمقطع",
+  "text_description_empty": " لم يتم كتابة اي ملاحظة  ", 
+  "hint_distance": "  (أضف المسافة للتذكير  (متر" ,
+  "hint_distance_error": " المرجو ادخال المسافة " 
+  
 
 }

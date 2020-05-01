@@ -21,5 +21,8 @@
   "about": "about",
   "cropper": "Crop Image",
   "disable_ads": "disable ads",
-   "name_the_record": " name your record "
+   "name_the_record": " name your record ",
+   "text_description_empty": "The text is empty please write anything?", 
+   "hint_distance": "add distance " ,
+   "hint_distance_error": "please enter the distance " 
 }

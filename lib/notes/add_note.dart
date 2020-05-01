@@ -176,7 +176,6 @@ activateFab()async{
                   setState(()  {
                     try {
        getLocation.getPermissionStatus(context);
-
                     } catch (e)
                     {
                       print(e);
@@ -195,15 +194,18 @@ activateFab()async{
         body: Stack(
           children: <Widget>[
             Container(
-              margin: EdgeInsets.only(top: sizeConfig.screenHeight * .01),
-              height: sizeConfig.screenHeight * .15,
+            padding: EdgeInsets.only(top: 10),
+            //  color: Colors.teal,
+              //TODO margin
+             // margin: EdgeInsets.only(top: sizeConfig.screenHeight * .01),
+              height: sizeConfig.screenHeight * .16,
               child: Column(
                 children: <Widget>[
                   Padding(
-                    padding:   EdgeInsets.only( top:  sizeConfig.screenWidth * .03,left: 5),
+                    padding: EdgeInsets.only( top:  sizeConfig.screenWidth * .02,left: 5),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
                         IconButton(
                           icon: Icon(Icons.arrow_back_ios,
                               color: Color(0xFF417BFb),
@@ -245,19 +247,6 @@ activateFab()async{
                       ],
                     ),
                   ),
-                  Row(
-                    children: <Widget>[
-                      SizedBox(
-                        height: sizeConfig.screenHeight * .06,
-                      ),
-                      Text(
-                        "   ${formatDateTime()}   ",
-                        style: TextStyle(
-                            fontSize: fontWidgetSize.bodyFontSize - 13,
-                            color: Colors.black45),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -269,6 +258,12 @@ activateFab()async{
                   bottom: sizeConfig.screenHeight * .005),
               child: ListView(
                 children: <Widget>[
+                  Text(
+                    "   ${formatDateTime()}   ",
+                    style: TextStyle(
+                        fontSize: fontWidgetSize.bodyFontSize - 13,
+                        color: Colors.black45),
+                  ),
                   SizedBox(
                     height: 10,
                   ),
@@ -352,7 +347,7 @@ activateFab()async{
             child: Form(
               key: _formKey,
               child: Container(
-                height:sizeConfig.screenHeight*.55,
+                height:sizeConfig.screenHeight*.45,
                 width: sizeConfig.screenHeight*.4,
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
                 child: Column(
@@ -374,7 +369,7 @@ activateFab()async{
                         ),
                         Positioned(
                           top: sizeConfig.screenHeight*.09,
-                          left: sizeConfig.screenWidth*.23,
+                          left: sizeConfig.screenWidth*.25,
                           child: Container(
                             height: 90.0,
                             width: 90.0,
@@ -389,13 +384,11 @@ activateFab()async{
                         )
                       ],
                     ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                     textMeterField(),
+                       textMeterField(),
+                    
                     Padding(
                       padding: EdgeInsets.all(10.0),
-                      child: Text(  AppLocalizations.of(context).translate("dialog_save_data"),
+                      child: Text(AppLocalizations.of(context).translate("dialog_save_data"),
                         style: TextStyle(
                             color: Color(0xFF417BFb),
                             fontWeight: FontWeight.w600,
@@ -412,7 +405,6 @@ activateFab()async{
                      if (_formKey.currentState.validate()) {
                        saveLocationNote(double.parse(meterController?.text));
                           }
-
 
                             });
 
@@ -458,44 +450,46 @@ activateFab()async{
 
     return SingleChildScrollView(
       child: Container(
-        height: 50,
-        child: TextFormField(
+       
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal:40),
+          child: TextFormField(
        keyboardType: TextInputType.number,
-          controller:meterController,
-             textInputAction: TextInputAction.done,
-             style: TextStyle(
+            controller:meterController,
+               textInputAction: TextInputAction.done,
+               style: TextStyle(
+                fontFamily: 'sans sherif',
+                fontWeight: FontWeight.normal,
+                color: Colors.blueAccent,
+                fontSize: fontWidgetSize.bodyFontSize-5 ),
+            validator: (value) {
+              if (value.isEmpty) {
+                _validate=true;
+                return AppLocalizations.of(context).translate("hint_distance_error");
+                }
+              return null;
+            },
+              decoration: InputDecoration( 
+              icon:Icon( Icons.location_on,color: Colors.blueAccent,),
+              hintMaxLines:1,
+              hintText:! _validate ?  AppLocalizations.of(context).translate("hint_distance"):null,
+              hintStyle: TextStyle(
               fontFamily: 'sans sherif',
-              fontWeight: FontWeight.normal,
-              color: Colors.blueAccent,
-              fontSize: fontWidgetSize.bodyFontSize-5 ),
-          validator: (value) {
-            if (value.isEmpty) {
-              return 'المرجو ادخال المسافة';
-            }
-            return null;
-          },
-            decoration: InputDecoration(
-       //    errorText: _validate ? 'المرجو ادخال المسافة' : null,
-            icon:Icon( Icons.location_on,color: Colors.blueAccent,),
-            hintMaxLines:1,
-       hintText: !_validate ? "أضف المسافة بالمتر":null,
-           hintStyle: TextStyle(
-            fontFamily: 'sans sherif',
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-            fontSize: fontWidgetSize.bodyFontSize-10),
+              fontWeight: FontWeight.bold,
+              color: Colors.grey,
+              fontSize: fontWidgetSize.bodyFontSize-10),
           ),
-            ),
+              ),
+        ),
       ),
     );
   }
 
   _displaySnackBar()  {
-    final snackBar = SnackBar(
-      backgroundColor: Colors.blueAccent,
-    
-      content: Text('The text is empty please write anything?'));
-    _scaffoldKey.currentState.showSnackBar(snackBar);  
+   final snackBar = SnackBar(
+     backgroundColor: Colors.blueAccent,
+     content: Text( AppLocalizations.of(context).translate("text_description_empty")));
+     _scaffoldKey.currentState.showSnackBar(snackBar);  
   }
  Widget saveButton() {
           return widget.location == true

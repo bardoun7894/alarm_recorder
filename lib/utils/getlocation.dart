@@ -52,7 +52,7 @@ class GetLocation {
     double currentlat = p.latitude;
     double currentlong = p.longitude;
     var geolocator = Geolocator();
-    var locationOptions =  LocationOptions(accuracy: LocationAccuracy.high, distanceFilter:50);
+    var locationOptions =  LocationOptions(accuracy: LocationAccuracy.high, distanceFilter:0);
 
     if(_positionStream==null){
 
