@@ -22,7 +22,7 @@ String base64String(Uint8List data){
   return base64Encode(data);
 }
 Image imageFromBase64String(String base64String,double height,double width){
-return Image.memory(base64Decode(base64String),fit: BoxFit.fill,height:height,width: width,);
+return Image.memory(base64Decode(base64String),fit:BoxFit.fill,height:height,width: width,);
 }
 //this for save records to sqlite also for push notification
 reminderDateTime(id,imageString,title,description,payload,context)async{

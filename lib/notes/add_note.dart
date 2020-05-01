@@ -90,13 +90,11 @@ class _AddNotesState extends State<AddNotes> {
           iosUiSettings: IOSUiSettings(
             minimumAspectRatio: 1.0,
           ));
-
       setState(() {
         _image = croppedFile;
         if (_image != null) {
           imgString = base64String(_image.readAsBytesSync());
         }
-
         print(_image.toString());
         print(image.toString());
         print(croppedFile.toString());
@@ -136,7 +134,6 @@ activateFab()async{
     if (widget.camera == false) {
       status = await Permission.photos.status;
     }
-
     print("$status ll");
     switch (status) {
       case PermissionStatus.undetermined:

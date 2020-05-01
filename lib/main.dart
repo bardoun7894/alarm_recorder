@@ -252,12 +252,12 @@ class LocalNotification {
     await myApp.flutterLocalNotificationsPlugin.show(id, title, body, notificationDetails, payload: payload);
   }
 }
-String getAppId() {
-  //Todo 
-  if (Platform.isIOS) {
-    return 'ca-app-pub-3940256099942544~1458002511';
-  } else if (Platform.isAndroid) {
-    return 'ca-app-pub-3940256099942544~3347511713';
-  }
-  return null;
-}
+// String getAppId() {
+//   //Todo 
+//   if (Platform.isIOS) {
+//     return 'ca-app-pub-3940256099942544~1458002511';
+//   } else if (Platform.isAndroid) {
+//     return 'ca-app-pub-3940256099942544~3347511713';
+//   }
+//   return null;
+// }
