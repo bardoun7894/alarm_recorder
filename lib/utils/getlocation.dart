@@ -16,17 +16,25 @@ class GetLocation {
   StreamSubscription<Position> _positionStream;
   getPermissionStatus(context) async {
     SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
-    var status = await Permission.locationWhenInUse.status;
+    PermissionStatus status = await Permission.locationWhenInUse.status;
+    
     var isDisabled =  await Permission.locationWhenInUse.serviceStatus.isDisabled;
-    if (isDisabled) {   showSaveDialog(context);   }
+    if (isDisabled) { 
+        showSaveDialog(context,status,sharedPreferences,isDisabled);   }
     print("$status");
     switch (status) {
       case PermissionStatus.undetermined:
         await Permission.locationWhenInUse.request();
         break;
       case PermissionStatus.granted:
-        sharedPreferences.setBool("fabClicked", true);
+      if(!isDisabled){
+       sharedPreferences.setBool("fabClicked", true);
         getCurrentPosition();
+      }else{
+        sharedPreferences.setBool("fabClicked", false);
+        print("isdisabled");
+      }
+       
         break;
       case PermissionStatus.denied:
         await Permission.locationWhenInUse.request();
@@ -36,14 +44,16 @@ class GetLocation {
         break;
       case PermissionStatus.permanentlyDenied:
         openAppSettings();
-        print("slsls");
+        if(status.isGranted){
+        sharedPreferences.setBool("fabClicked", true);
+        getCurrentPosition();
+         }
         break;
-    }
-
-  }
+    } }
 
   Future<Position> getCurrentPosition() async {
     Position startPosition = await Geolocator() .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    print("startPosition $startPosition");
     return startPosition;
   }
   bool isListening() => !(_positionStream == null || _positionStream.isPaused);
@@ -59,12 +69,13 @@ class GetLocation {
        _positionStream = geolocator.getPositionStream(locationOptions).listen((Position position) async {
         double endlat = position.latitude;
         double endlong = position.longitude;
+
         print("${position.longitude} movee ");
         print("${p.longitude}  current ");
+        
         double distanceInMeters = await Geolocator().distanceBetween(currentlat, currentlong, endlat, endlong);
         print("distance meter  $distanceInMeters");
         if (distanceInMeters >= xMeter) {
-
           print(" you are so far");
           _localNotification.showNotification(id, title, body,imgString,payload);
           _positionStream.pause();
@@ -76,7 +87,6 @@ class GetLocation {
     }
 
  bool _isListening() => !(_positionStream == null || _positionStream.isPaused);
-
 
   stopLocation(){
     if  (_isListening()){
@@ -95,7 +105,7 @@ class GetLocation {
 
   }
 
-  Future<bool> showSaveDialog(context) {
+  Future<bool> showSaveDialog(context,PermissionStatus status,shared,isDisabled) {
     SizeConfig sizeConfig = SizeConfig(context);
     WidgetSize fontWidgetSize= WidgetSize(sizeConfig);
     return showDialog(
@@ -164,49 +174,66 @@ class GetLocation {
                     children: <Widget>[
                       FlatButton(
                         onPressed: () async {
-                          if (Platform.isAndroid) {
+                         settings(context);
+                           
+                        if(!isDisabled){
+                             if(status.isGranted){
+                           shared.setBool("fabClicked", true);
+                             await getCurrentPosition();
+                             }
+                         }else{
+                            shared.setBool("fabClicked", false);
+                            print("isdisabled");
+                           }
+                      
+                                                  
+                                                 },
+                                                 color: Colors.teal,
+                                                 child: Center(
+                                                   child: Text(
+                                                     AppLocalizations.of(context).translate("ok"),
+                                                     style: TextStyle(
+                                                         color: Colors.white,
+                                                         fontSize:fontWidgetSize.bodyFontSize-8,
+                                                         fontWeight: FontWeight.bold),
+                                                   ),
+                                                 ),
+                                               ),
+                                               FlatButton(
+                                                 onPressed: () {
+                                                   Navigator.of(context).pop();
+                                                 },
+                                                 color: Colors.grey,
+                                                 child: Center(
+                                                   child: Text(
+                                                     AppLocalizations.of(context).translate("no"),
+                                                     style: TextStyle(
+                                                         color: Colors.white,
+                                                    fontSize:fontWidgetSize.bodyFontSize-8,
+                                                         fontWeight: FontWeight.bold),
+                                                   ),
+                                                 ),
+                                               )
+                                             ],
+                                           ),
+                                         ],
+                                       ),
+                                     ),
+                                   );
+                                 });
+                           }
+                         
+                           Future settings(context) async{
+                              if (Platform.isAndroid) {
                             final AndroidIntent intent = AndroidIntent(
                             action:  'android.settings.LOCATION_SOURCE_SETTINGS');
                             await intent.launch();
                             Navigator.of(context, rootNavigator: true).pop();
                           } else if (Platform.isIOS) {
-                            openAppSettings();
+                            await openAppSettings();
                           }
-                        },
-                        color: Colors.teal,
-                        child: Center(
-                          child: Text(
-                            AppLocalizations.of(context).translate("ok"),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize:fontWidgetSize.bodyFontSize-8,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      FlatButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        color: Colors.grey,
-                        child: Center(
-                          child: Text(
-                            AppLocalizations.of(context).translate("no"),
-                            style: TextStyle(
-                                color: Colors.white,
-                           fontSize:fontWidgetSize.bodyFontSize-8,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        });
-  }
+                           }
+
 
   
 }

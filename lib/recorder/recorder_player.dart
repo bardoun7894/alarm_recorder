@@ -49,6 +49,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   void dispose() { 
     super.dispose();
     audioC.dispose();
+    audioC.durBPlayerStreamClose();
   }
 
   @override
@@ -151,7 +152,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
           appBar: AppBar(
             leading: IconButton(onPressed: () {
               audioC.audioStop();
-             _onBackPressed();
+              _onBackPressed();
                 },
          icon: Icon(Icons.arrow_back_ios),
             ),
@@ -182,9 +183,9 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       bottom: 0,
       left: 0,
       right: 0,
-      height: sizeConfig.screenHeight * .205,
-      child: Container(
-        padding: EdgeInsets.only(top: 5),
+      height: sizeConfig.screenHeight * .207,
+      child: data.length==0?Container():Container(
+       // padding: EdgeInsets.only(top: 5),
         color: Colors.blueAccent,
         child: Column(
           children: <Widget>[
@@ -286,8 +287,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     );
   }
    _pickSound() {
-    
-    FilePicker.getFile().then((onValue) {
+   FilePicker.getFile().then((onValue) {
       if (onValue != null) {
         audioC.audioStop();
         repath = onValue.path;

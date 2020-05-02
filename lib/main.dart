@@ -20,8 +20,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =  Flutter
 final BehaviorSubject<ReceivedNotification> didReceiveLocalNotificationSubject =   BehaviorSubject<ReceivedNotification>();
 
 final BehaviorSubject<String> selectNotificationSubject =  BehaviorSubject<String>();
-
-NotificationAppLaunchDetails notificationAppLaunchDetails;
+ NotificationAppLaunchDetails notificationAppLaunchDetails;
 String customPayload = "";
 Note customNote = Note();
 Future<void> main() async {
@@ -30,67 +29,16 @@ Future<void> main() async {
   //TODO Admob
  // Admob.initialize(getAppId());
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  notificationAppLaunchDetails =
-      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-  var initializationSettingsAndroid = AndroidInitializationSettings('my_smart_note');
-  // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
-  // of the `IOSFlutterLocalNotificationsPlugin` class
-  var initializationSettingsIOS = IOSInitializationSettings(
-      requestAlertPermission: false,
-      requestBadgePermission: false,
-      requestSoundPermission: false,
-      onDidReceiveLocalNotification:
-          (int id, String title, String body, String payload) async {
-        didReceiveLocalNotificationSubject.add(ReceivedNotification(
-            id: id, title: title, body: body, payload: payload));
-      });
-  var initializationSettings = InitializationSettings(
-      initializationSettingsAndroid, initializationSettingsIOS);
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings,
-      onSelectNotification: (String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: ' + payload);
-    }
-    selectNotificationSubject.add(payload);
-  });
- AppLanguage appLanguage = AppLanguage();
+   AppLanguage appLanguage = AppLanguage();
     await appLanguage.fetchLocale();
-  runApp(
-      MaterialApp(
-    navigatorKey: navigatorKey,
-    initialRoute: '/',
-    routes: {
-      // When navigating to the "/second" route, build the SecondScreen widget.
-      '/textField': (context) => AddNotes(
-            true,
-            false,
-            false,
-            note: customNote,
-          ),
-      '/recordPlayer': (context) => RecorderPlayer(customPayload),
-    },
-    home: MyApp(appLanguage: appLanguage),
-    debugShowCheckedModeBanner: false,
-    supportedLocales: [
-      Locale('en', 'US'),
-      Locale('ar', ''),
-    ],
-    localizationsDelegates: [
-      // A class which loads the translations from JSON files
-      AppLocalizations.delegate,
-      // Built-in localization of basic text for Material widgets
-      GlobalMaterialLocalizations.delegate,
-      // Built-in localization for text direction LTR/RTL
-      GlobalWidgetsLocalizations.delegate,
-    ],
-  ));
+  runApp(  MyApp(appLanguage: appLanguage),
+    );
 }
 class ReceivedNotification {
   final int id;
   final String title;
   final String body;
   final String payload;
-
   ReceivedNotification({
     @required this.id,
     @required this.title,
@@ -115,17 +63,51 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+     initNotificSettings();
     _requestIOSPermissions();
     _configureDidReceiveLocalNotificationSubject();
     _configureSelectNotificationSubject();
   }
+
   @override
   void dispose() {
     getLocation.disposeLocation();
     super.dispose();
+   
     didReceiveLocalNotificationSubject.close();
     selectNotificationSubject.close();
   }
+
+
+  
+  Future<void>  initNotificSettings() async {
+     notificationAppLaunchDetails  =
+      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  var initializationSettingsAndroid = AndroidInitializationSettings('my_smart_note');
+  // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
+  // of the `IOSFlutterLocalNotificationsPlugin` class
+  var initializationSettingsIOS = IOSInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+      onDidReceiveLocalNotification:
+      (int id, String title, String body, String payload) async {
+        didReceiveLocalNotificationSubject.add(ReceivedNotification(
+            id: id, title: title, body: body, payload: payload));
+      });
+ 
+  var initializationSettings = InitializationSettings(
+    initializationSettingsAndroid, initializationSettingsIOS);
+    await flutterLocalNotificationsPlugin.initialize(initializationSettings,
+      onSelectNotification: (String payload) async {
+    if (payload != null) {
+      debugPrint('notification payload: ' + payload);
+    }
+    selectNotificationSubject.add(payload);
+  });
+   
+      }
+   
   void _requestIOSPermissions() {
     widget.flutterLocalNotificationsPlugin
          .resolvePlatformSpecificImplementation<
@@ -178,8 +160,20 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return  ChangeNotifierProvider<AppLanguage>(
       child: Consumer<AppLanguage>(
-          builder: (context, model, child) {
+        builder: (context, model, child) {
         return MaterialApp(
+          navigatorKey: navigatorKey,
+          initialRoute: '/',
+          routes: {
+        // When navigating to the "/second" route, build the SecondScreen widget.
+        '/textField': (context) => AddNotes(
+            true,
+            false,
+            false,
+            note: customNote,
+          ),
+      '/recordPlayer': (context) => RecorderPlayer(customPayload),
+                   },
           debugShowCheckedModeBanner: false,
           locale: model.appLocal,
           supportedLocales: [

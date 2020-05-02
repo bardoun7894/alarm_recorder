@@ -50,7 +50,6 @@ class _AddNotesState extends State<AddNotes> {
   TextEditingController descriptionController = TextEditingController();
   bool _validate = false;
   _AddNotesState(this.note);
-
   bool cursor = true;
   DateTime firstDate = DateTime.now().add(Duration(minutes: 1));
 
@@ -61,7 +60,10 @@ class _AddNotesState extends State<AddNotes> {
       descriptionController.text = widget.note.description;
       imgString = widget.note.imagePath;
     }
-    activateFab();
+    setState(() {
+      activateFab();
+    });
+    
   }
 
   Widget imageFr(String image) {
@@ -82,7 +84,7 @@ class _AddNotesState extends State<AddNotes> {
             CropAspectRatioPreset.original,
             CropAspectRatioPreset.ratio4x3,
             CropAspectRatioPreset.ratio16x9
-          ],
+           ],
           androidUiSettings: AndroidUiSettings(
               toolbarTitle: AppLocalizations.of(context).translate("cropper"),
               toolbarColor: Colors.blueAccent,
@@ -122,10 +124,12 @@ class _AddNotesState extends State<AddNotes> {
 activateFab()async{
   SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
   bool fab = sharedPreferences.getBool("fabClicked");
-  if(fab==true){
+  if(fab == true){
     fabClicked=true;
+    print("fabClicked true");
   }else{
     fabClicked=false;
+     print("fabClicked true");
   }
 
 }
@@ -195,9 +199,7 @@ activateFab()async{
           children: <Widget>[
             Container(
             padding: EdgeInsets.only(top: 10),
-            //  color: Colors.teal,
-              //TODO margin
-             // margin: EdgeInsets.only(top: sizeConfig.screenHeight * .01),
+          
               height: sizeConfig.screenHeight * .16,
               child: Column(
                 children: <Widget>[
@@ -311,7 +313,10 @@ activateFab()async{
               : descriptionController.text;
           String descriptionData = descriptionController.text;
           String s = DateFormat.yMMMd().format(DateTime.now());
-          if (widget.edit == true) {
+          if(descriptionController.text==""){
+           _displaySnackBar(AppLocalizations.of(context).translate("text_description_empty"));
+                        }else{
+         if (widget.edit == true) {
             NoteDatabaseProvider.db.updateNote(new Note(
                 id: widget.note.id,
                 imagePath: imgString,
@@ -334,10 +339,10 @@ activateFab()async{
               return NoteList();
             }));
           }
+                        }
+        
         }
-
   Widget locationDialog() {
-
     showDialog(
         context: context,
         barrierDismissible: true,
@@ -450,12 +455,11 @@ activateFab()async{
 
     return SingleChildScrollView(
       child: Container(
-       
-        child: Padding(
+              child: Padding(
           padding: const EdgeInsets.symmetric(horizontal:40),
           child: TextFormField(
-       keyboardType: TextInputType.number,
-            controller:meterController,
+             keyboardType: TextInputType.number,
+              controller:meterController,
                textInputAction: TextInputAction.done,
                style: TextStyle(
                 fontFamily: 'sans sherif',
@@ -485,10 +489,10 @@ activateFab()async{
     );
   }
 
-  _displaySnackBar()  {
+  _displaySnackBar(String text)  {
    final snackBar = SnackBar(
      backgroundColor: Colors.blueAccent,
-     content: Text( AppLocalizations.of(context).translate("text_description_empty")));
+     content: Text( text));
      _scaffoldKey.currentState.showSnackBar(snackBar);  
   }
  Widget saveButton() {
@@ -505,7 +509,7 @@ activateFab()async{
                      : InkWell(
                       onTap: () {
                         if(descriptionController.text==""){
-                       _displaySnackBar();
+                       _displaySnackBar(AppLocalizations.of(context).translate("text_description_empty"));
                         }else{
                               if (widget.edit == true) {
                       saveNoteDialog(widget.note.id,widget.edit,

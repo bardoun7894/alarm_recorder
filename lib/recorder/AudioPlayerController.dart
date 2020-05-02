@@ -27,6 +27,7 @@ class AudioPLayerController extends BlocBase {
       audioObject.duration = d;
       inPlayer.add(audioObject);
     });
+   
     audioObject.advancedPlayer.onAudioPositionChanged.listen((Duration p) {
       audioObject.position = p;
       inPlayer.add(audioObject);
@@ -37,7 +38,10 @@ class AudioPLayerController extends BlocBase {
   audioStop() {
     audioObject.advancedPlayer.stop();
   }
-
+ durBPlayerStreamClose(){
+   print("durb close"); 
+      durB.close();
+    }
   buttonPlayPause(data) {
     if (audioObject.play) {
       audioObject.play = false;
@@ -55,7 +59,7 @@ class AudioPLayerController extends BlocBase {
     audioObject.tempoMusica = newValue.toStringAsFixed(0);
     audioObject.advancedPlayer.resume();
     audioObject.play = true;
-    inPlayer.add(audioObject);
+    inPlayer.add(audioObject); 
   }
 }
 
