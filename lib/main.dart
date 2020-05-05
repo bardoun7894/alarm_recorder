@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
   Future<void>  initNotificSettings() async {
      notificationAppLaunchDetails  =
       await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
-  var initializationSettingsAndroid = AndroidInitializationSettings('my_smart_note');
+  var initializationSettingsAndroid = AndroidInitializationSettings('iconsr');
   // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
   // of the `IOSFlutterLocalNotificationsPlugin` class
   var initializationSettingsIOS = IOSInitializationSettings(
@@ -120,19 +120,13 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _configureDidReceiveLocalNotificationSubject() {
-    if(getLocation.isListening()){
-      getLocation.disposeLocation();
-      //TODO check if still work
-    //  getLocation.positionStream.pause();
-     }
-
+  
     didReceiveLocalNotificationSubject.stream
         .listen((ReceivedNotification receivedNotification) async {
       if (receivedNotification.payload.startsWith("{")) {
         Note note = Note.fromRawJson(receivedNotification.payload);
         customNote = note;
-        await navigatorKey.currentState
-            .popAndPushNamed('/textField', arguments: customNote);
+        await navigatorKey.currentState.popAndPushNamed('/textField', arguments: customNote);
       } else {
         customPayload = receivedNotification.payload;
         await navigatorKey.currentState
@@ -147,8 +141,11 @@ class _MyAppState extends State<MyApp> {
         getLocation.stopLocation();
         Note note = Note.fromRawJson(payload);
         customNote = note;
-        await navigatorKey.currentState  .pushNamed('/textField', arguments: customNote);
-      } else {
+        try{
+     await navigatorKey.currentState.pushNamed('/textField', arguments: customNote);
+      
+        }catch(e){e.toString();}
+       } else {
         customPayload = payload;
         print(payload);
         await navigatorKey.currentState

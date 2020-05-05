@@ -23,6 +23,11 @@
   "disable_ads": "disable ads",
    "name_the_record": " name your record ",
    "text_description_empty": "The text is empty please write anything?", 
+   "call": "Call Us",
+   "email": "send Email",
+   "contact_us": "contact us",
    "hint_distance": "add distance " ,
-   "hint_distance_error": "please enter the distance " 
+   "hint_distance_error": "please enter the distance " ,
+   "welcome_location": " welcome to reminder Note location service  ",
+   "start_location": "Start "
 }

@@ -49,13 +49,16 @@ dependencies:
   provider: ^4.0.5
   admob_flutter: ^0.3.4
   flutter_launcher_icons: "^0.7.3"
+  url_launcher: ^5.4.5
+  rate_my_app: ^0.6.0+2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 flutter_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/icon/mySmartNote.png"
+  image_path: "assets/icon/iconsr.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

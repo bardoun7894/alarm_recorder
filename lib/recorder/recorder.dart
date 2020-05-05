@@ -45,6 +45,11 @@ class _RecorderScreenState extends State<RecorderScreen> {
     super.initState();
     _init();
   }
+  @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
+  }
 
   _init() async {
     try {

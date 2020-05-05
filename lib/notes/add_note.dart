@@ -19,8 +19,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../main.dart';
 
 class AddNotes extends StatefulWidget {
-
-  final Note note; 
+  final Note note;
   final bool edit;
   final bool camera;
   final bool location;
@@ -32,27 +31,31 @@ class AddNotes extends StatefulWidget {
 }
 
 class _AddNotesState extends State<AddNotes> {
-    final _scaffoldKey = GlobalKey<ScaffoldState>(); 
-  final _formKey =GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _formKey = GlobalKey<FormState>();
   GetLocation getLocation = GetLocation();
   String textAfterGetImage = "";
   File _image;
-  bool fabClicked = false;
+
+  bool isFabClicked=false ;
+
+  bool isHideFAB = false ;
+  bool isImageMapHide=false;
+  bool isNormalNote=false;
+
   String imgString = "";
   LocalNotification _localNotification = LocalNotification();
-  Note note;
-  String te ="";
+  Note note; 
   List<Note> list = [];
   WidgetSize fontWidgetSize;
-  SizeConfig sizeConfig;
-  String title;
-  TextEditingController meterController=TextEditingController();
+  SizeConfig sizeConfig; 
+  TextEditingController meterController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   bool _validate = false;
+
   _AddNotesState(this.note);
   bool cursor = true;
   DateTime firstDate = DateTime.now().add(Duration(minutes: 1));
-
   @override
   void initState() {
     super.initState();
@@ -60,10 +63,26 @@ class _AddNotesState extends State<AddNotes> {
       descriptionController.text = widget.note.description;
       imgString = widget.note.imagePath;
     }
+    if(widget.location){
+
+        isImageMapHide=false;
+        isNormalNote=false;
+    }else{
+      isHideFAB=true;
+      isImageMapHide=true;
+      isNormalNote=true;
+    }
     setState(() {
       activateFab();
     });
-    
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    getLocation.disposeFab();
+    descriptionController.dispose();
+    meterController.dispose();
   }
 
   Widget imageFr(String image) {
@@ -84,7 +103,7 @@ class _AddNotesState extends State<AddNotes> {
             CropAspectRatioPreset.original,
             CropAspectRatioPreset.ratio4x3,
             CropAspectRatioPreset.ratio16x9
-           ],
+          ],
           androidUiSettings: AndroidUiSettings(
               toolbarTitle: AppLocalizations.of(context).translate("cropper"),
               toolbarColor: Colors.blueAccent,
@@ -95,20 +114,17 @@ class _AddNotesState extends State<AddNotes> {
             minimumAspectRatio: 1.0,
           ));
       setState(() {
-        if(croppedFile!=null){
-         _image = croppedFile;
-         if (_image != null) {
-          imgString = base64String(_image.readAsBytesSync());
-        }
-        } else{
+        if (croppedFile != null) {
+          _image = croppedFile;
+          if (_image != null) {
+            imgString = base64String(_image.readAsBytesSync());
+          }
+        } else {
           return;
         }
-     
-    
       });
     }
   }
-
   putImageText() {
     textAfterGetImage = descriptionController.text;
     widget.camera == true
@@ -116,24 +132,21 @@ class _AddNotesState extends State<AddNotes> {
         : getImage(ImageSource.gallery);
     descriptionController.text = textAfterGetImage;
   }
-
   requestPermission() async {
     await Permission.camera.request();
     await Permission.photos.request();
   }
-activateFab()async{
-  SharedPreferences sharedPreferences=await SharedPreferences.getInstance();
-  bool fab = sharedPreferences.getBool("fabClicked");
-  if(fab == true){
-    fabClicked=true;
-    print("fabClicked true");
-  }else{
-    fabClicked=false;
-     print("fabClicked true");
+  activateFab() async {
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    bool fab = sharedPreferences.getBool("fabClicked");
+    if (fab == true) {
+      isFabClicked = true;
+      print("fabClicked true");
+     } else {
+      isFabClicked = false;
+      print("fabClicked false");
+    }
   }
-
-}
-
   getPermissionStatus() async {
     var status;
     if (widget.camera == true) {
@@ -167,47 +180,47 @@ activateFab()async{
   }
 
   @override
-  Widget build(BuildContext context)  {
+  Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
 
     return WillPopScope(
-          child: Scaffold(
-            key: _scaffoldKey,
-        floatingActionButton:widget.location == true   ? FloatingActionButton(
-                onPressed: ()async {
-
-                  setState(()  {
+      child: Scaffold(
+        key: _scaffoldKey,
+        floatingActionButton:!isHideFAB 
+              ? FloatingActionButton(
+                onPressed: () async {
+                  setState(() {
                     try {
-       getLocation.getPermissionStatus(context);
-                    } catch (e)
-                    {
+                      isFabClicked=true;
+                    //  getLocation.getPermissionStatus(context);
+                      getLocation.getPermissionStatus(context);
+                    } catch (e) {
                       print(e);
                     }
-
                   });
                 },
-                backgroundColor: fabClicked? Colors.blue:Colors.grey[500],
+                backgroundColor: isFabClicked ? Colors.blue : Colors.grey[500],
                 child: Icon(
                   Icons.gps_fixed,
                   color: Colors.white,
-                  size: 30,
+                  size: 30, 
                 ),
               )
-            : Container(),
+              : Container(),
         body: Stack(
           children: <Widget>[
             Container(
-            padding: EdgeInsets.only(top: 10),
-          
+              padding: EdgeInsets.only(top: 10),
               height: sizeConfig.screenHeight * .16,
               child: Column(
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.only( top:  sizeConfig.screenWidth * .02,left: 5),
+                    padding: EdgeInsets.only(
+                        top: sizeConfig.screenWidth * .02, left: 5),
                     child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
                         IconButton(
                           icon: Icon(Icons.arrow_back_ios,
                               color: Color(0xFF417BFb),
@@ -220,7 +233,7 @@ activateFab()async{
                             }));
                           },
                         ),
-                        Row(
+                        isImageMapHide?Row(
                           children: <Widget>[
                             Padding(
                                 padding: const EdgeInsets.only(right: 8.0),
@@ -229,7 +242,8 @@ activateFab()async{
                               padding: const EdgeInsets.only(right: 18.0),
                               child: IconButton(
                                 icon: Icon(
-                                  widget.camera == true
+                                  widget.camera == true 
+                                    
                                       ? Icons.camera_enhance
                                       : Icons.image,
                                   color: Color(0xFF417BFb),
@@ -238,16 +252,18 @@ activateFab()async{
                                 onPressed: () {
                                   try {
                                     getPermissionStatus();
-                                  } catch (e) {
+                                      } catch (e) {
                                     print("exception" + e);
-                                  }
+                                      }
                                 },
                               ),
                             ),
                           ],
-                        )
+                             ):Container()
+                    
                       ],
-                    ),
+                    )
+                    ,
                   ),
                 ],
               ),
@@ -258,10 +274,10 @@ activateFab()async{
                   right: sizeConfig.screenWidth * .02,
                   left: sizeConfig.screenWidth * .02,
                   bottom: sizeConfig.screenHeight * .005),
-              child: ListView(
+             child:! isImageMapHide && widget.location ?locationStartButton(): ListView(
                 children: <Widget>[
                   Text(
-                    "   ${formatDateTime()}   ",
+                    "  ${formatDateTime()} ",
                     style: TextStyle(
                         fontSize: fontWidgetSize.bodyFontSize - 13,
                         color: Colors.black45),
@@ -294,76 +310,170 @@ activateFab()async{
             ),
           ],
         ),
-      ), onWillPop: _onBackPressed,
-          );
-        }
-      
+      ),
+      onWillPop: _onBackPressed,
+    );
+  }
+
   String formatDateTime() {
-   String firstD =  DateFormat("MM MMMM  HH:mm").format(firstDate).toString() + " PM";
-   return firstD;
-   }
-      
+    String firstD = DateFormat("MM MMMM  HH:mm").format(firstDate).toString() + " PM";
+    return firstD;
+  }
+
   void updateDescription() {
     note.description = descriptionController.text;
-   }
-      
-   saveLocationNote(double xmeter) async {
-          String titleData = descriptionController.text.length > 12
-              ? descriptionController.text.substring(0, 12)
-              : descriptionController.text;
-          String descriptionData = descriptionController.text;
-          String s = DateFormat.yMMMd().format(DateTime.now());
-          if(descriptionController.text==""){
-           _displaySnackBar(AppLocalizations.of(context).translate("text_description_empty"));
+  }
+
+  saveLocationNote(double xmeter) async {
+    String titleData = descriptionController.text.length > 12
+        ? descriptionController.text.substring(0, 12)
+        : descriptionController.text;
+    String descriptionData = descriptionController.text;
+    String s = DateFormat.yMMMd().format(DateTime.now());
+    if (descriptionController.text == "") {
+      _displaySnackBar(
+          AppLocalizations.of(context).translate("text_description_empty"));
+    } else {
+      if (widget.edit == true) {
+        NoteDatabaseProvider.db.updateNote(new Note(
+            id: widget.note.id,
+            imagePath: imgString,
+            title: titleData,
+            description: descriptionData,
+            date: s,
+            time: firstDate.hour.toString()));
+        getLocation.getLastPosition(widget.note.id, titleData, descriptionData,
+            imgString, "location", _localNotification, xmeter);
+        Navigator.pop(context);
+      } else if (widget.edit == false) {
+        int id = await NoteDatabaseProvider.db.insertNote(new Note(
+            imagePath: imgString,
+            title: titleData,
+            description: descriptionData,
+            date: s,
+            time: firstDate.hour.toString()));
+        getLocation.getLastPosition(id, titleData, descriptionData, imgString,
+            "location $titleData", _localNotification, xmeter);
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+          return NoteList();
+        }));
+      }
+    }
+  }
+  
+  bool islocationForFirst(){
+   
+   if( widget.location ){
+      return true ;   
+    }else{
+        return false;
+    }
+     }
+
+  Widget  locationStartButton() {
+    return Container(
+      child: Center(
+          child: Column(
+        children: <Widget>[
+
+
+
+       Padding(
+            child: Image.asset(
+              "assets/locationMap.png",
+              width: sizeConfig.screenWidth*.8 ,
+              height: sizeConfig.screenHeight*.5,
+            ),
+            padding: EdgeInsets.only(top: sizeConfig.screenHeight * .1),
+          ),
+         Padding(
+            child: Text(
+              AppLocalizations.of(context).translate("welcome_location"),
+              style: TextStyle(
+                color: Colors.grey[500],
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            padding: EdgeInsets.only(top: sizeConfig.screenHeight * .001),
+          ),
+         Padding(
+            child: Text(
+              AppLocalizations.of(context).translate("welcome_location"),
+              style: TextStyle(
+                color: Colors.grey[500],
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            
+            padding: EdgeInsets.only(top: sizeConfig.screenHeight * .001),
+          ),
+         Padding(
+            padding: EdgeInsets.only(top: sizeConfig.screenHeight * .05),
+            child:
+            isFabClicked? Container(
+                height: 35,
+                width: 100,
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        colors: [Colors.blue[300], Colors.blueAccent]),
+                    borderRadius: BorderRadius.circular(20)),
+                child:
+             FlatButton(
+                    child: Text(
+                      AppLocalizations.of(context).translate("start_location"),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold),
+                    ),
+                    onPressed: () {
+                       setState(() {
+                        if(isFabClicked){
+                        isHideFAB = true;
+                        isImageMapHide=true;
+                        _displaySnackBar(" تم تنشيط موقعك الحالي سيتم تذكيرك بعد كتابة الملاحظة و ادخال المسافة");
                         }else{
-         if (widget.edit == true) {
-            NoteDatabaseProvider.db.updateNote(new Note(
-                id: widget.note.id,
-                imagePath: imgString,
-                title: titleData,
-                description: descriptionData,
-                date: s,
-                time: firstDate.hour.toString()));
-            getLocation.getLastPosition(widget.note.id, titleData, descriptionData,imgString,"location",_localNotification,xmeter);
-            Navigator.pop(context);
-          } else if (widget.edit == false) {
-            int id = await NoteDatabaseProvider.db.insertNote(new Note(
-                imagePath: imgString,
-                title: titleData,
-                description: descriptionData,
-                date: s,
-                time: firstDate.hour.toString()));
-            getLocation.getLastPosition(id, titleData, descriptionData,imgString,"location $titleData", _localNotification,xmeter);
-            Navigator.of(context)
-                .pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
-              return NoteList();
-            }));
-          }
+                          _displaySnackBar("please active gps");
                         }
-        
-        }
+                        });
+                   
+                    })
+
+            ):Container(),
+          )
+
+        ],
+      )),
+    );
+  }
+
   Widget locationDialog() {
+    
     showDialog(
         context: context,
         barrierDismissible: true,
         builder: (BuildContext context) {
           return Dialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0)),
             child: Form(
               key: _formKey,
               child: Container(
-                height:sizeConfig.screenHeight*.45,
-                width: sizeConfig.screenHeight*.4,
-                decoration: BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
+                height: sizeConfig.screenHeight * .45,
+                width: sizeConfig.screenHeight * .4,
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(20.0)),
                 child: Column(
                   children: <Widget>[
                     Stack(
                       children: <Widget>[
                         Container(
-                          height:sizeConfig.screenHeight*.22,
+                          height: sizeConfig.screenHeight * .22,
                         ),
                         Container(
-                          height:sizeConfig.screenHeight*.15,
+                          height: sizeConfig.screenHeight * .15,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.only(
                               topLeft: Radius.circular(10.0),
@@ -373,8 +483,8 @@ activateFab()async{
                           ),
                         ),
                         Positioned(
-                          top: sizeConfig.screenHeight*.09,
-                          left: sizeConfig.screenWidth*.25,
+                          top: sizeConfig.screenHeight * .09,
+                          left: sizeConfig.screenWidth * .25,
                           child: Container(
                             height: 90.0,
                             width: 90.0,
@@ -389,39 +499,38 @@ activateFab()async{
                         )
                       ],
                     ),
-                       textMeterField(),
-                    
+                    textMeterField(),
                     Padding(
                       padding: EdgeInsets.all(10.0),
-                      child: Text(AppLocalizations.of(context).translate("dialog_save_data"),
+                      child: Text(
+                        AppLocalizations.of(context)
+                            .translate("dialog_save_data"),
                         style: TextStyle(
                             color: Color(0xFF417BFb),
                             fontWeight: FontWeight.w600,
-                            fontSize:fontWidgetSize.bodyFontSize-8),
+                            fontSize: fontWidgetSize.bodyFontSize - 8),
                       ),
                     ),
-                    SizedBox(height: sizeConfig.screenHeight*.01),
-                  Row(
+                    SizedBox(height: sizeConfig.screenHeight * .01),
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
-                      FlatButton(
+                        FlatButton(
                           onPressed: () {
                             setState(() {
-                     if (_formKey.currentState.validate()) {
-                       saveLocationNote(double.parse(meterController?.text));
-                          }
-
+                              if (_formKey.currentState.validate()) {
+                                saveLocationNote(
+                                    double.parse(meterController?.text));
+                              }
                             });
-
-
-                             },
+                          },
                           color: Colors.teal,
                           child: Center(
                             child: Text(
                               AppLocalizations.of(context).translate("ok"),
                               style: TextStyle(
                                   color: Colors.white,
-                                  fontSize:fontWidgetSize.bodyFontSize-8,
+                                  fontSize: fontWidgetSize.bodyFontSize - 8,
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -436,7 +545,7 @@ activateFab()async{
                               AppLocalizations.of(context).translate("no"),
                               style: TextStyle(
                                   color: Colors.white,
-                                  fontSize:fontWidgetSize.bodyFontSize-8,
+                                  fontSize: fontWidgetSize.bodyFontSize - 8,
                                   fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -449,85 +558,83 @@ activateFab()async{
             ),
           );
         });
-
   }
-  Widget textMeterField(){
 
+  Widget textMeterField() {
     return SingleChildScrollView(
       child: Container(
-              child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal:40),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 40),
           child: TextFormField(
-             keyboardType: TextInputType.number,
-              controller:meterController,
-               textInputAction: TextInputAction.done,
-               style: TextStyle(
+            keyboardType: TextInputType.number,
+            controller: meterController,
+            textInputAction: TextInputAction.done,
+            style: TextStyle(
                 fontFamily: 'sans sherif',
                 fontWeight: FontWeight.normal,
                 color: Colors.blueAccent,
-                fontSize: fontWidgetSize.bodyFontSize-5 ),
+                fontSize: fontWidgetSize.bodyFontSize - 5),
             validator: (value) {
               if (value.isEmpty) {
-                _validate=true;
-                return AppLocalizations.of(context).translate("hint_distance_error");
-                }
+                _validate = true;
+                return AppLocalizations.of(context)
+                    .translate("hint_distance_error");
+              }
               return null;
             },
-              decoration: InputDecoration( 
-              icon:Icon( Icons.location_on,color: Colors.blueAccent,),
-              hintMaxLines:1,
-              hintText:! _validate ?  AppLocalizations.of(context).translate("hint_distance"):null,
-              hintStyle: TextStyle(
-              fontFamily: 'sans sherif',
-              fontWeight: FontWeight.bold,
-              color: Colors.grey,
-              fontSize: fontWidgetSize.bodyFontSize-10),
-          ),
+            decoration: InputDecoration(
+              icon: Icon(
+                Icons.location_on,
+                color: Colors.blueAccent,
               ),
+              hintMaxLines: 1,
+              hintText: !_validate
+                  ? AppLocalizations.of(context).translate("hint_distance")
+                  : null,
+              hintStyle: TextStyle(
+                  fontFamily: 'sans sherif',
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey,
+                  fontSize: fontWidgetSize.bodyFontSize - 10),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  _displaySnackBar(String text)  {
-   final snackBar = SnackBar(
-     backgroundColor: Colors.blueAccent,
-     content: Text( text));
-     _scaffoldKey.currentState.showSnackBar(snackBar);  
+  _displaySnackBar(String text) {
+    final snackBar = SnackBar(backgroundColor: Colors.blueAccent, content: Text(text));
+    _scaffoldKey.currentState.showSnackBar(snackBar);
   }
- Widget saveButton() {
-          return widget.location == true
-              ? fabClicked == true
-                  ? InkWell(
-                      onTap: () { 
-                        //
-                      locationDialog() ;
-                      },
-                      child: Icon(Icons.save,
-                          color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3))
-                     : Container()
-                     : InkWell(
-                      onTap: () {
-                        if(descriptionController.text==""){
-                       _displaySnackBar(AppLocalizations.of(context).translate("text_description_empty"));
-                        }else{
-                              if (widget.edit == true) {
-                      saveNoteDialog(widget.note.id,widget.edit,
-                          descriptionController.text, 
-                           imgString, context);
-                        } else if (widget.edit == false) {
-                      saveNoteDialog(0, widget.edit, descriptionController.text,
-                          imgString, context);
-                         }
-                        }
-                   
-                  },
-                  child: Icon(Icons.save,
-                      color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3));
-        }
+
+  Widget saveButton() {
+    return widget.location == true ? InkWell(
+                onTap : () { locationDialog(); },
+                child : Icon(Icons.save,
+                color : Color(0xFF417BFb), size: fontWidgetSize.icone - 3)) : InkWell(
+            onTap: () {
+              if (descriptionController.text == "") {
+                _displaySnackBar(AppLocalizations.of(context)
+                    .translate("text_description_empty"));
+              } else {
+                if (widget.edit == true) {
+                  saveNoteDialog(widget.note.id, widget.edit,
+                      descriptionController.text, imgString, context);
+                } else if (widget.edit == false) {
+                  saveNoteDialog(0, widget.edit, descriptionController.text,
+                      imgString, context);
+                }
+              }
+              },
+            child: Icon(Icons.save,
+                color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3));
+  }
+
   Future<bool> _onBackPressed() {
-          return Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
-          return NoteList();
-        }));
+    return Navigator.pushReplacement(context,
+        MaterialPageRoute(builder: (BuildContext context) {
+      return NoteList();
+    }));
   }
 }

@@ -9,12 +9,11 @@ import 'package:alarm_recorder/utils/settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';  
-
 import '../Translate/app_localizations.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
+  MyHomePage({Key key}) : super(key: key);
+ 
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }

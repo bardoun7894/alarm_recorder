@@ -2,6 +2,8 @@ import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/Translate/change_language.dart';
 import 'package:flutter/material.dart';
 
+import 'about.dart';
+
 class MySettings extends StatefulWidget {
   @override
   _MySettingsState createState() => _MySettingsState();
@@ -51,6 +53,9 @@ class _MySettingsState extends State<MySettings> {
                 leading: Icon(Icons.info_outline,color: Colors.blueAccent,),
                 title: Text(AppLocalizations.of(context).translate("about"),style: TextStyle(color: Colors.grey)),
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
+                onTap: (){
+                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {return About();}));
+                },
               ),
             ),
           ],

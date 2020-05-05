@@ -22,9 +22,15 @@
   "cropper": "قص الصورة ",
   "disable_ads": "أزل الاعلانات",
   "name_the_record": "اضف اسم للمقطع",
-  "text_description_empty": " لم يتم كتابة اي ملاحظة  ", 
+  "text_description_empty": " لم يتم كتابة اي ملاحظة  ",
+  "call": "اتصل بنا ",
+  "email": "أرسل رسالة",
+  "contact_us": "راسلنا",
   "hint_distance": "  (أضف المسافة للتذكير  (متر" ,
-  "hint_distance_error": " المرجو ادخال المسافة " 
+  "hint_distance_error": " المرجو ادخال المسافة " ,
+  "welcome_location": " gps مرحبا بك في خدمة تذكير عبر ",
+  "start_location": "ابدأ "
+
   
 
 }

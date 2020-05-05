@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'app_localizations.dart';
 import 'app_language.dart';
+import 'package:alarm_recorder/home_page/homepage.dart';
 
 class ChangeLanguage extends StatefulWidget {
   @override
@@ -28,14 +29,19 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
           children: <Widget>[
             RaisedButton(
               onPressed: () async{
-                print('kkk');
                 appLanguage.changeLanguage(Locale("en"));
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+                return MyHomePage();
+                }));
               },
-              child: Text('English'),
+        child: Text('English'),
             ),
             RaisedButton(
               onPressed: () {
                 appLanguage.changeLanguage(Locale("ar"));
+                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+                 return MyHomePage();
+                }));
               },
               child: Text('العربي'),
             )
