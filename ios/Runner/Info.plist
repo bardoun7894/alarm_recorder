@@ -42,6 +42,10 @@
 	<string>This app needs access to location when in the background.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app needs access to location when open.</string>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>itms</string>
+    </array>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This sample uses the microphone to record your speech </string>
 	<key>NSPhotoLibraryUsageDescription</key>

@@ -1,14 +1,14 @@
 {
-  "arabic_main": "مذكرتي الذكية",
-  "app_name" : " الذكية",
-  "pre_name" : "مذكرتي",
+  "arabic_main": "I won't Forget",
+  "app_name" : " نوع التذكير",
+  "pre_name" : "اختر",
   "note_main": "مذكرة",
-  "recorder_main": "مسجلة",
-  "location_main": "مكاني",
+  "recorder_main": "مسجل",
+  "location_main": "عند المغادرة",
   "camera_main": "كاميرا",
   "note_not_found": "لا يوجد مذكرات المرجو الاضافة ...",
   "dialog_save_data": "هل تريد الحفظ ؟",
-  "dialog_settings": "لا يمكن جلب موقعك الحالي المرجو تنشيط GPS لولوج هذه الخدمة  جرب مرة أخرى",
+  "dialog_settings": " لا يمكن جلب موقعك الحالي المرجو تنشيط GPS لولوج هذه الخدمة  جرب مرة أخرى  ",
   "ok": "نعم",
   "no": "لا",
   "add_note": "أضف مذكرة",
@@ -24,13 +24,16 @@
   "name_the_record": "اضف اسم للمقطع",
   "text_description_empty": " لم يتم كتابة اي ملاحظة  ",
   "call": "اتصل بنا ",
-  "email": "أرسل رسالة",
-  "contact_us": "راسلنا",
+  "email":"أرسل رسالة",
+  "contact_us":"راسلنا",
   "hint_distance": "  (أضف المسافة للتذكير  (متر" ,
   "hint_distance_error": " المرجو ادخال المسافة " ,
-  "welcome_location": " gps مرحبا بك في خدمة تذكير عبر ",
-  "start_location": "ابدأ "
+  "welcome_location": "  مرحبا بك في خدمة تذكير بالمسافة ",
+  "start_location": "ابدأ ",
+  "save": "حفظ",
+  "rate_title": "هل أعجبك التطبيق ؟",
+  "rate_message": "المرجو تقييم تطبيقنا فهذا يعني لنا الكثير",
+  "snack_message": "تم تنشيط موقعك الحالي سيتم تذكيرك بعد كتابة الملاحظة و ادخال المسافة"
 
-  
 
 }

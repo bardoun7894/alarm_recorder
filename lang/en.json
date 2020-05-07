@@ -1,7 +1,7 @@
 {
-  "arabic_main": "",
-  "pre_name": "My smart ",
-  "app_name": "Memory",
+  "arabic_main": "I won't Forget",
+  "pre_name": "Choose ",
+  "app_name": "Reminder Type",
   "note_main": "Note",
   "recorder_main": "Recorder",
   "location_main": "Location",
@@ -29,5 +29,10 @@
    "hint_distance": "add distance " ,
    "hint_distance_error": "please enter the distance " ,
    "welcome_location": " welcome to reminder Note location service  ",
-   "start_location": "Start "
+   "start_location": "Start ",
+   "save": "save",
+   "rate_title": "Enjoying our Reminder App?",
+   "rate_message": "It would mean a lot to us, if you leave a rating.",
+   "snack_message": "your location is activated you will be reminded after write a note and enter the distance ."
+
 }

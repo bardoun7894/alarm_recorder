@@ -56,6 +56,7 @@ MyApp({this.appLanguage});
 }
 
 class _MyAppState extends State<MyApp> {
+
   AndroidInitializationSettings initializationSettingsAndroid;
   IOSInitializationSettings initializationSettingsIOS;
   InitializationSettings initializationSettings;
@@ -67,8 +68,8 @@ class _MyAppState extends State<MyApp> {
     _requestIOSPermissions();
     _configureDidReceiveLocalNotificationSubject();
     _configureSelectNotificationSubject();
+// _appRatingService.promptAppRating(context);
   }
-
   @override
   void dispose() {
     getLocation.disposeLocation();
@@ -78,11 +79,8 @@ class _MyAppState extends State<MyApp> {
     selectNotificationSubject.close();
   }
 
-
-  
   Future<void>  initNotificSettings() async {
-     notificationAppLaunchDetails  =
-      await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
+  notificationAppLaunchDetails  = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
   var initializationSettingsAndroid = AndroidInitializationSettings('iconsr');
   // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
   // of the `IOSFlutterLocalNotificationsPlugin` class
@@ -148,8 +146,7 @@ class _MyAppState extends State<MyApp> {
        } else {
         customPayload = payload;
         print(payload);
-        await navigatorKey.currentState
-            .pushNamed('/recordPlayer', arguments: customPayload);
+        await navigatorKey.currentState.pushNamed('/recordPlayer', arguments: customPayload);
           }
     });
   }

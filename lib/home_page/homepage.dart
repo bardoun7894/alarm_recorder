@@ -8,7 +8,8 @@ import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';  
+import 'package:flutter/services.dart';
+import 'package:rate_my_app/rate_my_app.dart';
 import '../Translate/app_localizations.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -24,11 +25,18 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
 //  AdmobBannerSize bannerSize;
 //  AdmobInterstitial interstitialAd;
 //  AdmobReward rewardAd;
-
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
-
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
+  RateMyApp _rateMyApp = RateMyApp(
+    preferencesPrefix: 'rateMyApp_',
+    minDays: 3,
+    minLaunches: 7,
+    remindDays: 2,
+    remindLaunches: 5,
+    //appStoreIdentifier: '',
+    googlePlayIdentifier: 'alarmrecorder.example.com.alarm_recorder',
+  );
 
   @override
   void initState() {
@@ -51,7 +59,33 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
 //
 //    interstitialAd.load();
 //    rewardAd.load();
+
+  _rateMyApp.init().then(
+     (_) {
+        if (_rateMyApp.shouldOpenDialog) {
+          launchAppRating(context,AppLocalizations.of(context).translate("rate_title"),AppLocalizations.of(context).translate("rate_message"));
+        }
+      },
+    );
   }
+
+  void launchAppRating(BuildContext context,String title,String message) {
+    _rateMyApp.showStarRateDialog(
+      context,
+      title: title,
+      message: message,
+      actionsBuilder: (_, stars) => <Widget>[
+        FlatButton(
+          child: Text(AppLocalizations.of(context).translate("ok")),
+          onPressed: () async {
+            await _rateMyApp.callEvent(RateMyAppEventType.rateButtonPressed);
+            Navigator.pop<RateMyAppDialogButton>(context, RateMyAppDialogButton.rate);
+          },
+        ),
+      ],
+    );
+  }
+
     @override
   void dispose() {
     //TODO add ads
@@ -66,13 +100,9 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
             ));
-
             sizeConfig = SizeConfig(context);
             fontWidgetSize = WidgetSize(sizeConfig);
             double raduis = sizeConfig.screenWidth * 0.10;
-
-
-
             return Scaffold(
               key: _scaffoldKey,
               drawer: Drawer(
@@ -98,9 +128,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                           SizedBox(
                             width: 10,
                           ),
-                          Text(
-                           AppLocalizations.of(context).translate("pre_name")  +
-                                AppLocalizations.of(context).translate("app_name"),
+                          Text( AppLocalizations.of(context).translate("arabic_main"),
                             style: TextStyle(
                                 color: Colors.white, fontWeight: FontWeight.bold),
                           ),
@@ -256,14 +284,14 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                                   Text(
                                     AppLocalizations.of(context).translate('pre_name'),
                                     style: TextStyle(
-                                        fontSize: fontWidgetSize.titleFontSize,
+                                        fontSize: fontWidgetSize.titleFontSize-8,
                                         fontWeight: FontWeight.normal,
                                         color: Colors.white),
                                   ),
                                   Text(
                                     AppLocalizations.of(context).translate('app_name'),
                                     style: TextStyle(
-                                        fontSize: fontWidgetSize.titleFontSize,
+                                        fontSize: fontWidgetSize.titleFontSize-8,
                                         fontWeight: FontWeight.bold,
                                         color: Colors.white),
                                   ),
@@ -484,32 +512,32 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
               ),
             );
           }
-
-  String getBannerAdUnitId() {
-    if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/2934735716';
-    } else if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/6300978111';
-    }
-    return null;
-  }
-
-  String getInterstitialAdUnitId() {
-    if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/4411468910';
-    } else if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/1033173712';
-    }
-    return null;
-  }
-
-  String getRewardBasedVideoAdUnitId() {
-    if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/1712485313';
-    } else if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/5224354917';
-    }
-    return null;
-  }
+//
+//  String getBannerAdUnitId() {
+//    if (Platform.isIOS) {
+//      return 'ca-app-pub-3940256099942544/2934735716';
+//    } else if (Platform.isAndroid) {
+//      return 'ca-app-pub-3940256099942544/6300978111';
+//    }
+//    return null;
+//  }
+//
+//  String getInterstitialAdUnitId() {
+//    if (Platform.isIOS) {
+//      return 'ca-app-pub-3940256099942544/4411468910';
+//    } else if (Platform.isAndroid) {
+//      return 'ca-app-pub-3940256099942544/1033173712';
+//    }
+//    return null;
+//  }
+//
+//  String getRewardBasedVideoAdUnitId() {
+//    if (Platform.isIOS) {
+//      return 'ca-app-pub-3940256099942544/1712485313';
+//    } else if (Platform.isAndroid) {
+//      return 'ca-app-pub-3940256099942544/5224354917';
+//    }
+//    return null;
+//  }
 
 }

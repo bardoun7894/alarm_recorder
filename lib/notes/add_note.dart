@@ -376,9 +376,6 @@ class _AddNotesState extends State<AddNotes> {
       child: Center(
           child: Column(
         children: <Widget>[
-
-
-
        Padding(
             child: Image.asset(
               "assets/locationMap.png",
@@ -398,17 +395,7 @@ class _AddNotesState extends State<AddNotes> {
 
             padding: EdgeInsets.only(top: sizeConfig.screenHeight * .001),
           ),
-         Padding(
-            child: Text(
-              AppLocalizations.of(context).translate("welcome_location"),
-              style: TextStyle(
-                color: Colors.grey[500],
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            
-            padding: EdgeInsets.only(top: sizeConfig.screenHeight * .001),
-          ),
+
          Padding(
             padding: EdgeInsets.only(top: sizeConfig.screenHeight * .05),
             child:
@@ -433,9 +420,7 @@ class _AddNotesState extends State<AddNotes> {
                         if(isFabClicked){
                         isHideFAB = true;
                         isImageMapHide=true;
-                        _displaySnackBar(" تم تنشيط موقعك الحالي سيتم تذكيرك بعد كتابة الملاحظة و ادخال المسافة");
-                        }else{
-                          _displaySnackBar("please active gps");
+                        _displaySnackBar(AppLocalizations.of(context).translate("snack_message"));
                         }
                         });
                    
@@ -611,8 +596,13 @@ class _AddNotesState extends State<AddNotes> {
   Widget saveButton() {
     return widget.location == true ? InkWell(
                 onTap : () { locationDialog(); },
-                child : Icon(Icons.save,
-                color : Color(0xFF417BFb), size: fontWidgetSize.icone - 3)) : InkWell(
+                child : Row(
+                  children: <Widget>[
+                    Icon(Icons.save, color : Color(0xFF417BFb), size: fontWidgetSize.icone - 3),
+                    Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent),)
+                  ],
+                )
+    ) : InkWell(
             onTap: () {
               if (descriptionController.text == "") {
                 _displaySnackBar(AppLocalizations.of(context)
@@ -624,12 +614,15 @@ class _AddNotesState extends State<AddNotes> {
                 } else if (widget.edit == false) {
                   saveNoteDialog(0, widget.edit, descriptionController.text,
                       imgString, context);
-                }
-              }
-              },
-            child: Icon(Icons.save,
-                color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3));
-  }
+                        }}
+                  },
+            child: Row(
+              children: <Widget>[
+                Icon(Icons.save,      color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3),
+                Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent),)
+              ],
+            ));
+             }
 
   Future<bool> _onBackPressed() {
     return Navigator.pushReplacement(context,
