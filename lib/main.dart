@@ -166,7 +166,7 @@ class _MyAppState extends State<MyApp> {
             false,
             note: customNote,
           ),
-      '/recordPlayer': (context) => RecorderPlayer(customPayload),
+        '/recordPlayer': (context) => RecorderPlayer(customPayload),
                    },
           debugShowCheckedModeBanner: false,
           locale: model.appLocal,

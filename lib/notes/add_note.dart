@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
@@ -90,40 +92,43 @@ class _AddNotesState extends State<AddNotes> {
         image, sizeConfig.screenHeight * .13, sizeConfig.screenWidth * .50);
   }
   Future getImage(source) async {
-    var image = await ImagePicker.pickImage(source: source);
-    if (image != null) {
-      File croppedFile = await ImageCropper.cropImage(
-          sourcePath: image.path,
-          compressQuality: 100,
-          maxWidth: 480,
-          maxHeight: 480,
-          aspectRatioPresets: [
-            CropAspectRatioPreset.square,
-            CropAspectRatioPreset.ratio3x2,
-            CropAspectRatioPreset.original,
-            CropAspectRatioPreset.ratio4x3,
-            CropAspectRatioPreset.ratio16x9
-          ],
-          androidUiSettings: AndroidUiSettings(
-              toolbarTitle: AppLocalizations.of(context).translate("cropper"),
-              toolbarColor: Colors.blueAccent,
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
-              lockAspectRatio: false),
-          iosUiSettings: IOSUiSettings(
-            minimumAspectRatio: 1.0,
-          ));
-      setState(() {
-        if (croppedFile != null) {
-          _image = croppedFile;
-          if (_image != null) {
-            imgString = base64String(_image.readAsBytesSync());
+    try{
+      var image = await ImagePicker.pickImage(source: source);
+      if (image != null) {
+        File croppedFile = await ImageCropper.cropImage(
+            sourcePath: image.path,
+            compressQuality: 100,
+            maxWidth: 480,
+            maxHeight: 480,
+            aspectRatioPresets: [
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio3x2,
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPreset.ratio16x9
+            ],
+            androidUiSettings: AndroidUiSettings(
+                toolbarTitle: AppLocalizations.of(context).translate("cropper"),
+                toolbarColor: Colors.blueAccent,
+                toolbarWidgetColor: Colors.white,
+                initAspectRatio: CropAspectRatioPreset.original,
+                lockAspectRatio: false),
+            iosUiSettings: IOSUiSettings(
+              minimumAspectRatio: 1.0,
+            ));
+        setState(() {
+          if (croppedFile != null) {
+            _image = croppedFile;
+            if (_image != null) {
+              imgString = base64String(_image.readAsBytesSync());
+            }
+          } else {
+            return;
           }
-        } else {
-          return;
-        }
-      });
-    }
+        });
+      }
+    }catch(e){}
+print(e.toString());
   }
   putImageText() {
     textAfterGetImage = descriptionController.text;
@@ -301,7 +306,7 @@ class _AddNotesState extends State<AddNotes> {
                     cursorRadius: Radius.circular(2),
                     cursorWidth: 1,
                     autofocus: false,
-                    style: TextStyle(color: Colors.grey[700], fontSize: 16),
+                    style: TextStyle(color: Colors.grey[700], fontSize: 16,fontWeight: FontWeight.bold),
                     maxLines: 100,
                     keyboardType: TextInputType.multiline,
                   ),
@@ -556,7 +561,7 @@ class _AddNotesState extends State<AddNotes> {
             textInputAction: TextInputAction.done,
             style: TextStyle(
                 fontFamily: 'sans sherif',
-                fontWeight: FontWeight.normal,
+                fontWeight: FontWeight.bold,
                 color: Colors.blueAccent,
                 fontSize: fontWidgetSize.bodyFontSize - 5),
             validator: (value) {
@@ -596,33 +601,43 @@ class _AddNotesState extends State<AddNotes> {
   Widget saveButton() {
     return widget.location == true ? InkWell(
                 onTap : () { locationDialog(); },
-                child : Row(
-                  children: <Widget>[
-                    Icon(Icons.save, color : Color(0xFF417BFb), size: fontWidgetSize.icone - 3),
-                    Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent),)
-                  ],
+                child :  Container(
+                  width: 50,
+                  height: 24,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(19),
+                      border: Border.all(color: Colors.blueAccent,width: 3)
+                  ),
+                  child: Center(
+
+                    child:   Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 14),),
+                  ),
                 )
     ) : InkWell(
             onTap: () {
               if (descriptionController.text == "") {
                 _displaySnackBar(AppLocalizations.of(context)
                     .translate("text_description_empty"));
-              } else {
-                if (widget.edit == true) {
+              } else { if (widget.edit == true) {
                   saveNoteDialog(widget.note.id, widget.edit,
                       descriptionController.text, imgString, context);
-                } else if (widget.edit == false) {
+                }else if (widget.edit == false) {
                   saveNoteDialog(0, widget.edit, descriptionController.text,
                       imgString, context);
                         }}
                   },
-            child: Row(
-              children: <Widget>[
-                Icon(Icons.save,      color: Color(0xFF417BFb), size: fontWidgetSize.icone - 3),
-                Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent),)
-              ],
+            child:Container(
+              width: 50,
+              height: 24,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(19),
+                  border: Border.all(color: Colors.blueAccent,width: 3)
+              ),
+              child: Center(
+                child:   Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 14),),
+              ),
             ));
-             }
+           }
 
   Future<bool> _onBackPressed() {
     return Navigator.pushReplacement(context,

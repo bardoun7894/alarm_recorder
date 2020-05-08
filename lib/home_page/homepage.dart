@@ -35,7 +35,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
     remindDays: 2,
     remindLaunches: 5,
     //appStoreIdentifier: '',
-    googlePlayIdentifier: 'alarmrecorder.example.com.alarm_recorder',
+    googlePlayIdentifier: 'iwontforget.note.com.alarm_recorder',
   );
 
   @override
@@ -105,7 +105,8 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
             double raduis = sizeConfig.screenWidth * 0.10;
             return Scaffold(
               key: _scaffoldKey,
-              drawer: Drawer(
+              drawer:
+              Drawer(
                 child: Column(
                   children: <Widget>[
                     Container(
@@ -148,7 +149,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                       ),
                       title: Text(
                         AppLocalizations.of(context).translate("add_note"),
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: Colors.grey[700]),
                       ),
                     ),
                     ListTile(
@@ -164,7 +165,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                       ),
                       title: Text(
                         AppLocalizations.of(context).translate("all_notes"),
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: Colors.grey[700]),
                       ),
                     ),
                     ListTile(
@@ -180,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                       ),
                       title: Text(
                         AppLocalizations.of(context).translate("record_voice"),
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: Colors.grey[700]),
                       ),
                     ),
                     ListTile(
@@ -196,7 +197,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                       ),
                       title: Text(
                         AppLocalizations.of(context).translate("recorder_list"),
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: Colors.grey[700]),
                       ),
                     ),
                     ListTile(
@@ -212,7 +213,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                       ),
                       title: Text(
                         AppLocalizations.of(context).translate("settings"),
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: Colors.grey[700]),
                       ),
                     ),
                   ],

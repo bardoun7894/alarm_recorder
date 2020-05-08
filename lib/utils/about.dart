@@ -2,7 +2,7 @@ import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class About extends StatelessWidget {
+class ContactUs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,7 +18,8 @@ class About extends StatelessWidget {
               color: Color(0xffF5F6FA),
               child: Column(
              children: <Widget>[
-              FlatButton(onPressed: null, child: Text(AppLocalizations.of(context).translate("contact_us"),style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),))
+              FlatButton(onPressed: null, child: Text(AppLocalizations.of(context).translate("contact_us"),
+                style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: Colors.grey[700]),))
             , Padding(
               padding:EdgeInsets.only(top:MediaQuery.of(context).size.height*.1,left: 20),
               child: Column(
@@ -56,11 +57,11 @@ class About extends StatelessWidget {
                  },
                  child: Chip(
 
-             backgroundColor: Colors.pinkAccent,
+             backgroundColor: Colors.teal,
             label: Row(
             children: <Widget>[
               CircleAvatar(child:
-                    Icon(Icons.phone,color: Colors.pinkAccent,)
+                    Icon(Icons.phone,color: Colors.teal,)
                     ,backgroundColor: Colors.white,),
                    SizedBox(width: 50,),
                    Text(AppLocalizations.of(context).translate("call"),style:

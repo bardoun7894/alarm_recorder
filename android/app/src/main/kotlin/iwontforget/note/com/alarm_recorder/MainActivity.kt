@@ -1,4 +1,4 @@
-package alarmrecorder.example.com.alarm_recorder
+package iwontforget.note.com.alarm_recorder
 
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity

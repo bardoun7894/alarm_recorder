@@ -14,8 +14,8 @@ class _MySettingsState extends State<MySettings> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(AppLocalizations.of(context).translate("settings"),style:TextStyle(color: Colors.grey,)),
-        leading: InkWell(onTap: ()=>Navigator.pop(context),child: Icon(Icons.arrow_back,color: Colors.grey,)),
+        title: Text(AppLocalizations.of(context).translate("settings"),style:TextStyle(color:  Colors.grey[700],)),
+        leading: InkWell(onTap: ()=>Navigator.pop(context),child: Icon(Icons.arrow_back,color:  Colors.grey[700],)),
         backgroundColor: Colors.white,
       ),
       body: Container(
@@ -28,33 +28,33 @@ class _MySettingsState extends State<MySettings> {
                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return ChangeLanguage();}));
                 },
                 leading: Icon(Icons.language,color: Colors.blueAccent,),
-                title: Text(AppLocalizations.of(context).translate("change_language"),style: TextStyle(color: Colors.grey)),
-                trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
+                title: Text(AppLocalizations.of(context).translate("change_language"),style: TextStyle(color:  Colors.grey[700])),
+                trailing:Icon(Icons.arrow_forward,color:  Colors.grey[700],) ,
               ),
             ),
             Card(
               child: ListTile(
                 leading: Icon(Icons.notifications,color: Colors.blueAccent,),
 
-                title: Text(AppLocalizations.of(context).translate("notifications"),style: TextStyle(color: Colors.grey),),
-                trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
+                title: Text(AppLocalizations.of(context).translate("notifications"),style: TextStyle(color:  Colors.grey[700]),),
+                trailing:Icon(Icons.arrow_forward,color: Colors.grey[700],) ,
               ),
             ),
            Card(
               child: ListTile(
                 leading: Icon(Icons.monetization_on,color: Colors.blueAccent,),
-                title: Text(AppLocalizations.of(context).translate("disable_ads"),style: TextStyle(color: Colors.grey),),
-                trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
+                title: Text(AppLocalizations.of(context).translate("disable_ads"),style: TextStyle(color:  Colors.grey[700]),),
+                trailing:Icon(Icons.arrow_forward,color: Colors.grey[700],) ,
               ),
             ),
 
             Card(
               child: ListTile(
                 leading: Icon(Icons.info_outline,color: Colors.blueAccent,),
-                title: Text(AppLocalizations.of(context).translate("about"),style: TextStyle(color: Colors.grey)),
-                trailing:Icon(Icons.arrow_forward,color: Colors.grey,) ,
+                title: Text(AppLocalizations.of(context).translate("contact_us"),style: TextStyle(color:  Colors.grey[700])),
+                trailing:Icon(Icons.arrow_forward,color: Colors.grey[700],),
                 onTap: (){
-                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {return About();}));
+                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {return ContactUs();}));
                 },
               ),
             ),
