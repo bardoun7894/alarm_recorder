@@ -48,18 +48,33 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   @override
   void dispose() { 
     super.dispose();
-    audioC.dispose();
     audioC.durBPlayerStreamClose();
+    audioC.dispose();
+
   }
 
   @override
   void initState() {
-
     super.initState(); 
     if (widget.pathfromNotifiction != "") {
+
       audioC.buttonPlayPause(widget.pathfromNotifiction);
-          }
+       }
+     }
+
+  deleteFiles(){
+  for(int i =0; i<_selectedIndexList.length;i++){
+
+     print("$i -- ${_recordList[i].id}");
+   RegisterDatabaseProvider.db.deleteRecordWithId(_recordList[i].id);
+        }
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (BuildContext context) {
+              return RecorderPlayer("");
+            }));
       }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,19 +86,10 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
           child: IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-            for(int i =0;i<_selectedIndexList.length;i++){
-             print(_selectedIndexList[i]);
-           RegisterDatabaseProvider.db.deleteRecordWithId(_recordList[i].id) ;
-                   }
-           Navigator.of(context).pushReplacement(MaterialPageRoute(
-           builder: (BuildContext context) {
-           return RecorderPlayer("");
-                 })); 
-              _selectedIndexList.sort();
-              print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
-            }),
-        ));
-      }else{
+              deleteFiles();
+             }),
+           ));
+          }else{
       _buttons.add(
          Padding(
            padding: const EdgeInsets.only(right:10.0),
@@ -343,8 +349,10 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     return ListView.builder(
       itemCount: data.length != null ? data.length : 0,
       itemBuilder: (BuildContext context, index) {
-        _recordList=data;
         RecordModel recordModel = data[index];
+        print("DATA __ ${data[index].id}");
+        _recordList=data;
+
         return Padding(
           padding: EdgeInsets.only(
             right: sizeConfig.screenWidth * .05,

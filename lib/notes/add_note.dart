@@ -279,7 +279,7 @@ print(e.toString());
                   right: sizeConfig.screenWidth * .02,
                   left: sizeConfig.screenWidth * .02,
                   bottom: sizeConfig.screenHeight * .005),
-             child:! isImageMapHide && widget.location ?locationStartButton(): ListView(
+             child:! isImageMapHide && widget.location ? locationStartButton(): ListView(
                 children: <Widget>[
                   Text(
                     "  ${formatDateTime()} ",
