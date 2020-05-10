@@ -1,4 +1,6 @@
  
+import 'package:alarm_recorder/databases/NoteDatabase.dart';
+import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/Translate/app_language.dart';
 import 'package:alarm_recorder/utils/getlocation.dart';
@@ -152,36 +154,47 @@ class _MyAppState extends State<MyApp> {
   }
   @override
   Widget build(BuildContext context) {
-    return  ChangeNotifierProvider<AppLanguage>(
-      child: Consumer<AppLanguage>(
-        builder: (context, model, child) {
-        return MaterialApp(
-          navigatorKey: navigatorKey,
-          initialRoute: '/',
-          routes: {
-        // When navigating to the "/second" route, build the SecondScreen widget.
-        '/textField': (context) => AddNotes(
-            true,
-            false,
-            false,
-            note: customNote,
-          ),
-        '/recordPlayer': (context) => RecorderPlayer(customPayload),
-                   },
-          debugShowCheckedModeBanner: false,
-          locale: model.appLocal,
-          supportedLocales: [
-            Locale('en','US'),
-            Locale('ar',''),  ],
-          localizationsDelegates: [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-               ],
-          home: MyHomePage(),
-          );
-      }), create:(_) =>  widget.appLanguage,
-    );
+    return
+      MultiProvider(
+        providers: [
+        ChangeNotifierProvider<AppLanguage>( create:(_) =>  widget.appLanguage,),
+        ChangeNotifierProvider( create:(_) =>  RegisterDatabaseProvider.db,),
+        ChangeNotifierProvider( create:(_) =>  NoteDatabaseProvider.db,)
+
+        ],
+
+        child: Consumer<AppLanguage>(
+          builder: (context, model, child) {
+          return MaterialApp(
+            navigatorKey: navigatorKey,
+            initialRoute: '/',
+            routes: {
+          // When navigating to the "/second" route, build the SecondScreen widget.
+          '/textField': (context) => AddNotes(
+              true,
+              false,
+              false,
+              note: customNote,
+            ),
+          '/recordPlayer': (context) => RecorderPlayer(customPayload),
+                     },
+            debugShowCheckedModeBanner: false,
+            locale: model.appLocal,
+            supportedLocales: [
+              Locale('en','US'),
+              Locale('ar',''),  ],
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+                 ],
+            home: MyHomePage(),
+            );
+        }),
+
+
+
+      );
   }
 }
 class LocalNotification {

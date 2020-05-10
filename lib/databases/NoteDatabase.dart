@@ -1,12 +1,14 @@
  import 'dart:io';
 
+import 'package:alarm_recorder/Translate/change_language.dart';
 import 'package:alarm_recorder/model/Note.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'package:sqflite/sqflite.dart'; 
 
-class NoteDatabaseProvider {
+class NoteDatabaseProvider extends ChangeNotifier{
   NoteDatabaseProvider._();
 
 static final NoteDatabaseProvider db =NoteDatabaseProvider._();
@@ -50,8 +52,8 @@ Future<List<Note>> getAllNotes() async{
 Future<int> insertNote(Note note) async {
     // Get a reference to the database.
     final Database db = await database;
-   var raw =await db.insert("note",note.toMap(),conflictAlgorithm: ConflictAlgorithm.replace);
-
+  var raw =await db.insert("note",note.toMap(),conflictAlgorithm: ConflictAlgorithm.replace);
+notifyListeners();
    return raw;
 }
 
@@ -63,15 +65,18 @@ Future<Note> getNoteWithId(int id) async{
 
   deleteNoteWithId(int id) async{
 final db =await database;
+notifyListeners();
 return db.delete("note",where: "id=?",whereArgs: [id]);
   }
- deleteAllNotes() async{
-final db =await database;
-db.delete("note");
-  }
+// deleteAllNotes() async{
+//final db =await database;
+//db.delete("note");
+//notifyListeners();
+//  }
   updateNote(Note note) async{
   final db =await database;
   var response=await db.update("note", note.toMap(),where: "id=?",whereArgs: [note.id]);
+  notifyListeners();
   return response;
   }
 

@@ -1,13 +1,16 @@
 import 'dart:io';
 
+import 'package:alarm_recorder/Translate/change_language.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqlite_api.dart';
 import 'package:sqflite/sqflite.dart'; 
 
-class RegisterDatabaseProvider {
+class RegisterDatabaseProvider extends ChangeNotifier{
   RegisterDatabaseProvider._();
+  RegisterDatabaseProvider();
 
   static final RegisterDatabaseProvider db =RegisterDatabaseProvider._();
 
@@ -40,13 +43,20 @@ class RegisterDatabaseProvider {
           date: map[i]['date'],
           time:  map[i]['time']);
     });
+   // notifyListeners();
   }
+
+
+
+
   Future<int> insertRegister(RecordModel recordModel) async {
     // Get a reference to the database.
     final Database db = await database;
     var raw =await db.insert("register",recordModel.toMap(),conflictAlgorithm: ConflictAlgorithm.replace);
     print("seccuss");
+    notifyListeners();
     return raw;
+
   }
   Future<RecordModel> getRecordWithId(int id) async{
     final db =await database;
@@ -56,15 +66,18 @@ class RegisterDatabaseProvider {
 
   deleteRecordWithId(int id) async{
     final db =await database;
-    return db.delete("register",where: "id=?",whereArgs: [id]);
+    db.delete("register",where: "id=?",whereArgs: [id]);
+    notifyListeners();
   }
   deleteAllRecords() async{
     final db =await database;
     db.delete("register");
+    notifyListeners();
   }
   updateNote(RecordModel recordModel) async{
     final db =await database;
     var response=await db.update("register", recordModel.toMap(),where: "id=?",whereArgs: [recordModel.id]);
+    notifyListeners();
     return response;
   }
 

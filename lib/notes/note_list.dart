@@ -9,6 +9,7 @@ import 'package:alarm_recorder/utils/utils.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 
 class NoteList extends StatefulWidget {
   NoteList(  {Key key}) : super(key: key);
@@ -41,6 +42,7 @@ class _NoteListState extends State<NoteList> {
   }
   @override
   Widget build(BuildContext context) {
+    var noteProvider=Provider.of<NoteDatabaseProvider>(context);
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
     List<Widget> _buttons = List();
@@ -49,16 +51,9 @@ class _NoteListState extends State<NoteList> {
         icon: Icon(Icons.delete,color:Colors.blueAccent,),
        onPressed: () {
          for(int i =0;i<_selectedIndexList.length;i++){
-        print(_selectedIndexList[i]);
-               NoteDatabaseProvider.db.deleteNoteWithId(_noteList[i].id) ;
-                  }
-       Navigator.of(context).pushReplacement(MaterialPageRoute(
-                 builder: (BuildContext context) {
-                  return NoteList();
-                 }));  
-          _selectedIndexList.sort();
-           print('Delete ${_selectedIndexList.length} items! Index: ${_selectedIndexList.toString()}');
-          }));
+             //remove selected note
+             noteProvider.deleteNoteWithId(_noteList[_selectedIndexList[i]].id) ;
+                  }  }));
     }
         return WillPopScope(
             child: Scaffold(
@@ -66,9 +61,7 @@ class _NoteListState extends State<NoteList> {
               leading: IconButton(icon: Icon(Icons.arrow_back,color: Colors.blueAccent,), onPressed: () {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
-                  builder: (BuildContext context) {
-                                return MyHomePage();
-                              }));
+                  builder: (BuildContext context) {   return MyHomePage();      }));
               },),
               elevation: 0,
               backgroundColor: Colors.grey[200],
@@ -78,7 +71,7 @@ class _NoteListState extends State<NoteList> {
       body: Container(
           color: Colors.grey[200],
           child: FutureBuilder<List<Note>>(
-            future: NoteDatabaseProvider.db.getAllNotes(),
+            future: noteProvider.getAllNotes(),
             builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
             if(snapshot.hasData){
               if(snapshot.data.length==0){

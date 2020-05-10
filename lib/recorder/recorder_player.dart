@@ -11,6 +11,7 @@ import 'package:audioplayers/audio_cache.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RecorderPlayer extends StatefulWidget {
   String pathfromNotifiction;
@@ -36,8 +37,8 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
    List<RecordModel> _recordList = List();
-  List<int> _selectedIndexList = List();
-  bool _selectionMode = false;
+   List<int> _selectedIndexList = List();
+   bool _selectionMode = false;
    void _changeSelection({bool enable, int index}) {
     _selectionMode = enable;
     _selectedIndexList.add(index);
@@ -57,27 +58,13 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   void initState() {
     super.initState(); 
     if (widget.pathfromNotifiction != "") {
-
       audioC.buttonPlayPause(widget.pathfromNotifiction);
        }
      }
 
-  deleteFiles(){
-  for(int i =0; i<_selectedIndexList.length;i++){
-
-     print("$i -- ${_recordList[i].id}");
-   RegisterDatabaseProvider.db.deleteRecordWithId(_recordList[i].id);
-        }
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-            builder: (BuildContext context) {
-              return RecorderPlayer("");
-            }));
-      }
-
-
-
   @override
   Widget build(BuildContext context) {
+     var recordProvider=Provider.of<RegisterDatabaseProvider>(context);
        List<Widget> _buttons = List();
       if (_selectionMode) {
       _buttons.add(
@@ -86,11 +73,14 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
           child: IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
-              deleteFiles();
+              for(int i =0; i<_selectedIndexList.length;i++){
+                //delete selected index
+            recordProvider.deleteRecordWithId(_recordList[_selectedIndexList[i]].id);
+              }
              }),
            ));
           }else{
-      _buttons.add(
+         _buttons.add(
          Padding(
            padding: const EdgeInsets.only(right:10.0),
            child: IconButton(
@@ -111,7 +101,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
             height: double.infinity,
             color: Colors.white10,
             child: FutureBuilder<List<RecordModel>>(
-                future: RegisterDatabaseProvider.db.getAllRecords(),
+                future: recordProvider.getAllRecords(),
                 builder: (BuildContext context,
                     AsyncSnapshot<List<RecordModel>> futuresnapshot) {
                   if (futuresnapshot.hasData) {
@@ -328,7 +318,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
               },
                 onLongPress: () {
             setState(() {
-              _changeSelection(enable: true, index: index);
+               _changeSelection(enable: true, index: index);
             });
                 },
               leading: Icon(
@@ -350,8 +340,9 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       itemCount: data.length != null ? data.length : 0,
       itemBuilder: (BuildContext context, index) {
         RecordModel recordModel = data[index];
-        print("DATA __ ${data[index].id}");
-        _recordList=data;
+     print("$index DATA __ ${data[index].id}");
+     print(")______");
+         _recordList=data;
 
         return Padding(
           padding: EdgeInsets.only(
