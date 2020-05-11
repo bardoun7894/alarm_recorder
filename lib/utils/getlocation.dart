@@ -26,26 +26,23 @@ Sink<bool> get fabClickEventSink =>_fabEventController.sink;
 GetLocation(){
   _fabEventController.stream.listen(_mapEventToState);
 }
-
-
-
   void _mapEventToState(bool event) async{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    var isDisabled = await Permission.locationWhenInUse.serviceStatus.isDisabled;
+    var isDisabled = await Permission.locationAlways.serviceStatus.isDisabled;
     if(!isDisabled){
       if(event){
         _fabClicked=true;
         getCurrentPosition();
         sharedPreferences.setBool("fabClicked", true);
-      } else{
+        }else{
         _fabClicked=false;
         sharedPreferences.setBool("fabClicked", false);
-       }
-    }else{
-      print(" disabled");
-    }
+        }
+        }else{
+          print(" disabled");
+          }
     _inFabClick.add(_fabClicked);
-  }
+          }
 
   getPermissionStatus(context) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -94,17 +91,14 @@ GetLocation(){
 
   getLastPosition(int id, String title, String body, String imgString,
       String payload, _localNotification, double xMeter) async {
-    Position p = await getCurrentPosition();
+    Position p = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     double currentlat = p.latitude;
     double currentlong = p.longitude;
     var geolocator = Geolocator();
-    var locationOptions =
-        LocationOptions(accuracy: LocationAccuracy.high, distanceFilter: 0);
+    var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter:10);
 
     if (_positionStream == null) {
-      _positionStream = geolocator
-          .getPositionStream(locationOptions)
-          .listen((Position position) async {
+      _positionStream = geolocator .getPositionStream(locationOptions) .listen((Position position) async {
         double endlat = position.latitude;
         double endlong = position.longitude;
 

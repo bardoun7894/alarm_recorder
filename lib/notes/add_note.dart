@@ -508,9 +508,13 @@ print(e.toString());
                         FlatButton(
                           onPressed: () {
                             setState(() {
-                              if (_formKey.currentState.validate()) {
-                                saveLocationNote(
-                                    double.parse(meterController?.text));
+
+                              double meter = double.parse(meterController?.text);
+
+
+                            if (_formKey.currentState.validate()) {
+
+                                saveLocationNote(meter);
                               }
                             });
                           },
@@ -567,8 +571,7 @@ print(e.toString());
             validator: (value) {
               if (value.isEmpty) {
                 _validate = true;
-                return AppLocalizations.of(context)
-                    .translate("hint_distance_error");
+                return AppLocalizations.of(context) .translate("hint_distance_error");
               }
               return null;
             },
