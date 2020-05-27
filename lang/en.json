@@ -28,6 +28,7 @@
    "contact_us": "contact us",
    "hint_distance": "add distance " ,
    "hint_distance_error": "please enter the distance " ,
+   "hint_100_error": " enter at least 100 m  for best accurancy" ,
    "welcome_location": " welcome to reminder Note location service  ",
    "start_location": "Start ",
    "save": "save",

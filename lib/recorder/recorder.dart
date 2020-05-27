@@ -221,10 +221,12 @@ class _RecorderScreenState extends State<RecorderScreen> {
       ), onWillPop:_onBackPressed,
     );
   }
- Future<bool> _onBackPressed() {
-   return Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
-          return MyHomePage();
-        }));
+  Future<bool> _onBackPressed() async{
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
+      return MyHomePage();
+    }));
+
+    return false;
   }
 
   reco() {

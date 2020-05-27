@@ -15,6 +15,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
   Widget build(BuildContext context) {
     final appLanguage = Provider.of<AppLanguage>(context);
     return Scaffold(
+      appBar: AppBar(  ),
        body: Center(
     child:Container(
       width: MediaQuery.of(context).size.width*.8,

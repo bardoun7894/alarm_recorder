@@ -28,6 +28,7 @@
   "contact_us":"راسلنا",
   "hint_distance": "  (أضف المسافة للتذكير  (متر" ,
   "hint_distance_error": " المرجو ادخال المسافة " ,
+  "hint_100_error": " أقل مسافة مسموح بها 100 متر للدقة" ,
   "welcome_location": "  مرحبا بك في خدمة تذكير بالمسافة ",
   "start_location": "ابدأ ",
   "save": "حفظ",

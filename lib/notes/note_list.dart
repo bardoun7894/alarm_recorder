@@ -35,10 +35,9 @@ class _NoteListState extends State<NoteList> {
     _selectedIndexList.clear();
     }
   }
- Future<bool> _onBackPressed() {
-          return Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
-          return MyHomePage();
-        }));
+ Future<bool> _onBackPressed() async{
+   Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {    return MyHomePage();}));
+   return false;
   }
   @override
   Widget build(BuildContext context) {
@@ -113,7 +112,8 @@ class _NoteListState extends State<NoteList> {
           child: Icon(Icons.add, color: Colors.white),
           backgroundColor: mainTheme.primaryColorDark,
       ),
-    ), onWillPop:_onBackPressed,
+    ),
+          onWillPop:_onBackPressed,
         );
   }
   

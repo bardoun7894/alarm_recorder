@@ -11,14 +11,13 @@ import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class GetLocation {
+class GetLocation  extends ChangeNotifier{
   StreamSubscription<Position> _positionStream;
 
   bool _fabClicked=false;
 final _fabStateController=StreamController<bool>();
 StreamSink<bool> get _inFabClick=>_fabStateController.sink;
 Stream<bool> get FabClick=>_fabStateController.stream;
-
 
 final _fabEventController =StreamController<bool>();
 Sink<bool> get fabClickEventSink =>_fabEventController.sink;
@@ -81,42 +80,37 @@ GetLocation(){
       }
 
   Future<Position> getCurrentPosition() async {
-    Position startPosition = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    Position startPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
          print("startPosition $startPosition");
     return startPosition;
   }
 
   bool isListening() => !(_positionStream == null || _positionStream.isPaused);
 
-  getLastPosition(int id, String title, String body, String imgString,
-      String payload, _localNotification, double xMeter) async {
+   getLastPosition(int id, String title, String body, String imgString, String payload, _localNotification, double xMeter) async {
     Position p = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     double currentlat = p.latitude;
     double currentlong = p.longitude;
+
     var geolocator = Geolocator();
     var locationOptions = LocationOptions(accuracy: LocationAccuracy.high, distanceFilter:10);
-
+    notifyListeners();
     if (_positionStream == null) {
-      _positionStream = geolocator .getPositionStream(locationOptions) .listen((Position position) async {
+      _positionStream = geolocator.getPositionStream(locationOptions).listen((Position position) async {
         double endlat = position.latitude;
         double endlong = position.longitude;
 
-        print("${position.longitude} movee ");
-        print("${p.longitude}  current ");
-
-        double distanceInMeters = await Geolocator()
-            .distanceBetween(currentlat, currentlong, endlat, endlong);
+        double distanceInMeters = await Geolocator().distanceBetween(currentlat,currentlong, endlat, endlong);
         print("distance meter  $distanceInMeters");
         if (distanceInMeters >= xMeter) {
           print(" you are so far");
-          _localNotification.showNotification(
-              id, title, body, imgString, payload);
+          _localNotification.showNotification( id, title, body, imgString, payload) ;
           _positionStream.pause();
           _positionStream.cancel();
         }
       });
     }
+
   }
 
   bool _isListening() => !(_positionStream == null || _positionStream.isPaused);
@@ -145,7 +139,7 @@ GetLocation(){
 
 
 
-  Future<bool> showSaveDialog(   context, PermissionStatus status, shared, isDisabled) {
+  Future<bool> showSaveDialog(   context, PermissionStatus status, shared, isDisabled){
     SizeConfig sizeConfig = SizeConfig(context);
     WidgetSize fontWidgetSize = WidgetSize(sizeConfig);
     return showDialog(

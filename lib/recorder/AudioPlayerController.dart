@@ -9,6 +9,7 @@ class AudioPLayerController extends BlocBase {
   BehaviorSubject<AudioPlayerObject> durB = new BehaviorSubject<AudioPlayerObject>();
   Stream<AudioPlayerObject> get outPlayer => durB.stream;
   Sink<AudioPlayerObject> get inPlayer => durB.sink;
+
   AudioPlayer advancedPlayer = new AudioPlayer();
   AudioPlayerObject audioObject;
   AudioPLayerController() {

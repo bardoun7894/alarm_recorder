@@ -49,15 +49,15 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   @override
   void dispose() { 
     super.dispose();
-    audioC.durBPlayerStreamClose();
-    audioC.dispose();
-
+  audioC.durBPlayerStreamClose();
+  audioC.dispose();
   }
 
   @override
   void initState() {
     super.initState(); 
     if (widget.pathfromNotifiction != "") {
+
       audioC.buttonPlayPause(widget.pathfromNotifiction);
        }
      }
@@ -84,13 +84,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
          Padding(
            padding: const EdgeInsets.only(right:10.0),
            child: IconButton(
-             onPressed: (){
-              _pickSound();
-             }
-              ,
-              icon: Icon(Icons.folder_open)),
-         ),
-              );  }
+           onPressed: (){  _pickSound();   } , icon: Icon(Icons.folder_open)),  ),  );  }
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
     return MaterialApp(
@@ -156,23 +150,16 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
             backgroundColor: Colors.blueAccent,
             ),
             ),
-             onWillPop:() async{
-          return  Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(
-                   builder: (context) {
-                  return MyHomePage();
-                        },
-  ),
-  (Route<dynamic> route) => false,
-);
-            }
+             onWillPop:_onBackPressed
                ), 
              );
              }
-        Future _onBackPressed() {
-       return  Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {    return RecorderScreen();
-          }));
-         }
+  Future<bool> _onBackPressed() async{
+    Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
+      return MyHomePage();
+    }));
+    return false;
+  }
   Widget _player(isPlay, minute, seconds, AudioPlayerObject object,
       List<RecordModel> data, int i) {
     return Positioned(

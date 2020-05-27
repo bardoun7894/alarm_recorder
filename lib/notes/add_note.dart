@@ -38,13 +38,11 @@ class _AddNotesState extends State<AddNotes> {
   GetLocation getLocation = GetLocation();
   String textAfterGetImage = "";
   File _image;
-
   bool isFabClicked=false ;
 
   bool isHideFAB = false ;
   bool isImageMapHide=false;
   bool isNormalNote=false;
-
   String imgString = "";
   LocalNotification _localNotification = LocalNotification();
   Note note; 
@@ -61,9 +59,13 @@ class _AddNotesState extends State<AddNotes> {
   @override
   void initState() {
     super.initState();
+
     if (widget.edit == true) {
       descriptionController.text = widget.note.description;
       imgString = widget.note.imagePath;
+    }
+    if (widget.camera == true) {
+      getPermissionStatus();
     }
     if(widget.location){
 
@@ -140,6 +142,7 @@ print(e.toString());
   requestPermission() async {
     await Permission.camera.request();
     await Permission.photos.request();
+
   }
   activateFab() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -154,7 +157,7 @@ print(e.toString());
   }
   getPermissionStatus() async {
     var status;
-    if (widget.camera == true) {
+    if (widget.camera == true && widget.location==false) {
       status = await Permission.camera.status;
     }
     if (widget.camera == false) {
@@ -188,7 +191,6 @@ print(e.toString());
   Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
-
     return WillPopScope(
       child: Scaffold(
         key: _scaffoldKey,
@@ -319,7 +321,6 @@ print(e.toString());
       onWillPop: _onBackPressed,
     );
   }
-
   String formatDateTime() {
     String firstD = DateFormat("MM MMMM  HH:mm").format(firstDate).toString() + " PM";
     return firstD;
@@ -351,16 +352,15 @@ print(e.toString());
             imgString, "location", _localNotification, xmeter);
         Navigator.pop(context);
       } else if (widget.edit == false) {
+
         int id = await NoteDatabaseProvider.db.insertNote(new Note(
             imagePath: imgString,
             title: titleData,
             description: descriptionData,
             date: s,
             time: firstDate.hour.toString()));
-        getLocation.getLastPosition(id, titleData, descriptionData, imgString,
-            "location $titleData", _localNotification, xmeter);
-        Navigator.of(context)
-            .pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+        getLocation.getLastPosition(id, titleData, descriptionData, imgString,"location $titleData", _localNotification, xmeter);
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
           return NoteList();
         }));
       }
@@ -501,7 +501,6 @@ print(e.toString());
                             fontSize: fontWidgetSize.bodyFontSize - 8),
                       ),
                     ),
-                    SizedBox(height: sizeConfig.screenHeight * .01),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: <Widget>[
@@ -514,7 +513,9 @@ print(e.toString());
 
                             if (_formKey.currentState.validate()) {
 
-                                saveLocationNote(meter);
+                                 saveLocationNote(meter);
+
+
                               }
                             });
                           },
@@ -568,10 +569,16 @@ print(e.toString());
                 fontWeight: FontWeight.bold,
                 color: Colors.blueAccent,
                 fontSize: fontWidgetSize.bodyFontSize - 5),
+            onChanged: (value){
+
+            },
             validator: (value) {
               if (value.isEmpty) {
                 _validate = true;
-                return AppLocalizations.of(context) .translate("hint_distance_error");
+                return AppLocalizations.of(context).translate("hint_distance_error");
+              }
+              if (double.parse(value)<100){
+               return AppLocalizations.of(context).translate("hint_100_error");
               }
               return null;
             },
@@ -642,10 +649,11 @@ print(e.toString());
             ));
            }
 
-  Future<bool> _onBackPressed() {
-    return Navigator.pushReplacement(context,
-        MaterialPageRoute(builder: (BuildContext context) {
+  Future<bool> _onBackPressed() async{
+      Navigator.pushReplacement(context,
+      MaterialPageRoute(builder: (BuildContext context) {
       return NoteList();
     }));
+   return false;
   }
 }

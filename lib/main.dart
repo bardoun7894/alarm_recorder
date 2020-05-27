@@ -3,6 +3,7 @@ import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/Translate/app_language.dart';
+import 'package:alarm_recorder/recorder/recorder.dart';
 import 'package:alarm_recorder/utils/getlocation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -84,8 +85,6 @@ class _MyAppState extends State<MyApp> {
   Future<void>  initNotificSettings() async {
   notificationAppLaunchDetails  = await flutterLocalNotificationsPlugin.getNotificationAppLaunchDetails();
   var initializationSettingsAndroid = AndroidInitializationSettings('iconsr');
-  // Note: permissions aren't requested here just to demonstrate that can be done later using the `requestPermissions()` method
-  // of the `IOSFlutterLocalNotificationsPlugin` class
   var initializationSettingsIOS = IOSInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -95,12 +94,12 @@ class _MyAppState extends State<MyApp> {
         didReceiveLocalNotificationSubject.add(ReceivedNotification(
             id: id, title: title, body: body, payload: payload));
       });
- 
   var initializationSettings = InitializationSettings(
     initializationSettingsAndroid, initializationSettingsIOS);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String payload) async {
     if (payload != null) {
+
       debugPrint('notification payload: ' + payload);
     }
     selectNotificationSubject.add(payload);
@@ -127,28 +126,28 @@ class _MyAppState extends State<MyApp> {
         Note note = Note.fromRawJson(receivedNotification.payload);
         customNote = note;
         await navigatorKey.currentState.popAndPushNamed('/textField', arguments: customNote);
-      } else {
-        customPayload = receivedNotification.payload;
-        await navigatorKey.currentState
-            .popAndPushNamed('/recordPlayer', arguments: customPayload);
       }
+      else {
+         customPayload = receivedNotification.payload;
+         await navigatorKey.currentState
+        .popAndPushNamed('/recordPlayer', arguments: customPayload);
+           }
     });
   }
-
   void _configureSelectNotificationSubject() {
     selectNotificationSubject.stream.listen((String payload) async {
       if (payload.startsWith("{")) {
-        getLocation.stopLocation();
         Note note = Note.fromRawJson(payload);
         customNote = note;
-        try{
-     await navigatorKey.currentState.pushNamed('/textField', arguments: customNote);
-      
-        }catch(e){e.toString();}
-       } else {
+      try{
+        await navigatorKey.currentState.pushReplacementNamed('/textField',arguments: customNote);
+         }
+      catch(e){ e.toString();}
+         }
+      else{
         customPayload = payload;
         print(payload);
-        await navigatorKey.currentState.pushNamed('/recordPlayer', arguments: customPayload);
+        await navigatorKey.currentState.pushReplacementNamed('/recordPlayer', arguments: customPayload);
           }
     });
   }
@@ -159,26 +158,27 @@ class _MyAppState extends State<MyApp> {
         providers: [
         ChangeNotifierProvider<AppLanguage>( create:(_) =>  widget.appLanguage,),
         ChangeNotifierProvider( create:(_) =>  RegisterDatabaseProvider.db,),
-        ChangeNotifierProvider( create:(_) =>  NoteDatabaseProvider.db,)
+        ChangeNotifierProvider( create:(_) =>  NoteDatabaseProvider.db,),
+        ChangeNotifierProvider( create:(_) =>  GetLocation()),
 
         ],
 
         child: Consumer<AppLanguage>(
           builder: (context, model, child) {
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             navigatorKey: navigatorKey,
             initialRoute: '/',
             routes: {
           // When navigating to the "/second" route, build the SecondScreen widget.
-          '/textField': (context) => AddNotes(
-              true,
-              false,
-              false,
-              note: customNote,
-            ),
+          '/textField': (context) => AddNotes( true,
+            false,
+            false,
+            note: customNote,),
           '/recordPlayer': (context) => RecorderPlayer(customPayload),
+          '/recorderScreen': (context) => RecorderScreen(),
                      },
-            debugShowCheckedModeBanner: false,
+
             locale: model.appLocal,
             supportedLocales: [
               Locale('en','US'),
@@ -212,9 +212,12 @@ class LocalNotification {
         '$id',
          title,
            body,
+
         importance: Importance.Max,
         priority: Priority.High,
         ongoing: true,
+
+        enableLights: true,
         enableVibration: true,
         ticker: 'test ticker',
         playSound: true);

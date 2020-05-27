@@ -17,11 +17,11 @@ class RecordModel implements DataBaseModel{
   @override
   fromMap(Map<String,dynamic > map) {
     return new RecordModel(
-        id:map['id'],
-        name:  map['name'],
+        id:       map['id'],
+        name:     map['name'],
         pathRec:  map['pathRec'],
-        date: map['date'],
-        time:  map['time']);}
+        date:     map['date'],
+        time:     map['time']);}
   @override
   toMap() {
     return{
