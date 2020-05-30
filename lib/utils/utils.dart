@@ -118,6 +118,38 @@ void saveNote(int id,bool edit ,String descriptionControllertext,String imgStrin
      }
    
   }
+  //   static Future<bool> checkInternetConnectivity() async {
+  //   final ConnectivityResult connectivityResult =
+  //       await Connectivity().checkConnectivity();
+  //   if (connectivityResult == ConnectivityResult.mobile) {
+  //     // print('Mobile');
+  //     return true;
+  //   } else if (connectivityResult == ConnectivityResult.wifi) {
+  //     // print('Wifi');
+  //     return true;
+  //   } else if (connectivityResult == ConnectivityResult.none) {
+  //     print('No Connection');
+  //     return false;
+  //   } else {
+  //     return false;
+  //   }
+  // }
+
+  // static dynamic launchURL() async {
+  //   final PackageInfo packageInfo = await PackageInfo.fromPlatform();
+  //   print(packageInfo.packageName);
+  //   final String url =
+  //       'https://play.google.com/store/apps/details?id=${packageInfo.packageName}';
+  //   if (await canLaunch(url)) {
+  //     await launch(url);
+  //   } else {
+  //     throw 'Could not launch $url';
+  //   }
+  // }
+
+  // static dynamic launchAppStoreURL({String iOSAppId}) async {
+  //   LaunchReview.launch(writeReview: false, iOSAppId: iOSAppId);
+  // }
 
 
 

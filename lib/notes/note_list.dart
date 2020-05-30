@@ -76,7 +76,7 @@ class _NoteListState extends State<NoteList> {
               if(snapshot.data.length==0){
                 return Container(
                     child: Padding(
-                      padding:  EdgeInsets.only(top:sizeConfig.screenHeight*.5),
+                      padding:  EdgeInsets.only(top:sizeConfig.screenHeight*.45),
                       child: Center(
                         child: Column(
                           children: <Widget>[

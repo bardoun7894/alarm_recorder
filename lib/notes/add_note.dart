@@ -187,6 +187,13 @@ print(e.toString());
     }
   }
 
+
+  saveDatainEditText(String image,String body)async{
+    SharedPreferences sh=await SharedPreferences.getInstance();
+    sh.setString("imageSh", image);
+    sh.setString("bodySh",body);
+  }
+
   @override
   Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
@@ -233,11 +240,7 @@ print(e.toString());
                               color: Color(0xFF417BFb),
                               size: fontWidgetSize.icone - 5),
                           onPressed: () {
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) {
-                              return NoteList();
-                            }));
+                            _onBackPressed();
                           },
                         ),
                         isImageMapHide?Row(
@@ -331,6 +334,7 @@ print(e.toString());
   }
 
   saveLocationNote(double xmeter) async {
+
     String titleData = descriptionController.text.length > 12
         ? descriptionController.text.substring(0, 12)
         : descriptionController.text;
@@ -341,6 +345,7 @@ print(e.toString());
           AppLocalizations.of(context).translate("text_description_empty"));
     } else {
       if (widget.edit == true) {
+
         NoteDatabaseProvider.db.updateNote(new Note(
             id: widget.note.id,
             imagePath: imgString,
@@ -352,13 +357,15 @@ print(e.toString());
             imgString, "location", _localNotification, xmeter);
         Navigator.pop(context);
       } else if (widget.edit == false) {
-
-        int id = await NoteDatabaseProvider.db.insertNote(new Note(
+        int id = await NoteDatabaseProvider.db.insertNote(
+            new Note(
             imagePath: imgString,
             title: titleData,
             description: descriptionData,
             date: s,
-            time: firstDate.hour.toString()));
+            time: firstDate.hour.toString()
+            )
+        );
         getLocation.getLastPosition(id, titleData, descriptionData, imgString,"location $titleData", _localNotification, xmeter);
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
           return NoteList();
@@ -650,6 +657,25 @@ print(e.toString());
            }
 
   Future<bool> _onBackPressed() async{
+    String titleData = descriptionController.text.length > 12
+        ? descriptionController.text.substring(0, 12)
+        : descriptionController.text ;
+    String descriptionData = descriptionController.text ;
+    String s = DateFormat.yMMMd().format(DateTime.now());
+    if (widget.edit == false) {
+      await NoteDatabaseProvider.db.insertNote(
+          new Note(
+              imagePath: imgString,
+              title: titleData,
+              description: descriptionData,
+              date: s,
+              time: firstDate.hour.toString()
+          )
+      );
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+        return NoteList();
+      }));
+    }
       Navigator.pushReplacement(context,
       MaterialPageRoute(builder: (BuildContext context) {
       return NoteList();
