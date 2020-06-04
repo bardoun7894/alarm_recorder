@@ -44,7 +44,7 @@ class _MyChoiceState extends State<MyChoice> {
                 Container(
                   height:sizeConfig.screenHeight*.2,
                 ),
-                Container(
+                  Container(
                   height:sizeConfig.screenHeight*.15,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
@@ -54,7 +54,7 @@ class _MyChoiceState extends State<MyChoice> {
                     color: Color(0xFF417BFb),
                   ),
                 ),
-                Positioned(
+                  Positioned(
                   top: sizeConfig.screenHeight*.08,
                   left: sizeConfig.screenWidth*.23,
                   child: Container(

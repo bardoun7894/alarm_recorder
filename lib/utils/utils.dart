@@ -61,7 +61,7 @@ reminderDateTime(id,imageString,title,description,payload,context)async{
  if(payload=="note"){
    Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){  return  NoteList();}));
  }
-  
+
 }
 Future<bool> saveRecordDialog(context,String result,String nameRecord )async {
   return showDialog(
@@ -70,6 +70,8 @@ Future<bool> saveRecordDialog(context,String result,String nameRecord )async {
       builder: (BuildContext context) { 
       return MyChoice(result:result,nameRecord:nameRecord,);
         });
+
+
 }
 Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,String imgString,context)async {
   String note="note";

@@ -57,7 +57,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
         name = DateTime.now().millisecondsSinceEpoch.toString();
         String customPath = '/$name';
         io.Directory appDocDirectory;
-//        io.Directory appDocDirectory = await getApplicationDocumentsDirectory();
+ //       io.Directory appDocDirectory = await getApplicationDocumentsDirectory();
         if (io.Platform.isIOS) {
           appDocDirectory = await getApplicationDocumentsDirectory();
         } else {
@@ -65,13 +65,9 @@ class _RecorderScreenState extends State<RecorderScreen> {
         }
 
         // can add extension like ".mp4" ".wav" ".m4a" ".aac"
-        customPath = appDocDirectory.path +
-            customPath +
-            DateTime.now().millisecondsSinceEpoch.toString();
+        customPath = appDocDirectory.path + customPath + DateTime.now().millisecondsSinceEpoch.toString();
 
-        _recorder =
-            FlutterAudioRecorder(customPath, audioFormat: AudioFormat.WAV);
-
+        _recorder =   FlutterAudioRecorder(customPath, audioFormat: AudioFormat.WAV);
         await _recorder.initialized;
         // after initialization
         var current = await _recorder.current(channel: 0);
@@ -83,8 +79,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
           print(_currentStatus);
         });
       } else {
-        Scaffold.of(context).showSnackBar(
-            new SnackBar(content: new Text("You must accept permissions")));
+  Scaffold.of(context).showSnackBar(   new SnackBar(content: new Text("You must accept permissions")));
       }
     } catch (e) {
       print(e);
@@ -197,7 +192,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
                           SizedBox(
                             height: sizeConfig.screenHeight * .05,
                           ),
-                          Text(
+                    Text(
                             _current?.duration.toString().split(".")[0],
                           style: TextStyle(
                                 fontFamily: 'sans sherif',
@@ -332,6 +327,7 @@ switch(statuses[Permission.microphone]){
   }
 
   _start() async {
+
     try {
       showFab=false;
       await _recorder.start();
@@ -347,7 +343,9 @@ switch(statuses[Permission.microphone]){
         var current = await _recorder.current(channel: 0);
         // print(current.status);
         setState(() {
+
           _current = current;
+
           _currentStatus = _current.status;
         });
       });
@@ -367,7 +365,8 @@ switch(statuses[Permission.microphone]){
       _current = result;
       _currentStatus = _current.status;
       saveRecordDialog(context, result.path.toString(), nameController.text!=""?nameController.text+"${result.extension}":name+"."+"${result.extension}");
-    });
+      _init();
+       });
   }
   
 }
