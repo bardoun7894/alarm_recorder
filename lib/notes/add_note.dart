@@ -201,27 +201,7 @@ print(e.toString());
     return WillPopScope(
       child: Scaffold(
         key: _scaffoldKey,
-        floatingActionButton:!isHideFAB 
-              ? FloatingActionButton(
-                onPressed: () async {
-                  setState(() {
-                    try {
-                      isFabClicked=true;
-                    //  getLocation.getPermissionStatus(context);
-                      getLocation.getPermissionStatus(context);
-                    } catch (e) {
-                      print(e);
-                    }
-                  });
-                },
-                backgroundColor: isFabClicked ? Colors.blue : Colors.grey[500],
-                child: Icon(
-                  Icons.gps_fixed,
-                  color: Colors.white,
-                  size: 30, 
-                ),
-              )
-              : Container(),
+
         body: Stack(
           children: <Widget>[
             Container(
@@ -395,15 +375,15 @@ print(e.toString());
               height: sizeConfig.screenHeight*.5,
             ),
             padding: EdgeInsets.only(top: sizeConfig.screenHeight * .1),
-          ),
+          )    ,
          Padding(
             child: Text(
               AppLocalizations.of(context).translate("welcome_location"),
-              style: TextStyle(
+              style:           TextStyle(
                 color: Colors.grey[500],
                 fontWeight: FontWeight.bold,
-              ),
-            ),
+                                 ),
+                         ),
 
             padding: EdgeInsets.only(top: sizeConfig.screenHeight * .001),
           ),
@@ -411,7 +391,7 @@ print(e.toString());
          Padding(
             padding: EdgeInsets.only(top: sizeConfig.screenHeight * .05),
             child:
-            isFabClicked? Container(
+             Container(
                 height: 35,
                 width: 100,
                 decoration: BoxDecoration(
@@ -429,16 +409,25 @@ print(e.toString());
                     ),
                     onPressed: () {
                        setState(() {
+                         setState(() {
+                           try {
+                             isFabClicked=true;
+                             //  getLocation.getPermissionStatus(context);
+                             getLocation.getPermissionStatus(context);
+                           } catch (e) {
+                             print(e);
+                           }
+                         });
                         if(isFabClicked){
                         isHideFAB = true;
                         isImageMapHide=true;
                         _displaySnackBar(AppLocalizations.of(context).translate("snack_message"));
                         }
                         });
-                   
+
                     })
 
-            ):Container(),
+            ),
           )
 
         ],

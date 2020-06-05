@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:alarm_recorder/notes/mapmpa.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/recorder/recorder.dart';
@@ -342,17 +343,17 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                        children: <Widget>[
                          InkWell(
                              onTap: () {
-                               navigateToAddNote(false,true,true);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+                          return  MapSample();
+                        }));
                              },
                              child: locationContainer()),
-
-                         InkWell(
+                          InkWell(
                            onTap: () {
                                  navigateToAddNote(false,true,false);
-
-                                    },
-                           child: cameraContainer(),
-                         ),
+                                             },
+                            child: cameraContainer(),
+                               ),
                        ],
                      ),
                    )

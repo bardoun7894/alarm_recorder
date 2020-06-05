@@ -272,8 +272,6 @@ class _RecorderScreenState extends State<RecorderScreen> {
     );
   }
 
-
-
   getPermissionStatus( ) async {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.microphone,
@@ -353,7 +351,6 @@ switch(statuses[Permission.microphone]){
       print(e);
     }
   }
-
   _stop() async {
     showFab=true;
     var result = await _recorder.stop();
@@ -367,6 +364,7 @@ switch(statuses[Permission.microphone]){
       saveRecordDialog(context, result.path.toString(), nameController.text!=""?nameController.text+"${result.extension}":name+"."+"${result.extension}");
       _init();
        });
+
   }
   
 }
