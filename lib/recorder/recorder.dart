@@ -2,6 +2,7 @@ import 'dart:async';
   
 import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/home_page/homepage.dart';
+import 'package:alarm_recorder/permissions/GetPermission.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
@@ -63,10 +64,8 @@ class _RecorderScreenState extends State<RecorderScreen> {
         } else {
           appDocDirectory = await getExternalStorageDirectory();
         }
-
         // can add extension like ".mp4" ".wav" ".m4a" ".aac"
         customPath = appDocDirectory.path + customPath + DateTime.now().millisecondsSinceEpoch.toString();
-
         _recorder =   FlutterAudioRecorder(customPath, audioFormat: AudioFormat.WAV);
         await _recorder.initialized;
         // after initialization
@@ -92,7 +91,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
      fontWidgetSize = WidgetSize(sizeConfig);
        return WillPopScope(
           child: Scaffold(
-        floatingActionButton: showFab?FloatingActionButton(
+        floatingActionButton: showFab ? FloatingActionButton(
           child: Icon(Icons.library_music,color: Colors.blueAccent,size: 40,),
           elevation: 0,
           backgroundColor: Colors.transparent,
@@ -103,7 +102,6 @@ class _RecorderScreenState extends State<RecorderScreen> {
               }));
             });
           },
-
         ):Container(),
         body: SingleChildScrollView(
           child: Container(
@@ -138,9 +136,9 @@ class _RecorderScreenState extends State<RecorderScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
                           GestureDetector(
-                              onTap: () {
-                                Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return MyHomePage();}));
-                              },
+                onTap: () {
+                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {return MyHomePage();}));
+                          },
                               child: Icon(
                                 Icons.arrow_back,
                                 color: Colors.white,
@@ -192,8 +190,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
                           SizedBox(
                             height: sizeConfig.screenHeight * .05,
                           ),
-                    Text(
-                            _current?.duration.toString().split(".")[0],
+                    Text(  _current?.duration.toString().split(".")[0],
                           style: TextStyle(
                                 fontFamily: 'sans sherif',
                                 fontWeight: FontWeight.normal,
@@ -240,12 +237,9 @@ class _RecorderScreenState extends State<RecorderScreen> {
         Center(
           child: InkWell(
             onTap: () {
-              
               setState(() {
-                getPermissionStatus();
-
-              });
-            },
+                getPermissionRecorderStatus(changeIconPlay);
+              });  },
             child: Container(
               width: sizeConfig.screenWidth * .2,
               height: sizeConfig.screenWidth * .2,
@@ -271,61 +265,18 @@ class _RecorderScreenState extends State<RecorderScreen> {
       size: sizeConfig.screenWidth * .92,
     );
   }
-
-  getPermissionStatus( ) async {
-    Map<Permission, PermissionStatus> statuses = await [
-      Permission.microphone,
-      Permission.storage,
-    ].request();
-switch(statuses[Permission.microphone]){
-  case PermissionStatus.undetermined:
-    await Permission.microphone.request();
-
-    break;
-  case PermissionStatus.granted:
-    // TODO: Handle this case.
-    if (currentIcon == 0) {
-      _start();
-      currentIcon = 1;
-    } else {
-      currentIcon = 0;
-      _stop(); }
-    break;
-  case PermissionStatus.denied:
-    await Permission.microphone.request();
-    // TODO: Handle this case.
-    break;
-  case PermissionStatus.restricted:
-    await Permission.microphone.request();
-    // TODO: Handle this case.
-    break;
-  case PermissionStatus.permanentlyDenied:
-    // TODO: Handle this case.
-    await Permission.microphone.request();
-    break;
-}
-    switch(statuses[Permission.storage]){
-      case PermissionStatus.undetermined:
-        await Permission.storage.request();
-        break;
-      case PermissionStatus.granted:
-      // TODO: Handle this case.
-        break;
-      case PermissionStatus.denied:
-        await Permission.storage.request();
-        break;
-      case PermissionStatus.restricted:
-        await Permission.storage.request();
-        break;
-      case PermissionStatus.permanentlyDenied:
-        await Permission.storage.request();
-        break;
-    }
-
+changeIconPlay(){
+  // TODO: Handle this case.
+  if (currentIcon == 0) {
+    _start();
+    currentIcon = 1 ;
+  } else {
+    currentIcon = 0 ;
+    _stop();
   }
+}
 
   _start() async {
-
     try {
       showFab=false;
       await _recorder.start();
@@ -341,9 +292,7 @@ switch(statuses[Permission.microphone]){
         var current = await _recorder.current(channel: 0);
         // print(current.status);
         setState(() {
-
           _current = current;
-
           _currentStatus = _current.status;
         });
       });
@@ -361,7 +310,10 @@ switch(statuses[Permission.microphone]){
     setState(() {
       _current = result;
       _currentStatus = _current.status;
-      saveRecordDialog(context, result.path.toString(), nameController.text!=""?nameController.text+"${result.extension}":name+"."+"${result.extension}");
+
+      saveRecordDialog(context, result.path.toString(),nameController.text!=""?nameController.text+"${result.extension}":name+"."+"${result.extension}");
+
+
       _init();
        });
 

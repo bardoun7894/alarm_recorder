@@ -3,13 +3,16 @@ import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/Translate/app_language.dart';
+import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/recorder/recorder.dart';
 import 'package:alarm_recorder/utils/getlocation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:workmanager/workmanager.dart';
 import 'Translate/app_localizations.dart'; 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'home_page/homepage.dart';
@@ -26,16 +29,35 @@ final BehaviorSubject<String> selectNotificationSubject =  BehaviorSubject<Strin
  NotificationAppLaunchDetails notificationAppLaunchDetails;
 String customPayload = "";
 Note customNote = Note();
+
+
+
+const fetchBackground = "fetchBackground";
+
+void callbackDispatcher() {
+  Workmanager.executeTask((task, inputData) async {
+    switch (task) {
+      case fetchBackground:
+        Position userLocation = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+        print(userLocation.altitude);
+        break;
+    }
+    return Future.value(true);
+  });
+}
+
 Future<void> main() async {
 // needed if you intend to initialize in the `main` function
   WidgetsFlutterBinding.ensureInitialized();
   //TODO Admob
  // Admob.initialize(getAppId());
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
    AppLanguage appLanguage = AppLanguage();
     await appLanguage.fetchLocale();
   runApp(  MyApp(appLanguage: appLanguage),
     );
+
 }
 class ReceivedNotification {
   final int id;
@@ -59,14 +81,30 @@ MyApp({this.appLanguage});
 }
 
 class _MyAppState extends State<MyApp> {
-
   AndroidInitializationSettings initializationSettingsAndroid;
   IOSInitializationSettings initializationSettingsIOS;
   InitializationSettings initializationSettings;
   GetLocation getLocation=GetLocation();
+
+  workM(){
+    Workmanager.initialize(
+      callbackDispatcher,
+      isInDebugMode: true,
+    );
+    Workmanager.registerPeriodicTask(
+      "1",
+      fetchBackground,
+      initialDelay: Duration(seconds: 30),
+      constraints: Constraints(
+        networkType: NetworkType.connected,
+      ),
+      frequency: Duration(minutes: 1),
+    );
+  }
   @override
   void initState() {
     super.initState();
+//    workM();
      initNotificSettings();
     _requestIOSPermissions();
     _configureDidReceiveLocalNotificationSubject();
@@ -77,7 +115,6 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     getLocation.disposeLocation();
     super.dispose();
-   
     didReceiveLocalNotificationSubject.close();
     selectNotificationSubject.close();
   }
@@ -99,13 +136,11 @@ class _MyAppState extends State<MyApp> {
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String payload) async {
     if (payload != null) {
-
-      debugPrint('notification payload: ' + payload);
+      debugPrint('notification payload: '+payload);
     }
     selectNotificationSubject.add(payload);
   });
-   
-      }
+    }
    
   void _requestIOSPermissions() {
     widget.flutterLocalNotificationsPlugin
@@ -115,23 +150,20 @@ class _MyAppState extends State<MyApp> {
           alert: true,
           badge: true,
           sound: true,
-        );
+                           );
   }
-
   void _configureDidReceiveLocalNotificationSubject() {
-  
-    didReceiveLocalNotificationSubject.stream
-        .listen((ReceivedNotification receivedNotification) async {
+    didReceiveLocalNotificationSubject.stream.listen((ReceivedNotification receivedNotification) async {
       if (receivedNotification.payload.startsWith("{")) {
         Note note = Note.fromRawJson(receivedNotification.payload);
         customNote = note;
         await navigatorKey.currentState.popAndPushNamed('/textField', arguments: customNote);
-      }
+          }
       else {
          customPayload = receivedNotification.payload;
          await navigatorKey.currentState
         .popAndPushNamed('/recordPlayer', arguments: customPayload);
-           }
+          }
     });
   }
   void _configureSelectNotificationSubject() {
@@ -160,9 +192,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider( create:(_) =>  RegisterDatabaseProvider.db,),
         ChangeNotifierProvider( create:(_) =>  NoteDatabaseProvider.db,),
         ChangeNotifierProvider( create:(_) =>  GetLocation()),
-
         ],
-
         child: Consumer<AppLanguage>(
           builder: (context, model, child) {
           return MaterialApp(
@@ -177,6 +207,7 @@ class _MyAppState extends State<MyApp> {
             note: customNote,),
           '/recordPlayer': (context) => RecorderPlayer(customPayload),
           '/recorderScreen': (context) => RecorderScreen(),
+          '/noteList':(context)=>NoteList()
                      },
 
             locale: model.appLocal,
@@ -212,33 +243,26 @@ class LocalNotification {
         '$id',
          title,
            body,
-
         importance: Importance.Max,
         priority: Priority.High,
-        ongoing: true,
-
         enableLights: true,
         enableVibration: true,
         ticker: 'test ticker',
         playSound: true);
     IOSNotificationDetails iosNotificationDetails =   IOSNotificationDetails(presentSound: true);
     if (payload == "note") {
-    
       Note newNote = Note(id: id, imagePath: imgPath, title: title, description: body);
       customPayload = newNote.toRawJson();
     } else {
       customPayload = payload;
     }
-
     NotificationDetails notificationDetails =  NotificationDetails(androidNotificationDetails, iosNotificationDetails);
     await myApp.flutterLocalNotificationsPlugin.schedule(  id, title, body, timeDelayed, notificationDetails, payload: customPayload);}
 
   void showNotification(
       int id, String title, String body,imgString,String payload) async {   await notification(id, title, body,imgString,payload);
   }
-
   Future<void> notification(  int id, String title, String body,String imgPath, String payload) async {
-
     var androidNotificationDetails = AndroidNotificationDetails(
         '$id', title, body,
         importance: Importance.Max,

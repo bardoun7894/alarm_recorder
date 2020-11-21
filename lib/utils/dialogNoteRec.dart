@@ -1,4 +1,7 @@
  
+import 'package:alarm_recorder/model/recordModel.dart';
+import 'package:alarm_recorder/recorder/AudioPlayerController.dart';
+import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/utils.dart';
 import 'package:flutter/material.dart'; 
@@ -12,8 +15,8 @@ final int id;
 final bool edit ;
 final String descriptionControllertext;
 final String imgString;
+bool isRecorder = false ;
 MyChoice({this.result, this.nameRecord,this.id,this.edit,this.descriptionControllertext,this.imgString,this.note});
-
   @override
   _MyChoiceState createState() => _MyChoiceState();
 }
@@ -30,6 +33,119 @@ class _MyChoiceState extends State<MyChoice> {
     return dialog(widget.result, context, widget.nameRecord);
   }
 
+Widget streamPLayer(data){
+  return StreamBuilder(
+      stream: audioC.outPlayer,
+      builder:  (context, AsyncSnapshot<AudioPlayerObject> snapshot) {
+        if (snapshot.hasData) {
+          return Stack(
+            children: <Widget>[
+     _player( snapshot.data.play, snapshot.data.duration.inMinutes.toString(), (snapshot.data.duration.inSeconds - (snapshot.data.duration.inMinutes * 60)
+              ) .toString(), snapshot.data,  data,  0)
+            ],
+          );
+        } else {
+          return Container();
+        }
+      });
+}
+  Widget _player(isPlay, minute, seconds, AudioPlayerObject object,  data, int i) {
+    return Container(
+
+      height: sizeConfig.screenHeight * .22 ,
+      child: data==null ? Container() : Container(
+        // padding: EdgeInsets.only(top: 5),
+        color: Colors.blueAccent,
+        child: Column(
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                IconButton(
+                  onPressed: () {},
+                  iconSize: fontWidgetSize.icone + 5,
+                  icon: Icon(Icons.skip_previous),
+                  color: Colors.white,
+                  focusColor: Colors.pinkAccent,
+                ),
+                IconButton(
+                  onPressed:(){
+                    setState((){
+                      if(data==null){
+                        print("data is empty");
+                      }else{
+                         if (data!="") {
+                           audioC.buttonPlayPause(data);
+                              }
+                      }
+
+                    });
+                  },
+                  iconSize: fontWidgetSize.icone + 15,
+                  icon: isPlay == true
+                      ? Icon(Icons.pause_circle_filled)
+                      : Icon(Icons.play_circle_filled),
+                  color: Colors.white,
+                  focusColor: Colors.pinkAccent,
+                ),
+                IconButton(
+                    onPressed: () {},
+                    color: Colors.white,
+                    iconSize: fontWidgetSize.icone + 5,
+                    icon: Icon(Icons.skip_next)),
+              ],
+            ),
+            _slider(object),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  retornarTempoSound(object.position),
+                  Text(
+                    minute + ':' + seconds,
+                    style: TextStyle(color: Colors.white),
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _slider(AudioPlayerObject object) {
+    return Slider(
+      min: 0.0,
+      max: object.duration.inSeconds.toDouble(),
+      onChanged: (newTime) {
+        setState(() {
+          print(newTime);
+          audioC.timeSound(newTime);
+        });
+      },
+      value: object.position.inSeconds.toDouble(),
+      inactiveColor: Colors.grey[700],
+      activeColor: Colors.white,
+    );
+  }
+
+  Widget retornarTempoSound(Duration position) {
+    String seconds = (position.inMinutes >= 1
+        ? ((position.inSeconds - position.inMinutes * 60))
+        : position.inSeconds)
+        .toString();
+    if (position.inSeconds < 10) {
+      seconds = "0" + seconds;
+    }
+    String tempoSounds = position.inMinutes.toString() + ":" + seconds;
+    return Text(
+      tempoSounds,
+      style: TextStyle(color: Colors.white),
+    );
+  }
+
    Widget dialog(String result, context, nameRecord) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
@@ -41,9 +157,7 @@ class _MyChoiceState extends State<MyChoice> {
           children: <Widget>[
             Stack(
               children: <Widget>[
-                Container(
-                  height:sizeConfig.screenHeight*.2,
-                ),
+                Container(   height: sizeConfig.screenHeight *.2  ),
                   Container(
                   height:sizeConfig.screenHeight*.15,
                   decoration: BoxDecoration(
@@ -60,16 +174,16 @@ class _MyChoiceState extends State<MyChoice> {
                   child: Container(
                     height: 90.0,
                     width: 90.0,
-                    decoration: BoxDecoration(
+                     decoration: BoxDecoration(
                       image: DecorationImage(
-
                         fit: BoxFit.cover,
                         image: AssetImage('assets/clo.png'),
                       ),
                       borderRadius: BorderRadius.circular(45.0),
                     ),
                   ),
-                )
+                ),
+                Container(child:streamPLayer(widget.result),)
               ],
             ),
             SizedBox(

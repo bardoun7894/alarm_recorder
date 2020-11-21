@@ -67,11 +67,11 @@ Future<bool> saveRecordDialog(context,String result,String nameRecord )async {
   return showDialog(
       context: context,
       barrierDismissible: true,
-      builder: (BuildContext context) { 
-      return MyChoice(result:result,nameRecord:nameRecord,);
-        });
+      builder: (BuildContext context) {
 
+      return MyChoice(result:result,nameRecord:nameRecord);
 
+      });
 }
 Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,String imgString,context)async {
   String note="note";
@@ -84,7 +84,7 @@ Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,S
 }
 void saveRecord(String payload,context,String nameRecord) async {
  
-  int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: payload,name: nameRecord));
+  int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: payload , name: nameRecord));
  reminderDateTime( id,"","record",nameRecord,payload,context);
   // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
   //   return  RecorderPlayer(payload);

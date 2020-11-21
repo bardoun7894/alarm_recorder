@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:alarm_recorder/notes/mapmpa.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
+import 'package:alarm_recorder/permissions/GetPermission.dart';
 import 'package:alarm_recorder/recorder/recorder.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart'; 
 import 'package:alarm_recorder/utils/screen_size.dart';
@@ -39,14 +40,12 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
     //appStoreIdentifier: '',
     googlePlayIdentifier: 'iwontforget.note.com.alarm_recorder',
   );
-
   @override
   void initState() {
     // TODO: ADmob 
     super.initState();
-    getPermissionStatus();
+    firstPermissionGet();
 //    bannerSize = AdmobBannerSize.BANNER;
-//
 //    interstitialAd = AdmobInterstitial(
 //      adUnitId: getInterstitialAdUnitId(),
 //      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
@@ -121,9 +120,9 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                      width: 10,
                    ),
                    Container(
-                     width: sizeConfig.screenWidth * .15,
-                     height: sizeConfig.screenWidth * .15,
-                     child: CircleAvatar(
+                     width  : sizeConfig.screenWidth * .15,
+                     height : sizeConfig.screenWidth * .15,
+                     child  : CircleAvatar(
                          maxRadius: 10,
                          backgroundColor: Colors.white,
                          child: Icon(Icons.note)),
@@ -370,57 +369,57 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
        return AddNotes(edit,camera,location);
      }));
    }
-
-  getPermissionStatus() async {
-    var status;
-      status = await Permission.photos.status;
-    switch (status) {
-      case PermissionStatus.undetermined:
-        await Permission.camera.request();
-      // navigateToAddNote(false, true, false);
-        break;
-      case PermissionStatus.granted:
-      //  navigateToAddNote(false, true, false);
-        break;
-      case PermissionStatus.denied:
-        status = await Permission.photos.status;
-   //     navigateToAddNote(false,true,false);
-        break;
-      case PermissionStatus.restricted:
-        status = await Permission.photos.status;
-     //   navigateToAddNote(false,true,false);
-        break;
-      case PermissionStatus.permanentlyDenied:
-        status = await Permission.photos.status;
-       // navigateToAddNote(false,true,false);
-        break;
-    }
-  }
-  getCameraPermissionStatus() async {
-    var status;
-      status = await Permission.photos.status;
-    switch (status) {
-      case PermissionStatus.undetermined:
-        await Permission.camera.request();
-       navigateToAddNote(false, true, false);
-        break;
-      case PermissionStatus.granted:
-        navigateToAddNote(false, true, false);
-        break;
-      case PermissionStatus.denied:
-        status = await Permission.photos.status;
-        navigateToAddNote(false,true,false);
-        break;
-      case PermissionStatus.restricted:
-        status = await Permission.photos.status;
-        navigateToAddNote(false,true,false);
-        break;
-      case PermissionStatus.permanentlyDenied:
-        status = await Permission.photos.status;
-        navigateToAddNote(false,true,false);
-        break;
-    }
-  }
+//
+//  getPermissionStatus() async {
+//    var status;
+//      status = await Permission.photos.status;
+//    switch (status) {
+//      case PermissionStatus.undetermined:
+//        await Permission.camera.request();
+//      // navigateToAddNote(false, true, false);
+//        break;
+//      case PermissionStatus.granted:
+//      //  navigateToAddNote(false, true, false);
+//        break;
+//      case PermissionStatus.denied:
+//        status = await Permission.photos.status;
+//   //     navigateToAddNote(false,true,false);
+//        break;
+//      case PermissionStatus.restricted:
+//        status = await Permission.photos.status;
+//     //   navigateToAddNote(false,true,false);
+//        break;
+//      case PermissionStatus.permanentlyDenied:
+//        status = await Permission.photos.status;
+//       // navigateToAddNote(false,true,false);
+//        break;
+//    }
+//  }
+//  getCameraPermissionStatus() async {
+//    var status;
+//      status = await Permission.photos.status;
+//    switch (status) {
+//      case PermissionStatus.undetermined:
+//        await Permission.camera.request();
+//       navigateToAddNote(false, true, false);
+//        break;
+//      case PermissionStatus.granted:
+//        navigateToAddNote(false, true, false);
+//        break;
+//      case PermissionStatus.denied:
+//        status = await Permission.photos.status;
+//        navigateToAddNote(false,true,false);
+//        break;
+//      case PermissionStatus.restricted:
+//        status = await Permission.photos.status;
+//        navigateToAddNote(false,true,false);
+//        break;
+//      case PermissionStatus.permanentlyDenied:
+//        status = await Permission.photos.status;
+//        navigateToAddNote(false,true,false);
+//        break;
+//    }
+//  }
 
   Widget locationContainer() {
             return Padding(

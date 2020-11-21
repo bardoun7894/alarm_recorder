@@ -23,9 +23,9 @@ final _fabEventController =StreamController<bool>();
 Sink<bool> get fabClickEventSink =>_fabEventController.sink;
 
 GetLocation(){
-  _fabEventController.stream.listen(_mapEventToState);
+  _fabEventController.stream.listen(mapEventToState);
 }
-  void _mapEventToState(bool event) async{
+  void mapEventToState(bool event) async{
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var isDisabled = await Permission.locationAlways.serviceStatus.isDisabled;
     if(!isDisabled){
@@ -43,41 +43,6 @@ GetLocation(){
     _inFabClick.add(_fabClicked);
           }
 
-  getPermissionStatus(context) async {
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    PermissionStatus status = await Permission.locationWhenInUse.status;
-    var isDisabled = await Permission.locationWhenInUse.serviceStatus.isDisabled;
-    if (isDisabled) {
-      Future.delayed(Duration(seconds: 3)).then((x) {
-        showSaveDialog(context, status, sharedPreferences, isDisabled);
-      });
-    }
-
-    print("$status");
-    switch (status) {
-      case PermissionStatus.undetermined:
-        await Permission.locationWhenInUse.request();
-        break;
-      case PermissionStatus.granted:
-        _mapEventToState(status.isGranted);
-        break;
-      case PermissionStatus.denied:
-        await Permission.locationWhenInUse.request();
-        break;
-      case PermissionStatus.restricted:
-        // TODO: Handle this case.
-        break;
-      case PermissionStatus.permanentlyDenied:
-        openAppSettings();
-        if (status.isGranted) {
-          if (!isDisabled) {
-            sharedPreferences.setBool("fabClicked", true);
-            getCurrentPosition();
-          }
-        }
-        break;
-        }
-      }
 
   Future<Position> getCurrentPosition() async {
     Position startPosition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
@@ -139,7 +104,7 @@ GetLocation(){
 
 
 
-  Future<bool> showSaveDialog(   context, PermissionStatus status, shared, isDisabled){
+  Future<bool> showSaveDialog( context, PermissionStatus status, shared, isDisabled){
     SizeConfig sizeConfig = SizeConfig(context);
     WidgetSize fontWidgetSize = WidgetSize(sizeConfig);
     return showDialog(
@@ -208,7 +173,7 @@ GetLocation(){
                         onPressed: () async {
                           settings(context);
 
-                          _mapEventToState(status.isGranted);},
+                          mapEventToState(status.isGranted);},
                         color: Colors.teal,
                         child: Center(
                           child: Text(

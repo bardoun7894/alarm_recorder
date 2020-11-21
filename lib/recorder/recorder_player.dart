@@ -39,7 +39,8 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
    List<RecordModel> _recordList = List();
    List<int> _selectedIndexList = List();
    bool _selectionMode = false;
-   void _changeSelection({bool enable, int index}) {
+   void _changeSelection( 
+     {bool enable, int index}) {
     _selectionMode = enable;
     _selectedIndexList.add(index);
     if (index == -1) {
@@ -57,7 +58,6 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   void initState() {
     super.initState(); 
     if (widget.pathfromNotifiction != "") {
-
       audioC.buttonPlayPause(widget.pathfromNotifiction);
        }
      }
@@ -96,13 +96,11 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
             color: Colors.white10,
             child: FutureBuilder<List<RecordModel>>(
                 future: recordProvider.getAllRecords(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<List<RecordModel>> futuresnapshot) {
+                builder: (BuildContext context, AsyncSnapshot<List<RecordModel>> futuresnapshot) {
                   if (futuresnapshot.hasData) {
                     return StreamBuilder(
                         stream: audioC.outPlayer,
-                        builder:
-                            (context, AsyncSnapshot<AudioPlayerObject> snapshot) {
+                        builder:  (context, AsyncSnapshot<AudioPlayerObject> snapshot) {
                           if (snapshot.hasData) {
                             return Stack(
                               children: <Widget>[
@@ -111,31 +109,26 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                                       top: sizeConfig.screenHeight * .04),
                                   child: Container(
                                     height: sizeConfig.screenHeight * .72,
-                                    child: getRegisterList(  futuresnapshot.data, audioC),
+                                    child: getRegisterList( futuresnapshot.data, audioC),
                                   ),
                                 ),
-                                _player(
-                                    snapshot.data.play,
-                                    snapshot.data.duration.inMinutes.toString(),
-                                    (snapshot.data.duration.inSeconds -
-                                            (snapshot.data.duration.inMinutes *
-                                                60))
-                                        .toString(),
-                                    snapshot.data,
-                                    futuresnapshot.data,
-                                    pos)
+          _player( snapshot.data.play, snapshot.data.duration.inMinutes.toString(), (snapshot.data.duration.inSeconds - (snapshot.data.duration.inMinutes * 60)
+          ) .toString(), snapshot.data,  futuresnapshot.data,  pos)
                               ],
                             );
                           } else {
                             return Container();
                           }
                         });
+
                   } else {
+
                     return Container(
                       width: sizeConfig.screenWidth,
                       height: sizeConfig.screenHeight,
                       color: Colors.white,
                       );
+
                       }
                      }),
           ),
@@ -160,8 +153,8 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     }));
     return false;
   }
-  Widget _player(isPlay, minute, seconds, AudioPlayerObject object,
-      List<RecordModel> data, int i) {
+
+  Widget _player(isPlay, minute, seconds, AudioPlayerObject object,List<RecordModel> data, int i) {
     return Positioned(
       bottom: 0,
       left: 0,
@@ -246,19 +239,10 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
     );
   }
 
-  Widget getRegisterList(List<RecordModel> data, AudioPLayerController audioC) {
-    if(_selectionMode){
-    return   selectedRecords(data);
-    }else{
-      return listRecords(data);
-    }
-  
-    }
-
   Widget retornarTempoSound(Duration position) {
     String seconds = (position.inMinutes >= 1
-            ? ((position.inSeconds - position.inMinutes * 60))
-            : position.inSeconds)
+        ? ((position.inSeconds - position.inMinutes * 60))
+        : position.inSeconds)
         .toString();
     if (position.inSeconds < 10) {
       seconds = "0" + seconds;
@@ -269,7 +253,16 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       style: TextStyle(color: Colors.white),
     );
   }
-   _pickSound() {
+  Widget getRegisterList(List<RecordModel> data, AudioPLayerController audioC) {
+    if(_selectionMode){
+    return   selectedRecords(data);
+    }else{
+      return listRecords(data);
+    }
+  
+    }
+
+  _pickSound() {
    FilePicker.getFile().then((onValue) {
       if (onValue != null) {
         audioC.audioStop();
@@ -327,10 +320,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       itemCount: data.length != null ? data.length : 0,
       itemBuilder: (BuildContext context, index) {
         RecordModel recordModel = data[index];
-     print("$index DATA __ ${data[index].id}");
-     print(")______");
          _recordList=data;
-
         return Padding(
           padding: EdgeInsets.only(
             right: sizeConfig.screenWidth * .05,
@@ -345,7 +335,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                    _selectedIndexList.add(index);
                 }
               });
-              
+
               },
           onLongPress: (){
           setState(() {

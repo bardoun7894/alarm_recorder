@@ -36,7 +36,7 @@ Future<Database> get database async {
 Future<List<Note>> getAllNotes() async{
   final db =await database;
   var map =await db.query('note');
-  return List.generate(map.length, (i) {
+  return List.generate(map.length,(i){
     return Note(
         id:map[i]['id'],
         title:map[i]['title'],

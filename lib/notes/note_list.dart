@@ -49,9 +49,10 @@ class _NoteListState extends State<NoteList> {
       _buttons.add(IconButton(
         icon: Icon(Icons.delete,color:Colors.blueAccent,),
        onPressed: () {
-         for(int i =0;i<_selectedIndexList.length;i++){
+         for(int i = 0;i<_selectedIndexList.length;i++){
              //remove selected note
-             noteProvider.deleteNoteWithId(_noteList[_selectedIndexList[i]].id) ;
+             noteProvider.deleteNoteWithId(_noteList[_selectedIndexList[i]].id);
+
                   }  }));
     }
         return WillPopScope(
@@ -64,7 +65,6 @@ class _NoteListState extends State<NoteList> {
               },),
               elevation: 0,
               backgroundColor: Colors.grey[200],
-
              actions: _buttons,
       ),
       body: Container(
@@ -90,10 +90,7 @@ class _NoteListState extends State<NoteList> {
                 );
               }else{
                 return getNoteList(snapshot.data);
-                }
-                }
-
-            else{
+                }  } else{
                  return Container(
                    width: sizeConfig.screenWidth,
                   height: sizeConfig.screenHeight,
@@ -156,7 +153,7 @@ class _NoteListState extends State<NoteList> {
       return  InkWell(
         onLongPress: (){
           setState(() {
-              _changeSelection(enable: true, index: index);
+      _changeSelection(enable: true, index: index);
           });
         },
           onTap: () {
@@ -263,15 +260,15 @@ class _NoteListState extends State<NoteList> {
                               note.imagePath =="" ? Padding(padding: EdgeInsets.only(top:sizeConfig.screenHeight*.04),child: Text(note.description.length > 17
                                   ? note.description.substring(0, 17)
                                   :note.description,style: TextStyle( color: Colors.blueGrey,fontWeight: FontWeight.bold,),maxLines: 2)):Text(note.title,style: TextStyle( color: Colors.blueGrey,fontWeight: FontWeight.bold),)
-
                             ],
                           ),
                         ],
                       )
                   ,
                       Positioned(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+
+                     child: Padding(
+                      padding: const EdgeInsets.all(8.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[

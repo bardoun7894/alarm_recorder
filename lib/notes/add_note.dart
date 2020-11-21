@@ -4,11 +4,13 @@ import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
+import 'package:alarm_recorder/permissions/GetPermission.dart';
 import 'package:alarm_recorder/utils/getlocation.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -32,7 +34,7 @@ class AddNotes extends StatefulWidget {
   _AddNotesState createState() => _AddNotesState(this.note);
 }
 
-class _AddNotesState extends State<AddNotes> {
+class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
   GetLocation getLocation = GetLocation();
@@ -45,10 +47,10 @@ class _AddNotesState extends State<AddNotes> {
   bool isNormalNote=false;
   String imgString = "";
   LocalNotification _localNotification = LocalNotification();
-  Note note; 
+  Note note;
   List<Note> list = [];
   WidgetSize fontWidgetSize;
-  SizeConfig sizeConfig; 
+  SizeConfig sizeConfig;
   TextEditingController meterController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   bool _validate = false;
@@ -59,16 +61,15 @@ class _AddNotesState extends State<AddNotes> {
   @override
   void initState() {
     super.initState();
-
+WidgetsBinding.instance.addObserver(this);
     if (widget.edit == true) {
       descriptionController.text = widget.note.description;
       imgString = widget.note.imagePath;
     }
     if (widget.camera == true) {
-      getPermissionStatus();
+      getPermissionPhotosStatus(putImageText(), requestPermission, permissionWidgetStatus);
     }
     if(widget.location){
-
         isImageMapHide=false;
         isNormalNote=false;
     }else{
@@ -84,6 +85,7 @@ class _AddNotesState extends State<AddNotes> {
   @override
   void dispose() {
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     getLocation.disposeFab();
     descriptionController.dispose();
     meterController.dispose();
@@ -142,7 +144,6 @@ print(e.toString());
   requestPermission() async {
     await Permission.camera.request();
     await Permission.photos.request();
-
   }
   activateFab() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
@@ -155,35 +156,13 @@ print(e.toString());
       print("fabClicked false");
     }
   }
-  getPermissionStatus() async {
-    var status;
+
+  permissionWidgetStatus(status) async{
     if (widget.camera == true && widget.location==false) {
       status = await Permission.camera.status;
     }
     if (widget.camera == false) {
       status = await Permission.photos.status;
-    }
-    print("$status ll");
-    switch (status) {
-      case PermissionStatus.undetermined:
-        requestPermission();
-        putImageText();
-        break;
-      case PermissionStatus.granted:
-        putImageText();
-        break;
-      case PermissionStatus.denied:
-        requestPermission();
-        putImageText();
-        break;
-      case PermissionStatus.restricted:
-        requestPermission();
-        putImageText();
-        break;
-      case PermissionStatus.permanentlyDenied:
-        requestPermission();
-        putImageText();
-        break;
     }
   }
 
@@ -232,8 +211,8 @@ print(e.toString());
                               padding: const EdgeInsets.only(right: 18.0),
                               child: IconButton(
                                 icon: Icon(
-                                  widget.camera == true 
-                                    
+                                  widget.camera == true
+
                                       ? Icons.camera_enhance
                                       : Icons.image,
                                   color: Color(0xFF417BFb),
@@ -241,7 +220,7 @@ print(e.toString());
                                 ),
                                 onPressed: () {
                                   try {
-                                    getPermissionStatus();
+                                    getPermissionPhotosStatus(putImageText(), requestPermission, permissionWidgetStatus);
                                       } catch (e) {
                                     print("exception" + e);
                                       }
@@ -250,7 +229,7 @@ print(e.toString());
                             ),
                           ],
                              ):Container()
-                    
+
                       ],
                     )
                     ,
@@ -281,11 +260,12 @@ print(e.toString());
                   TextFormField(
                     maxLengthEnforced: true,
                     readOnly: cursor,
+
                     onTap: () {
                       setState(() {
                         cursor = false;
-                      });
-                    },
+                      } ) ;
+                    } ,
                     controller: descriptionController,
                     cursorColor: Colors.amber,
                     cursorRadius: Radius.circular(2),
@@ -325,7 +305,6 @@ print(e.toString());
           AppLocalizations.of(context).translate("text_description_empty"));
     } else {
       if (widget.edit == true) {
-
         NoteDatabaseProvider.db.updateNote(new Note(
             id: widget.note.id,
             imagePath: imgString,
@@ -333,7 +312,7 @@ print(e.toString());
             description: descriptionData,
             date: s,
             time: firstDate.hour.toString()));
-        getLocation.getLastPosition(widget.note.id, titleData, descriptionData,
+        getLocation.getLastPosition(widget.note.id , titleData, descriptionData,
             imgString, "location", _localNotification, xmeter);
         Navigator.pop(context);
       } else if (widget.edit == false) {
@@ -353,11 +332,9 @@ print(e.toString());
       }
     }
   }
-  
   bool islocationForFirst(){
-   
    if( widget.location ){
-      return true ;   
+      return true ;
     }else{
         return false;
     }
@@ -412,8 +389,7 @@ print(e.toString());
                          setState(() {
                            try {
                              isFabClicked=true;
-                             //  getLocation.getPermissionStatus(context);
-                             getLocation.getPermissionStatus(context);
+                             getPermissionLocationStatus(context);
                            } catch (e) {
                              print(e);
                            }
@@ -436,7 +412,6 @@ print(e.toString());
   }
 
   Widget locationDialog() {
-    
     showDialog(
         context: context,
         barrierDismissible: true,
@@ -598,12 +573,10 @@ print(e.toString());
       ),
     );
   }
-
   _displaySnackBar(String text) {
     final snackBar = SnackBar(backgroundColor: Colors.blueAccent, content: Text(text));
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
-
   Widget saveButton() {
     return widget.location == true ? InkWell(
                 onTap : () { locationDialog(); },
@@ -614,9 +587,7 @@ print(e.toString());
                       borderRadius: BorderRadius.circular(19),
                       border: Border.all(color: Colors.blueAccent,width: 3)
                   ),
-                  child: Center(
-
-                    child:   Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 14),),
+              child: Center(    child:   Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 14),),
                   ),
                 )
     ) : InkWell(
@@ -644,31 +615,37 @@ print(e.toString());
               ),
             ));
            }
-
   Future<bool> _onBackPressed() async{
+       saveAnyway();
+       Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) { return NoteList();}));
+       return false;
+  }
+
+  saveAnyway()async {
     String titleData = descriptionController.text.length > 12
-        ? descriptionController.text.substring(0, 12)
-        : descriptionController.text ;
-    String descriptionData = descriptionController.text ;
+        ? descriptionController.text.substring(0, 12) : descriptionController
+        .text;
+    String descriptionData = descriptionController.text;
     String s = DateFormat.yMMMd().format(DateTime.now());
-    if (widget.edit == false) {
-      await NoteDatabaseProvider.db.insertNote(
-          new Note(
-              imagePath: imgString,
-              title: titleData,
-              description: descriptionData,
-              date: s,
-              time: firstDate.hour.toString()
-          )
-      );
-      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
-        return NoteList();
-      }));
+    if(widget.edit==false){
+      if(titleData.length!=0 || descriptionData.length!=0){
+        await NoteDatabaseProvider.db.insertNote(
+            new Note( imagePath: imgString,title:titleData,description: descriptionData, date: s, time: firstDate.hour.toString()    ));
+      }
     }
-      Navigator.pushReplacement(context,
-      MaterialPageRoute(builder: (BuildContext context) {
-      return NoteList();
-    }));
-   return false;
+
+                   }
+
+ @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+      super.didChangeAppLifecycleState( state );
+  if(state==AppLifecycleState.detached) saveAnyway() ;
+  if(state==AppLifecycleState.detached)
+    print("state $state");
+    if(state==AppLifecycleState.inactive || state ==AppLifecycleState.paused){
+          saveAnyway();
+    }
+
   }
 }
