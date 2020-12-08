@@ -30,8 +30,8 @@ Future<Database> get database async {
       version: 1,onCreate: (Database db,int version)async{
         await db.execute(
           "CREATE TABLE note(id INTEGER PRIMARY KEY,imagePath TEXT, title TEXT, description TEXT,date TEXT,time TEXT)",
-          );}
-          );
+               );}
+               );
   }
 Future<List<Note>> getAllNotes() async{
   final db =await database;

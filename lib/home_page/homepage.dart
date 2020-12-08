@@ -28,17 +28,17 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
 //  AdmobBannerSize bannerSize;
 //  AdmobInterstitial interstitialAd;
 //  AdmobReward rewardAd;
-  GlobalKey<ScaffoldState> scaffoldState = GlobalKey();
-  WidgetSize fontWidgetSize;
-  SizeConfig sizeConfig;
+  GlobalKey<ScaffoldState> scaffoldState = GlobalKey() ;
+  WidgetSize fontWidgetSize ;
+  SizeConfig sizeConfig ;
   RateMyApp _rateMyApp = RateMyApp(
     preferencesPrefix: 'rateMyApp_',
-    minDays: 3,
-    minLaunches: 7,
-    remindDays: 2,
-    remindLaunches: 5,
-    //appStoreIdentifier: '',
-    googlePlayIdentifier: 'iwontforget.note.com.alarm_recorder',
+    minDays: 3 ,
+    minLaunches: 7 ,
+    remindDays: 2 ,
+    remindLaunches: 5 ,
+    //appStoreIdentifier: '' ,
+    googlePlayIdentifier:'iwontforget.note.com.alarm_recorder',
   );
   @override
   void initState() {

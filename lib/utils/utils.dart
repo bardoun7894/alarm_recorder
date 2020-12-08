@@ -17,6 +17,7 @@ LocalNotification  _localNotification = LocalNotification() ;
 bool isTimeSet=false;
 Color backgroundColor=Colors.grey[100] ;
 Color fColor ;
+
 String base64String(Uint8List data){
   return base64Encode(data);
 }
@@ -120,6 +121,7 @@ void saveNote(int id,bool edit ,String descriptionControllertext,String imgStrin
      }
    
   }
+
   //   static Future<bool> checkInternetConnectivity() async {
   //   final ConnectivityResult connectivityResult =
   //       await Connectivity().checkConnectivity();

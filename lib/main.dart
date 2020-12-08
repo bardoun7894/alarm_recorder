@@ -12,7 +12,6 @@ import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:workmanager/workmanager.dart';
 import 'Translate/app_localizations.dart'; 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'home_page/homepage.dart';
@@ -32,23 +31,10 @@ Note customNote = Note();
 
 
 
-const fetchBackground = "fetchBackground";
-
-void callbackDispatcher() {
-  Workmanager.executeTask((task, inputData) async {
-    switch (task) {
-      case fetchBackground:
-        Position userLocation = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-        print(userLocation.altitude);
-        break;
-    }
-    return Future.value(true);
-  });
-}
-
 Future<void> main() async {
 // needed if you intend to initialize in the `main` function
   WidgetsFlutterBinding.ensureInitialized();
+
   //TODO Admob
  // Admob.initialize(getAppId());
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -86,25 +72,11 @@ class _MyAppState extends State<MyApp> {
   InitializationSettings initializationSettings;
   GetLocation getLocation=GetLocation();
 
-  workM(){
-    Workmanager.initialize(
-      callbackDispatcher,
-      isInDebugMode: true,
-    );
-    Workmanager.registerPeriodicTask(
-      "1",
-      fetchBackground,
-      initialDelay: Duration(seconds: 30),
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-      ),
-      frequency: Duration(minutes: 1),
-    );
-  }
+
   @override
   void initState() {
     super.initState();
-//    workM();
+
      initNotificSettings();
     _requestIOSPermissions();
     _configureDidReceiveLocalNotificationSubject();
@@ -132,7 +104,7 @@ class _MyAppState extends State<MyApp> {
             id: id, title: title, body: body, payload: payload));
       });
   var initializationSettings = InitializationSettings(
-    initializationSettingsAndroid, initializationSettingsIOS);
+    android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
       onSelectNotification: (String payload) async {
     if (payload != null) {
@@ -149,8 +121,7 @@ class _MyAppState extends State<MyApp> {
         ?.requestPermissions(
           alert: true,
           badge: true,
-          sound: true,
-                           );
+          sound: true,   );
   }
   void _configureDidReceiveLocalNotificationSubject() {
     didReceiveLocalNotificationSubject.stream.listen((ReceivedNotification receivedNotification) async {
@@ -243,8 +214,8 @@ class LocalNotification {
         '$id',
          title,
            body,
-        importance: Importance.Max,
-        priority: Priority.High,
+        importance: Importance.max,
+        priority: Priority.high,
         enableLights: true,
         enableVibration: true,
         ticker: 'test ticker',
@@ -256,23 +227,22 @@ class LocalNotification {
     } else {
       customPayload = payload;
     }
-    NotificationDetails notificationDetails =  NotificationDetails(androidNotificationDetails, iosNotificationDetails);
+    NotificationDetails notificationDetails =  NotificationDetails(android: androidNotificationDetails, iOS: iosNotificationDetails);
     await myApp.flutterLocalNotificationsPlugin.schedule(  id, title, body, timeDelayed, notificationDetails, payload: customPayload);}
 
-  void showNotification(
-      int id, String title, String body,imgString,String payload) async {   await notification(id, title, body,imgString,payload);
+   showNotification( int id, String title, String body,imgString,String payload) async {   await notification(id, title, body,imgString,payload);
   }
   Future<void> notification(  int id, String title, String body,String imgPath, String payload) async {
     var androidNotificationDetails = AndroidNotificationDetails(
         '$id', title, body,
-        importance: Importance.Max,
-        priority: Priority.High,
-        ongoing: true,
+        importance: Importance.max,
+        priority: Priority.high,
+        ongoing: true ,
         enableVibration: true,
         ticker: 'test ticker',
         playSound: true);
     IOSNotificationDetails iosNotificationDetails =  IOSNotificationDetails(presentSound: true);
-    NotificationDetails notificationDetails =  NotificationDetails(androidNotificationDetails, iosNotificationDetails);
+    NotificationDetails notificationDetails =  NotificationDetails(android: androidNotificationDetails, iOS: iosNotificationDetails);
     Note newNote = Note(id: id, imagePath: imgPath, title: title, description: body);
     payload = newNote.toRawJson();
     await myApp.flutterLocalNotificationsPlugin.show(id, title, body, notificationDetails, payload: payload);

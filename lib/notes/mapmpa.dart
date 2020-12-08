@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -26,8 +27,8 @@ List<Marker> allMarker =[];
 
 
   void _getUserLocation() async {
-    Position position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    List<Placemark> placemark = await Geolocator().placemarkFromCoordinates(position.latitude,position.longitude);
+    Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    List<Placemark> placemark = await  placemarkFromCoordinates(position.latitude,position.longitude);
     setState(() {
       _initialPosition = LatLng(position.latitude, position.longitude);
       print('${placemark[0].name}');
@@ -64,10 +65,21 @@ List<Marker> allMarker =[];
 
   Future<void> _currentLocation() async {
     final GoogleMapController controller = await _controller.future;
-    controller.animateCamera(CameraUpdate.newCameraPosition(_current));
-    Future.delayed(Duration(milliseconds: 5000)).then(
-            (value) => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
-              return AddNotes(false, false, true);
-            })));
+    controller.animateCamera(CameraUpdate.newCameraPosition(_current)).whenComplete(() {
+        Future.delayed(Duration(seconds: 2)).then((value) {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+            return AddNotes(false, false, true);
+          }));
+        });
+
+    });
+
+    // if(mounted) {
+    //   Future.delayed(Duration(second: 10000)).then(
+    //           (value) => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
+    //         return AddNotes(false, false, true);
+    //       })));
+    // }
+
   }
 }

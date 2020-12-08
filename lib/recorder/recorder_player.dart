@@ -1,5 +1,7 @@
  
 
+import 'dart:io';
+
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
@@ -262,11 +264,12 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   
     }
 
-  _pickSound() {
-   FilePicker.getFile().then((onValue) {
+  _pickSound()async {
+
+   FilePicker.platform.pickFiles().then((onValue) {
       if (onValue != null) {
         audioC.audioStop();
-        repath = onValue.path;
+        repath = onValue.files.single.path;
         print(repath);
         List<String> namePickedFile= repath.split('/');
         saveRecord(repath,context,namePickedFile[namePickedFile.length-1]);

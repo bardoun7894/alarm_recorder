@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:isolate';
 import 'dart:math';
 
 import 'package:alarm_recorder/Translate/app_localizations.dart';
@@ -5,14 +7,19 @@ import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/permissions/GetPermission.dart';
+import 'package:alarm_recorder/utils/geoLocatorClass.dart';
 import 'package:alarm_recorder/utils/getlocation.dart';
+import 'package:alarm_recorder/utils/location_callback_handler.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
+import 'package:background_locator/background_locator.dart';
+import 'package:background_locator/location_dto.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
@@ -35,9 +42,19 @@ class AddNotes extends StatefulWidget {
 }
 
 class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
+
+  List<LatLng> points = List();
+  double currentlat ;
+  double currentlong ;
+  LocalNotification _localNotification = LocalNotification();
+  String logStr = '';
+  bool isRunning;
+  LocationDto lastLocation;
+  DateTime lastTimeLocation;
+
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
-  GetLocation getLocation = GetLocation();
+  GetLocation getLocation ;
   String textAfterGetImage = "";
   File _image;
   bool isFabClicked=false ;
@@ -46,7 +63,6 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
   bool isImageMapHide=false;
   bool isNormalNote=false;
   String imgString = "";
-  LocalNotification _localNotification = LocalNotification();
   Note note;
   List<Note> list = [];
   WidgetSize fontWidgetSize;
@@ -59,9 +75,8 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
   bool cursor = true;
   DateTime firstDate = DateTime.now().add(Duration(minutes: 1));
   @override
-  void initState() {
+  void initState()  {
     super.initState();
-WidgetsBinding.instance.addObserver(this);
     if (widget.edit == true) {
       descriptionController.text = widget.note.description;
       imgString = widget.note.imagePath;
@@ -70,8 +85,11 @@ WidgetsBinding.instance.addObserver(this);
       getPermissionPhotosStatus(putImageText(), requestPermission, permissionWidgetStatus);
     }
     if(widget.location){
-        isImageMapHide=false;
+      getLocation=GetLocation();
+
+      isImageMapHide=false;
         isNormalNote=false;
+
     }else{
       isHideFAB=true;
       isImageMapHide=true;
@@ -85,7 +103,6 @@ WidgetsBinding.instance.addObserver(this);
   @override
   void dispose() {
     super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
     getLocation.disposeFab();
     descriptionController.dispose();
     meterController.dispose();
@@ -293,6 +310,7 @@ print(e.toString());
     note.description = descriptionController.text;
   }
 
+
   saveLocationNote(double xmeter) async {
 
     String titleData = descriptionController.text.length > 12
@@ -312,8 +330,9 @@ print(e.toString());
             description: descriptionData,
             date: s,
             time: firstDate.hour.toString()));
-        getLocation.getLastPosition(widget.note.id , titleData, descriptionData,
-            imgString, "location", _localNotification, xmeter);
+           getLocation.getData(widget.note.id , titleData, descriptionData, imgString, "location", xmeter);
+
+
         Navigator.pop(context);
       } else if (widget.edit == false) {
         int id = await NoteDatabaseProvider.db.insertNote(
@@ -325,7 +344,7 @@ print(e.toString());
             time: firstDate.hour.toString()
             )
         );
-        getLocation.getLastPosition(id, titleData, descriptionData, imgString,"location $titleData", _localNotification, xmeter);
+        getLocation.getData(id, titleData, descriptionData, imgString,"location $titleData", xmeter);
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
           return NoteList();
         }));
@@ -486,7 +505,6 @@ print(e.toString());
 
                                  saveLocationNote(meter);
 
-
                               }
                             });
                           },
@@ -636,16 +654,5 @@ print(e.toString());
 
                    }
 
- @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    // TODO: implement didChangeAppLifecycleState
-      super.didChangeAppLifecycleState( state );
-  if(state==AppLifecycleState.detached) saveAnyway() ;
-  if(state==AppLifecycleState.detached)
-    print("state $state");
-    if(state==AppLifecycleState.inactive || state ==AppLifecycleState.paused){
-          saveAnyway();
-    }
 
-  }
 }

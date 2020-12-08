@@ -6,8 +6,8 @@ GetLocation location =new GetLocation();
 
 getPermissionLocationStatus(context) async {
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  PermissionStatus status = await Permission.locationWhenInUse.status;
-  var isDisabled = await Permission.locationWhenInUse.serviceStatus.isDisabled;
+  PermissionStatus status = await Permission.locationAlways.status;
+  var isDisabled = await Permission.locationAlways.serviceStatus.isDisabled;
   if (isDisabled) {
     Future.delayed(Duration(seconds: 3)).then((x) {
       location.showSaveDialog(context, status, sharedPreferences,isDisabled);
@@ -16,13 +16,13 @@ getPermissionLocationStatus(context) async {
   print("$status");
   switch (status) {
     case PermissionStatus.undetermined:
-      await Permission.locationWhenInUse.request();
+      await Permission.locationAlways.request();
       break;
     case PermissionStatus.granted:
       location.mapEventToState(status.isGranted);
       break;
     case PermissionStatus.denied:
-      await Permission.locationWhenInUse.request();
+      await Permission.locationAlways.request();
       break;
     case PermissionStatus.restricted:
     // TODO: Handle this case.
@@ -32,7 +32,7 @@ getPermissionLocationStatus(context) async {
       if (status.isGranted) {
         if (!isDisabled) {
           sharedPreferences.setBool("fabClicked", true);
-          location.getCurrentPosition();
+
         }
       }
       break;
@@ -111,7 +111,7 @@ getPermissionPhotosStatus(Function method,Function requestPermission,Function pe
 firstPermissionGet()async{
   Map<Permission, PermissionStatus> statuses = await [
     Permission.microphone,
-    Permission.location,
+    Permission.locationAlways,
     Permission.mediaLibrary,
     Permission.camera,
     Permission.storage,
@@ -187,21 +187,21 @@ firstPermissionGet()async{
       await Permission.camera.request();
       break;
   }
-  switch(statuses[Permission.location]){
+  switch(statuses[Permission.locationAlways]){
     case PermissionStatus.undetermined:
-      await Permission.location.request();
+      await Permission.locationAlways.request();
       break;
     case PermissionStatus.granted:
     // TODO: Handle this case.
       break;
     case PermissionStatus.denied:
-      await Permission.location.request();
+      await Permission.locationAlways.request();
       break;
     case PermissionStatus.restricted:
-      await Permission.location.request();
+      await Permission.locationAlways.request();
       break;
     case PermissionStatus.permanentlyDenied:
-      await Permission.location.request();
+      await Permission.locationAlways.request();
       break;
   }
 }
