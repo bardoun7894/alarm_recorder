@@ -4,40 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 GetLocation location =new GetLocation();
 
-getPermissionLocationStatus(context) async {
-  SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  PermissionStatus status = await Permission.locationAlways.status;
-  var isDisabled = await Permission.locationAlways.serviceStatus.isDisabled;
-  if (isDisabled) {
-    Future.delayed(Duration(seconds: 3)).then((x) {
-      location.showSaveDialog(context, status, sharedPreferences,isDisabled);
-    });
-  }
-  print("$status");
-  switch (status) {
-    case PermissionStatus.undetermined:
-      await Permission.locationAlways.request();
-      break;
-    case PermissionStatus.granted:
-      location.mapEventToState(status.isGranted);
-      break;
-    case PermissionStatus.denied:
-      await Permission.locationAlways.request();
-      break;
-    case PermissionStatus.restricted:
-    // TODO: Handle this case.
-      break;
-    case PermissionStatus.permanentlyDenied:
-      openAppSettings();
-      if (status.isGranted) {
-        if (!isDisabled) {
-          sharedPreferences.setBool("fabClicked", true);
 
-        }
-      }
-      break;
-  }
-}
 getPermissionRecorderStatus(Function fn) async {
   Map<Permission, PermissionStatus> statuses = await [
     Permission.microphone,
@@ -111,7 +78,6 @@ getPermissionPhotosStatus(Function method,Function requestPermission,Function pe
 firstPermissionGet()async{
   Map<Permission, PermissionStatus> statuses = await [
     Permission.microphone,
-    Permission.locationAlways,
     Permission.mediaLibrary,
     Permission.camera,
     Permission.storage,
@@ -187,23 +153,7 @@ firstPermissionGet()async{
       await Permission.camera.request();
       break;
   }
-  switch(statuses[Permission.locationAlways]){
-    case PermissionStatus.undetermined:
-      await Permission.locationAlways.request();
-      break;
-    case PermissionStatus.granted:
-    // TODO: Handle this case.
-      break;
-    case PermissionStatus.denied:
-      await Permission.locationAlways.request();
-      break;
-    case PermissionStatus.restricted:
-      await Permission.locationAlways.request();
-      break;
-    case PermissionStatus.permanentlyDenied:
-      await Permission.locationAlways.request();
-      break;
-  }
+
 }
 
 

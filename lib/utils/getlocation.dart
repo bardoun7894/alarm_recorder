@@ -31,7 +31,7 @@ class GetLocation  extends ChangeNotifier{
   ReceivePort port = ReceivePort();
 
  bool _fabClicked=false;
-final _fabStateController=StreamController<bool>();
+final _fabStateController =  StreamController<bool>();
 
 StreamSink<bool> get _inFabClick=>_fabStateController.sink;
 Stream<bool> get FabClick=>_fabStateController.stream;
@@ -148,9 +148,7 @@ getData(int id, String title, String body, String imgString, String payload, dou
 
 
   disposeLocation() {
-
     BackgroundLocator.unRegisterLocationUpdate();
-
   }
   disposeFab(){
     _fabStateController.close();

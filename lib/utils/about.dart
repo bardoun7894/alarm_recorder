@@ -85,6 +85,7 @@ class ContactUs extends StatelessWidget {
     );
   }
   Future<void> _launchEmailAndPhone(String url) async {
+    var encoded = Uri.encodeComponent(url);
     if (await canLaunch(url)) {
       await launch(url);
     } else {

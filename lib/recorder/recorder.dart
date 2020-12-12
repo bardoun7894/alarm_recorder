@@ -116,7 +116,6 @@ class _RecorderScreenState extends State<RecorderScreen> {
                     gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        tileMode: TileMode.clamp,
                         colors: <Color>[
                       Colors.blueAccent,
                           Colors.blueAccent,

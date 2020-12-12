@@ -11,7 +11,6 @@ import 'package:alarm_recorder/utils/settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:rate_my_app/rate_my_app.dart';
 import '../Translate/app_localizations.dart';
 
@@ -57,7 +56,6 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
 //        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
 //          if (event == AdmobAdEvent.closed) rewardAd.load();
 //        });
-//
 //    interstitialAd.load();
 //    rewardAd.load();
 
@@ -69,7 +67,6 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
       },
     );
   }
-
   void launchAppRating(BuildContext context,String title,String message) {
     _rateMyApp.showStarRateDialog(
       context,
@@ -227,11 +224,10 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                  gradient: LinearGradient(
                      begin: Alignment.topCenter,
                      end: Alignment.bottomCenter,
-                     colors: <Color>[
+                     colors:[
                        Colors.blueAccent,
                        Colors.blueAccent,
-                       Color(0xFF74b9ff),
-                     ]),
+                       Color(0xFF74b9ff),]),
                  borderRadius: BorderRadius.only(
                      bottomRight: Radius.circular(raduis),
                      bottomLeft: Radius.circular(raduis)),

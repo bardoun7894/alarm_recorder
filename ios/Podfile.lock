@@ -40,12 +40,6 @@ PODS:
   - Flutter (1.0.0)
   - flutter_audio_recorder (0.5.4):
     - Flutter
-  - flutter_ffmpeg (0.2.10):
-    - Flutter
-    - flutter_ffmpeg/https (= 0.2.10)
-  - flutter_ffmpeg/https (0.2.10):
-    - Flutter
-    - mobile-ffmpeg-https (= 4.3.1)
   - flutter_image_compress (0.0.1):
     - Flutter
     - Mantle
@@ -91,7 +85,6 @@ PODS:
   - Mantle (2.1.6):
     - Mantle/extobjc (= 2.1.6)
   - Mantle/extobjc (2.1.6)
-  - mobile-ffmpeg-https (4.3.1)
   - path_provider (0.0.1):
     - Flutter
   - "permission_handler (5.0.1+1)":
@@ -122,7 +115,6 @@ DEPENDENCIES:
   - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - Flutter (from `Flutter`)
   - flutter_audio_recorder (from `.symlinks/plugins/flutter_audio_recorder/ios`)
-  - flutter_ffmpeg (from `.symlinks/plugins/flutter_ffmpeg/ios`)
   - flutter_image_compress (from `.symlinks/plugins/flutter_image_compress/ios`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_ringtone_player (from `.symlinks/plugins/flutter_ringtone_player/ios`)
@@ -149,7 +141,6 @@ SPEC REPOS:
     - GoogleMaps
     - libwebp
     - Mantle
-    - mobile-ffmpeg-https
     - SDWebImage
     - SDWebImageWebPCoder
     - SwiftyGif
@@ -166,8 +157,6 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_audio_recorder:
     :path: ".symlinks/plugins/flutter_audio_recorder/ios"
-  flutter_ffmpeg:
-    :path: ".symlinks/plugins/flutter_ffmpeg/ios"
   flutter_image_compress:
     :path: ".symlinks/plugins/flutter_image_compress/ios"
   flutter_local_notifications:
@@ -211,7 +200,6 @@ SPEC CHECKSUMS:
   file_picker: 3e6c3790de664ccf9b882732d9db5eaf6b8d4eb1
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
   flutter_audio_recorder: eb998d4e75e59b39d9e3ca1818a5e0f3a82f5836
-  flutter_ffmpeg: cf0a6941ef67e88248c998cc3e34f8acb0b4e454
   flutter_image_compress: 082f8daaf6c1b0c9fe798251c750ef0ecd98d7ae
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_ringtone_player: 15eba85187230b87b2512f0e1b92225618bc03e7
@@ -226,7 +214,6 @@ SPEC CHECKSUMS:
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   location_permissions: 7e0f9aa0f60deb8ff93ddf0e2a164c7e8197bc94
   Mantle: 4c0ed6ce47c96eccc4dc3bb071deb3def0e2c3be
-  mobile-ffmpeg-https: c4a3c255163ddb1abc4b4dfc613c2d885f8c46eb
   path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
   permission_handler: eac8e15b4a1a3fba55b761d19f3f4e6b005d15b6
   rate_my_app: 3b64dd0876bd286001595ee2e69193e757c4d77c
@@ -239,6 +226,6 @@ SPEC CHECKSUMS:
   TOCropViewController: da59f531f8ac8a94ef6d6c0fc34009350f9e8bfe
   url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
 
-PODFILE CHECKSUM: 18e7d290ba35cb8d1f8b27721a0dc5de4e5559b1
+PODFILE CHECKSUM: 23e11f9ac9fea76dc5cd4b1eb589f5a3cdfbdb3d
 
 COCOAPODS: 1.10.0

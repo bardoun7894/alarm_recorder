@@ -178,6 +178,7 @@ class _MyAppState extends State<MyApp> {
             note: customNote,),
           '/recordPlayer': (context) => RecorderPlayer(customPayload),
           '/recorderScreen': (context) => RecorderScreen(),
+          '/showAlarmScreen': (context) => RecorderScreen(),
           '/noteList':(context)=>NoteList()
                      },
 
@@ -218,7 +219,7 @@ class LocalNotification {
         priority: Priority.high,
         enableLights: true,
         enableVibration: true,
-        ticker: 'test ticker',
+        ticker:'test ticker',
         playSound: true);
     IOSNotificationDetails iosNotificationDetails =   IOSNotificationDetails(presentSound: true);
     if (payload == "note") {
@@ -230,7 +231,8 @@ class LocalNotification {
     NotificationDetails notificationDetails =  NotificationDetails(android: androidNotificationDetails, iOS: iosNotificationDetails);
     await myApp.flutterLocalNotificationsPlugin.schedule(  id, title, body, timeDelayed, notificationDetails, payload: customPayload);}
 
-   showNotification( int id, String title, String body,imgString,String payload) async {   await notification(id, title, body,imgString,payload);
+   showNotification( int id, String title, String body,imgString,String payload) async {
+    await notification(id, title, body,imgString,payload);
   }
   Future<void> notification(  int id, String title, String body,String imgPath, String payload) async {
     var androidNotificationDetails = AndroidNotificationDetails(

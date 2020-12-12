@@ -46,7 +46,6 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
   List<LatLng> points = List();
   double currentlat ;
   double currentlong ;
-  LocalNotification _localNotification = LocalNotification();
   String logStr = '';
   bool isRunning;
   LocationDto lastLocation;
@@ -103,7 +102,9 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
   @override
   void dispose() {
     super.dispose();
-    getLocation.disposeFab();
+    if(widget.location){
+      getLocation.disposeFab();
+    }
     descriptionController.dispose();
     meterController.dispose();
   }
@@ -391,8 +392,9 @@ print(e.toString());
                 height: 35,
                 width: 100,
                 decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        colors: [Colors.blue[300], Colors.blueAccent]),
+              gradient: LinearGradient(
+                colors:<Color>[Colors.blue[300], Colors.blueAccent]
+                    ),
                     borderRadius: BorderRadius.circular(20)),
                 child:
              FlatButton(
@@ -408,7 +410,6 @@ print(e.toString());
                          setState(() {
                            try {
                              isFabClicked=true;
-                             getPermissionLocationStatus(context);
                            } catch (e) {
                              print(e);
                            }
@@ -634,7 +635,9 @@ print(e.toString());
             ));
            }
   Future<bool> _onBackPressed() async{
-       saveAnyway();
+    if( descriptionController.text.length!=0){
+      saveAnyway();
+    }
        Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) { return NoteList();}));
        return false;
   }

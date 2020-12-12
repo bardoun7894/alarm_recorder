@@ -13,8 +13,8 @@ GetLocation getLocation =GetLocation();
   return a ;
 }
 void getdistanceBetween(currentlat,currentlong, endlat, endlong ,int id, String title, String body, String imgString, String payload, double xMeter) async {
+      double distanceInMeters =   await Geolocator.distanceBetween(currentlat,currentlong, endlat, endlong);
 
-      double distanceInMeters = await Geolocator.distanceBetween(currentlat,currentlong, endlat, endlong);
       print("distance meter $distanceInMeters");
       print("$id $title $body") ;
       if (distanceInMeters >= xMeter) {
@@ -24,12 +24,12 @@ void getdistanceBetween(currentlat,currentlong, endlat, endlong ,int id, String 
           getLocation.onStop();
         });
 
-
       }
 }
 notif(int id, String title, String body, String imgString, String payload, double xMeter) async {
 
     _localNotification.showNotification( id, title, body, imgString, payload) ;
+
 
 }
 
