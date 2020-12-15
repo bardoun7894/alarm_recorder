@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/Translate/change_language.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +12,16 @@ class MySettings extends StatefulWidget {
 }
 
 class _MySettingsState extends State<MySettings> {
+
+  bool isIos ;
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkPlatform();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,22 +44,21 @@ class _MySettingsState extends State<MySettings> {
                 trailing:Icon(Icons.arrow_forward,color:  Colors.grey[700],) ,
               ),
             ),
-            Card(
+            isIos == false ?  Card(
               child: ListTile(
                 leading: Icon(Icons.notifications,color: Colors.blueAccent,),
-
                 title: Text(AppLocalizations.of(context).translate("notifications"),style: TextStyle(color:  Colors.grey[700]),),
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey[700],) ,
               ),
-            ),
-           Card(
+            ):Text(""),
+            isIos == false ?  Card(
               child: ListTile(
                 leading: Icon(Icons.monetization_on,color: Colors.blueAccent,),
                 title: Text(AppLocalizations.of(context).translate("disable_ads"),style: TextStyle(color:  Colors.grey[700]),),
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey[700],) ,
               ),
-            ),
-            Card(
+            ):Text(""),
+           isIos == false ? Card(
               child: ListTile(
                 leading: Icon(Icons.info_outline,color: Colors.blueAccent,),
                 title: Text(AppLocalizations.of(context).translate("contact_us"),style: TextStyle(color:  Colors.grey[700])),
@@ -55,11 +66,22 @@ class _MySettingsState extends State<MySettings> {
                 onTap: (){
                   Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {return ContactUs();}));
                 },
-                   ),
-            ),
+                ),
+            ):Text(""),
           ],
         ),
       ),
     );
   }
+
+  checkPlatform(){
+    if(Platform.isIOS){
+      setState(() {
+        isIos = true;
+      });
+    }else{
+      isIos =false;
+    }
+  }
 }
+

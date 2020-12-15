@@ -23,7 +23,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<string>ca-app-pub-3940256099942544~1458002511 </string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>itms</string>
@@ -36,24 +36,23 @@
 		<true/>
 	</dict>
 	<key>NSAppleMusicUsageDescription</key>
-	<string>Explain why your app uses music</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Need to upload Image</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open and in the background.</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when in the background.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This sample uses the microphone to record your speech </string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Need to upload Image</string>
+	<string>iWontForget need access music to add it to the recordList to remind you when you need to hear the audio again </string>
 	<key>NSCalendarsUsageDescription</key>
-    <string>This app need to access your calendar events</string>
+	<string>iWontForget need to access your calendar events</string>
+	<key>NSCameraUsageDescription</key>
+	<string>iWontForget Need access  to the camera to upload Image into the note </string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>IwontForget need access to the location when open in the background for measure the distance to remind you if you navigate to another app .</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This app needs access to location when open in the background for measure the distance to remind you if you navigate to another app.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app needs access to location when open in the background for measure the distance to remind you if you navigate to another app</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>IwontForget need access to the microphone to record your speech to use it to the reminder </string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>iWontForget Need access to the PhotoLibrary to upload Image into the note </string>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>audio</string>
 		<string>location</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
@@ -64,13 +63,6 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>

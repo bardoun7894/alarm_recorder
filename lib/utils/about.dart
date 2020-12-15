@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -85,8 +87,14 @@ class ContactUs extends StatelessWidget {
     );
   }
   Future<void> _launchEmailAndPhone(String url) async {
-    var encoded = Uri.encodeComponent(url);
-    if (await canLaunch(url)) {
+    var encoded = "";
+
+    if(Platform.isIOS){
+     encoded = Uri.encodeComponent(url);
+    }else{
+      encoded =url;
+    }
+    if (await canLaunch(encoded)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';
