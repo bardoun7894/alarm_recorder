@@ -27,11 +27,19 @@ class _MyChoiceState extends State<MyChoice> {
   SizeConfig sizeConfig;
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    // audioC.durBPlayerStreamClose()
+
+  }
+  @override
   Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
     return dialog(widget.result, context, widget.nameRecord);
   }
+
 
 Widget streamPLayer(data){
   return StreamBuilder(

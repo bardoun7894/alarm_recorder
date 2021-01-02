@@ -72,7 +72,8 @@ class _RecorderScreenState extends State<RecorderScreen> {
         var current = await _recorder.current(channel: 0);
         print(current);
         // should be "Initialized", if all working fine
-        setState(() {
+
+        setStateIfMounted(() {
           _current = current;
           _currentStatus = current.status;
           print(_currentStatus);
@@ -145,7 +146,12 @@ class _RecorderScreenState extends State<RecorderScreen> {
                               )),
                           InkWell(
                             onTap: (){
-                              Navigator.of(context).push(MaterialPageRoute(
+                              print(_current);
+                              // if(_current==1){
+                              //   _stop();
+                              // }
+
+                     Navigator.of(context).push(MaterialPageRoute(
                        builder: (BuildContext context) {  return MySettings();}));
                             },
                             child: Icon(
@@ -213,6 +219,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
     );
   }
   Future<bool> _onBackPressed() async{
+
     Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {
       return MyHomePage();
     }));
@@ -229,7 +236,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
               ? Container(
                   color: Colors.white,
                   width: sizeConfig.screenWidth * .92,
-                  height: sizeConfig.screenWidth * .92,
+                  height: sizeConfig.screenWidth * .81,
                 )
               : animationReco(),
         ),
@@ -240,11 +247,12 @@ class _RecorderScreenState extends State<RecorderScreen> {
                 getPermissionRecorderStatus(changeIconPlay);
               });  },
             child: Container(
+
               width: sizeConfig.screenWidth * .2,
               height: sizeConfig.screenWidth * .2,
               decoration: BoxDecoration(
                   color: Color(0xFF417BFb),
-                  borderRadius: BorderRadius.circular(50)),
+                  borderRadius: BorderRadius.circular(sizeConfig.screenWidth/8)),
               child: Center(
                 child: currentIcon == 0
                     ? ImageIcon(AssetImage('assets/rec.png'),
@@ -261,7 +269,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
   Widget animationReco() {
     return SpinKitDoubleBounce(
       color: Color(0xFF417BFb),
-      size: sizeConfig.screenWidth * .92,
+      size:sizeConfig.screenWidth * .92,
     );
   }
 changeIconPlay(){
@@ -280,7 +288,7 @@ changeIconPlay(){
       showFab=false;
       await _recorder.start();
       var recording = await _recorder.current(channel: 0);
-      setState(() {
+      setStateIfMounted(() {
         _current = recording;
       });
       const tick = const Duration(milliseconds: 50);
@@ -290,14 +298,18 @@ changeIconPlay(){
         }
         var current = await _recorder.current(channel: 0);
         // print(current.status);
-        setState(() {
+        setStateIfMounted((){
           _current = current;
           _currentStatus = _current.status;
         });
+
       });
     } catch (e) {
       print(e);
     }
+  }
+  void setStateIfMounted(f) {
+    if (mounted) setState(f);
   }
   _stop() async {
     showFab=true;
@@ -306,7 +318,7 @@ changeIconPlay(){
     print("Stop recording: ${result.duration}");
     File file = widget.localFileSystem.file(result.path);
     print("File length: ${await file.length()}");
-    setState(() {
+    setStateIfMounted((){
       _current = result;
       _currentStatus = _current.status;
 
@@ -314,7 +326,8 @@ changeIconPlay(){
 
 
       _init();
-       });
+
+    });
 
   }
   

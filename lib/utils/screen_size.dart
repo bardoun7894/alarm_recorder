@@ -23,8 +23,12 @@ if(this.screenWidth >= 320 && this.screenWidth <375){
 if(this.screenWidth >= 375 && this.screenWidth <414){
    this.screenType =ScreenType.MEDUIM;
 }
-if(this.screenWidth >=414 ){
+if(this.screenWidth >= 414 && this.screenWidth < 768){
    this.screenType =ScreenType.LARGE;
+}
+
+if(this.screenWidth >= 1024  ){
+   this.screenType =ScreenType.XLARGE;
 }
 
 }
@@ -35,7 +39,10 @@ class WidgetSize{
 double titleFontSize;
 double bodyFontSize;
 double icone;
+double shape ;
 SizeConfig sizeConfig;
+
+  double wid;
 WidgetSize(SizeConfig sizeConfig){
   this.sizeConfig=sizeConfig;
   _init();
@@ -44,16 +51,14 @@ WidgetSize(SizeConfig sizeConfig){
   sizeConfig._setScreen();
      switch(this.sizeConfig.screenType){
        case ScreenType.SMALL:
-         icone=28;
+        icone=28;
         titleFontSize = 26;
         bodyFontSize = 20;
-        print("ddddd");
-
        break;
        case ScreenType.LARGE:
          icone=36;
-        titleFontSize = 28;
-          bodyFontSize = 20;
+         titleFontSize = 28;
+         bodyFontSize = 20;
          break;
        case ScreenType.MEDUIM:
          icone =30;
@@ -61,14 +66,15 @@ WidgetSize(SizeConfig sizeConfig){
          bodyFontSize = 25;
          break;
        case ScreenType.XLARGE:
-         icone =35;
-         titleFontSize = 28;
+           icone =35;
+           titleFontSize = 28;
            bodyFontSize = 20;
          break;
         default:
-          icone =25;
-           titleFontSize = 24;
-           bodyFontSize = 17;
+          icone = 40;
+           titleFontSize = 30;
+           bodyFontSize = 20;
+
          break;
      }
     }

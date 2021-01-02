@@ -26,7 +26,7 @@ class LocationCallbackHandler {
   static Future<void> disposeCallback() async {
     final SendPort send = IsolateNameServer.lookupPortByName(isolateName);
     send?.send(null);
-    //IsolateNameServer.removePortNameMapping(isolateName);
+   IsolateNameServer.removePortNameMapping(isolateName);
   }
 
   static Future<void> callback(LocationDto locationDto) async {

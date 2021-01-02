@@ -137,6 +137,7 @@ getData(int id, String title, String body, String imgString, String payload, dou
 
   void onStop() async {
     BackgroundLocator.unRegisterLocationUpdate();
+    IsolateNameServer.removePortNameMapping(LocationCallbackHandler.isolateName);
     final _isRunning = await BackgroundLocator.isServiceRunning();
       isRunning = _isRunning;
     print('Running ${isRunning.toString()}');
@@ -149,6 +150,7 @@ getData(int id, String title, String body, String imgString, String payload, dou
 
   disposeLocation() {
     BackgroundLocator.unRegisterLocationUpdate();
+    IsolateNameServer.removePortNameMapping(LocationCallbackHandler.isolateName);
   }
   disposeFab(){
     _fabStateController.close();
@@ -270,27 +272,25 @@ getData(int id, String title, String body, String imgString, String payload, dou
       await LocationPermissions().openAppSettings();
     }
   }
-
-
   Future<void> initPlatformState() async {
     print('Initializing...');
     await BackgroundLocator.initialize();
     print('Initialization done');
     final _isRunning = await BackgroundLocator.isServiceRunning();
       isRunning = _isRunning;
-
     print('Running ${isRunning.toString()}');
   }
 
   void _startLocator( ) {
     BackgroundLocator.registerLocationUpdate(LocationCallbackHandler.callback,
         initCallback: LocationCallbackHandler.initCallback,
+
         disposeCallback: LocationCallbackHandler.disposeCallback,
-        autoStop: false,
+        autoStop: true,
+
         iosSettings: IOSSettings(
-            showsBackgroundLocationIndicator: true,
             accuracy: LocationAccuracy.BALANCED,
-            distanceFilter: 0),
+            distanceFilter: 10),
         androidSettings: AndroidSettings(
             accuracy: LocationAccuracy.BALANCED,
             interval: 5,

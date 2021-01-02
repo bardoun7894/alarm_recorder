@@ -64,16 +64,6 @@ reminderDateTime(id,imageString,title,description,payload,context)async{
  }
 
 }
-Future<bool> saveRecordDialog(context,String result,String nameRecord )async {
-  return showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-
-      return MyChoice(result:result,nameRecord:nameRecord);
-
-      });
-}
 Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,String imgString,context)async {
   String note="note";
   return showDialog(
@@ -83,10 +73,21 @@ Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,S
       return MyChoice(id:id,edit: edit,descriptionControllertext: descriptionControllertext,imgString: imgString,note:note);
     });
 }
+
+
+Future<bool> saveRecordDialog(context,String result,String nameRecord )async {
+  return showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return MyChoice(result:result,nameRecord:nameRecord);
+      });
+}
+
+
 void saveRecord(String payload,context,String nameRecord) async {
- 
   int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: payload , name: nameRecord));
- reminderDateTime( id,"","record",nameRecord,payload,context);
+  reminderDateTime( id,"","record",nameRecord,payload,context);
   // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
   //   return  RecorderPlayer(payload);
   // }));
@@ -122,38 +123,7 @@ void saveNote(int id,bool edit ,String descriptionControllertext,String imgStrin
    
   }
 
-  //   static Future<bool> checkInternetConnectivity() async {
-  //   final ConnectivityResult connectivityResult =
-  //       await Connectivity().checkConnectivity();
-  //   if (connectivityResult == ConnectivityResult.mobile) {
-  //     // print('Mobile');
-  //     return true;
-  //   } else if (connectivityResult == ConnectivityResult.wifi) {
-  //     // print('Wifi');
-  //     return true;
-  //   } else if (connectivityResult == ConnectivityResult.none) {
-  //     print('No Connection');
-  //     return false;
-  //   } else {
-  //     return false;
-  //   }
-  // }
 
-  // static dynamic launchURL() async {
-  //   final PackageInfo packageInfo = await PackageInfo.fromPlatform();
-  //   print(packageInfo.packageName);
-  //   final String url =
-  //       'https://play.google.com/store/apps/details?id=${packageInfo.packageName}';
-  //   if (await canLaunch(url)) {
-  //     await launch(url);
-  //   } else {
-  //     throw 'Could not launch $url';
-  //   }
-  // }
-
-  // static dynamic launchAppStoreURL({String iOSAppId}) async {
-  //   LaunchReview.launch(writeReview: false, iOSAppId: iOSAppId);
-  // }
 
 
 
