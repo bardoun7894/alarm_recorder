@@ -12,6 +12,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:rate_my_app/rate_my_app.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../Translate/app_localizations.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -38,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
     remindLaunches: 5 ,
     //appStoreIdentifier: '' ,
     googlePlayIdentifier:'iwontforget.note.com.alarm_recorder',
-  );
+           );
   @override
   void initState() {
     // TODO: ADmob 
@@ -107,110 +108,83 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
        Drawer(
          child: Column(
            children: <Widget>[
+             Expanded(child:
+             Column(children: [
+               Container(
+                 width: double.infinity,
+                 height: sizeConfig.screenHeight * .2,
+                 color: Colors.blueAccent,
+                 child: Row(
+                   children: <Widget>[
+                     SizedBox(
+                       width: 10,
+                     ),
+                     Container(
+                       width  : sizeConfig.screenWidth * .15,
+                       height : sizeConfig.screenWidth * .15,
+                       child  : CircleAvatar(
+                           maxRadius: 10,
+                           backgroundColor: Colors.white,
+                           child: Icon(Icons.event_note_outlined)),
+                     ),
+                     SizedBox(
+                       width: 10,
+                     ),
+                     Text(AppLocalizations.of(context).translate("arabic_main"),
+                       style: TextStyle(
+                           color: Colors.white, fontWeight: FontWeight.bold),
+                     ),
+                   ],
+                 ),
+               ),
+
+               ListTile(
+                 onTap: () {
+                   Navigator.of(context)
+                       .push(MaterialPageRoute(builder: (BuildContext context) {
+                     return NoteList();
+                   }));
+                 },
+                 leading: Icon(
+                   Icons.note,
+                   color: Colors.blueAccent,
+                 ),
+                 title: Text(
+                   AppLocalizations.of(context).translate("all_notes"),
+                   style: TextStyle(color: Colors.grey[700]),
+                 ),
+               ),
+               ListTile(
+                 onTap: () {
+                   Navigator.of(context)
+                       .push(MaterialPageRoute(builder: (BuildContext context) {
+                     return RecorderPlayer("");
+                   }));
+                 },
+                 leading: Icon(
+                   Icons.queue_music,
+                   color: Colors.blueAccent,
+                 ),
+                 title: Text(
+                   AppLocalizations.of(context).translate("recorder_list"),
+                   style: TextStyle(color: Colors.grey[700]),
+                 ),
+               ),
+
+             ],),),
+
              Container(
-               width: double.infinity,
-               height: sizeConfig.screenHeight * .2,
-               color: Colors.blueAccent,
-               child: Row(
-                 children: <Widget>[
-                   SizedBox(
-                     width: 10,
-                   ),
-                   Container(
-                     width  : sizeConfig.screenWidth * .15,
-                     height : sizeConfig.screenWidth * .15,
-                     child  : CircleAvatar(
-                         maxRadius: 10,
-                         backgroundColor: Colors.white,
-                         child: Icon(Icons.note)),
-                   ),
-                   SizedBox(
-                     width: 10,
-                   ),
-                   Text(AppLocalizations.of(context).translate("arabic_main"),
-                     style: TextStyle(
-                         color: Colors.white, fontWeight: FontWeight.bold),
-                   ),
-                 ],
-               ),
-             ),
-             ListTile(
-               onTap: () {
-                 navigateToAddNote(false,false,false);
-               },
-               leading: Icon(
-                 Icons.note_add,
-                 color: Colors.blueAccent,
-               ),
-               title: Text(
-                 AppLocalizations.of(context).translate("add_note"),
-                 style: TextStyle(color: Colors.grey[700]),
-               ),
-             ),
-             ListTile(
-               onTap: () {
-                 Navigator.of(context)
-                     .push(MaterialPageRoute(builder: (BuildContext context) {
-                   return NoteList();
-                 }));
-               },
-               leading: Icon(
-                 Icons.note,
-                 color: Colors.blueAccent,
-               ),
-               title: Text(
-                 AppLocalizations.of(context).translate("all_notes"),
-                 style: TextStyle(color: Colors.grey[700]),
-               ),
-             ),
-             ListTile(
-               onTap: () {
-                 Navigator.of(context)
-                     .push(MaterialPageRoute(builder: (BuildContext context) {
-                   return RecorderScreen();
-                 }));
-               },
-               leading: Icon(
-                 Icons.record_voice_over,
-                 color: Colors.blueAccent,
-               ),
-               title: Text(
-                 AppLocalizations.of(context).translate("record_voice"),
-                 style: TextStyle(color: Colors.grey[700]),
-               ),
-             ),
-             ListTile(
-               onTap: () {
-                 Navigator.of(context)
-                     .push(MaterialPageRoute(builder: (BuildContext context) {
-                   return RecorderPlayer("");
-                 }));
-               },
-               leading: Icon(
-                 Icons.queue_music,
-                 color: Colors.blueAccent,
-               ),
-               title: Text(
-                 AppLocalizations.of(context).translate("recorder_list"),
-                 style: TextStyle(color: Colors.grey[700]),
-               ),
-             ),
-             ListTile(
-               onTap: () {
-                 Navigator.of(context)
-                     .push(MaterialPageRoute(builder: (BuildContext context) {
-                   return MySettings();
-                 }));
-               },
-               leading: Icon(
-                 Icons.settings,
-                 color: Colors.blueAccent,
-               ),
-               title: Text(
-                 AppLocalizations.of(context).translate("settings"),
-                 style: TextStyle(color: Colors.grey[700]),
-               ),
-             ),
+                 child: Align(
+                     alignment: FractionalOffset.bottomCenter,
+                     child: Column(
+                       children: <Widget>[
+                         Divider(),
+                         ListTile(
+                           subtitle: Text("dardmna@gmail.com"),
+                             leading: Icon(Icons.help,color: Colors.blueAccent,size: 34),
+                             title: Text(AppLocalizations.of(context).translate("contact_us"),style: TextStyle(color: Colors.blueAccent),)),
+                       ],
+                     ))),
            ],
          ),
        ),
@@ -365,57 +339,6 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
        return AddNotes(edit,camera,location);
      }));
    }
-//
-//  getPermissionStatus() async {
-//    var status;
-//      status = await Permission.photos.status;
-//    switch (status) {
-//      case PermissionStatus.undetermined:
-//        await Permission.camera.request();
-//      // navigateToAddNote(false, true, false);
-//        break;
-//      case PermissionStatus.granted:
-//      //  navigateToAddNote(false, true, false);
-//        break;
-//      case PermissionStatus.denied:
-//        status = await Permission.photos.status;
-//   //     navigateToAddNote(false,true,false);
-//        break;
-//      case PermissionStatus.restricted:
-//        status = await Permission.photos.status;
-//     //   navigateToAddNote(false,true,false);
-//        break;
-//      case PermissionStatus.permanentlyDenied:
-//        status = await Permission.photos.status;
-//       // navigateToAddNote(false,true,false);
-//        break;
-//    }
-//  }
-//  getCameraPermissionStatus() async {
-//    var status;
-//      status = await Permission.photos.status;
-//    switch (status) {
-//      case PermissionStatus.undetermined:
-//        await Permission.camera.request();
-//       navigateToAddNote(false, true, false);
-//        break;
-//      case PermissionStatus.granted:
-//        navigateToAddNote(false, true, false);
-//        break;
-//      case PermissionStatus.denied:
-//        status = await Permission.photos.status;
-//        navigateToAddNote(false,true,false);
-//        break;
-//      case PermissionStatus.restricted:
-//        status = await Permission.photos.status;
-//        navigateToAddNote(false,true,false);
-//        break;
-//      case PermissionStatus.permanentlyDenied:
-//        status = await Permission.photos.status;
-//        navigateToAddNote(false,true,false);
-//        break;
-//    }
-//  }
 
   Widget locationContainer() {
             return Padding(
@@ -557,7 +480,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
               ),
             );
           }
-//
+
 //  String getBannerAdUnitId() {
 //    if (Platform.isIOS) {
 //      return 'ca-app-pub-3940256099942544/2934735716';

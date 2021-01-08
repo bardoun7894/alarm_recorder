@@ -65,7 +65,7 @@ class _MySettingsState extends State<MySettings> {
                 trailing:Icon(Icons.arrow_forward,color: Colors.grey[700],),
                 onTap: (){
                   Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {return ContactUs();}));
-                },
+                    },
                 ),
             ):Text(""),
           ],

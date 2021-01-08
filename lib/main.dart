@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'Translate/app_localizations.dart'; 
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'Translate/cupertino_delegate.dart';
 import 'home_page/homepage.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -166,9 +167,9 @@ class _MyAppState extends State<MyApp> {
         ],
         child: Consumer<AppLanguage>(
           builder: (context, model, child) {
-          return MaterialApp(
-            debugShowCheckedModeBanner: false,
-            navigatorKey: navigatorKey,
+            return MaterialApp(
+               debugShowCheckedModeBanner: false,
+               navigatorKey: navigatorKey,
             initialRoute: '/',
             routes: {
           // When navigating to the "/second" route, build the SecondScreen widget.
@@ -176,10 +177,10 @@ class _MyAppState extends State<MyApp> {
             false,
             false,
             note: customNote,),
-          '/recordPlayer': (context) => RecorderPlayer(customPayload),
-          '/recorderScreen': (context) => RecorderScreen(),
-          '/showAlarmScreen': (context) => RecorderScreen(),
-          '/noteList':(context)=>NoteList()
+             '/recordPlayer': (context) => RecorderPlayer(customPayload),
+             '/recorderScreen': (context) => RecorderScreen(),
+             '/showAlarmScreen': (context) => RecorderScreen(),
+             '/noteList':(context)=>NoteList()
                      },
 
             locale: model.appLocal,
@@ -190,6 +191,7 @@ class _MyAppState extends State<MyApp> {
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,
               GlobalWidgetsLocalizations.delegate,
+              CupertinoLocalizationsDelegate()
                  ],
             home: MyHomePage(),
             );

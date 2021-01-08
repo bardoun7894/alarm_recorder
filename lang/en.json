@@ -10,8 +10,10 @@
   "dialog_save_data": "You want to Save this ?",
   "dialog_settings": " Can't get current location  Please make sure you enable GPS and try again ",
   "ok": "ok",
+  "cancel": "cancel",
   "no": "no",
   "add_note": "add note",
+  "note": "note",
   "all_notes": " all notes",
   "record_voice": "record voice",
   "recorder_list": "recorder list",
@@ -32,6 +34,7 @@
    "welcome_location": " welcome to reminder Note location service  ",
    "start_location": "Start ",
    "save": "save",
+   "saved_succesfully": "note has added successfully",
    "rate_title": "Enjoying our Reminder App?",
    "rate_message": "It would mean a lot to us, if you leave a rating.",
    "snack_message": "your location is activated you will be reminded after write a note and enter the distance ."

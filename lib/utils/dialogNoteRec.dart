@@ -27,13 +27,6 @@ class _MyChoiceState extends State<MyChoice> {
   SizeConfig sizeConfig;
 
   @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    // audioC.durBPlayerStreamClose()
-
-  }
-  @override
   Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
@@ -43,23 +36,25 @@ class _MyChoiceState extends State<MyChoice> {
 
 Widget streamPLayer(data){
   return StreamBuilder(
+
       stream: audioC.outPlayer,
       builder:  (context, AsyncSnapshot<AudioPlayerObject> snapshot) {
-        if (snapshot.hasData) {
-          return Stack(
+      if (snapshot.hasData) {
+       return Stack(
             children: <Widget>[
-     _player( snapshot.data.play, snapshot.data.duration.inMinutes.toString(), (snapshot.data.duration.inSeconds - (snapshot.data.duration.inMinutes * 60)
+      _player( snapshot.data.play, snapshot.data.duration.inMinutes.toString(),(snapshot.data.duration.inSeconds - (snapshot.data.duration.inMinutes * 60)
               ) .toString(), snapshot.data,  data,  0)
             ],
           );
-        } else {
+           }
+          else
+          {
           return Container();
-        }
+            }
       });
 }
   Widget _player(isPlay, minute, seconds, AudioPlayerObject object,  data, int i) {
     return Container(
-
       height: sizeConfig.screenHeight * .22 ,
       child: data==null ? Container() : Container(
         // padding: EdgeInsets.only(top: 5),
@@ -81,7 +76,7 @@ Widget streamPLayer(data){
                     setState((){
                       if(data==null){
                         print("data is empty");
-                      }else{
+                        }else{
                          if (data!="") {
                            audioC.buttonPlayPause(data);
                               }
@@ -233,6 +228,8 @@ Widget streamPLayer(data){
            FlatButton(
                   onPressed: () {
                     Navigator.of(context).pop();
+                 audioC.audioObject.play=false;
+                 audioC.audioObject.advancedPlayer.pause();
                   },
                   color: Colors.grey,
                   child: Center(

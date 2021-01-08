@@ -71,10 +71,9 @@ WidgetSize(SizeConfig sizeConfig){
            bodyFontSize = 20;
          break;
         default:
-          icone = 40;
-           titleFontSize = 30;
+          icone = 36;
+           titleFontSize = 28;
            bodyFontSize = 20;
-
          break;
      }
     }

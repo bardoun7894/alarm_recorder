@@ -322,7 +322,7 @@ changeIconPlay(){
       _current = result;
       _currentStatus = _current.status;
 
-      saveRecordDialog(context, result.path.toString(),nameController.text!=""?nameController.text+"${result.extension}":name+"."+"${result.extension}");
+      saveRecordDialog(context,result.path.toString(),nameController.text!=""?nameController.text+"${result.extension}":name+"."+"${result.extension}");
 
 
       _init();

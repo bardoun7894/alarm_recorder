@@ -404,7 +404,6 @@ class AudioPlayerObject {
   set play(bool value) {
     _play = value;
   }
-
   String get tempoMusica => _tempoMusica;
 
   set tempoMusica(String value) {

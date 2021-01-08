@@ -1,13 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
  
+import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
+import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
+import 'package:rich_alert/rich_alert.dart';
  
 import '../main.dart';
 import '../recorder/recorder_player.dart';
@@ -60,7 +63,9 @@ reminderDateTime(id,imageString,title,description,payload,context)async{
   }));
  }
  if(payload=="note"){
-   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){  return  NoteList();}));
+   showRichAlertDialog(context);
+   await Future.delayed(Duration(seconds: 3));
+   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){  return MyHomePage();}));
  }
 
 }
@@ -71,10 +76,21 @@ Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,S
       barrierDismissible: true,
       builder: (BuildContext context) { 
       return MyChoice(id:id,edit: edit,descriptionControllertext: descriptionControllertext,imgString: imgString,note:note);
-    });
+            });
 }
-
-
+Future<bool> showRichAlertDialog(context)async {
+  showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return RichAlertDialog(
+          //uses the custom alert dialog
+          alertTitle: richTitle(AppLocalizations.of(context).translate("note")),
+          alertSubtitle: richSubtitle(AppLocalizations.of(context).translate("saved_succesfully")),
+          alertType: RichAlertType.SUCCESS,alertButtonText: AppLocalizations.of(context).translate("cancel"),
+        );
+      }
+  );
+}
 Future<bool> saveRecordDialog(context,String result,String nameRecord )async {
   return showDialog(
       context: context,
@@ -88,10 +104,6 @@ Future<bool> saveRecordDialog(context,String result,String nameRecord )async {
 void saveRecord(String payload,context,String nameRecord) async {
   int id = await RegisterDatabaseProvider.db.insertRegister(new RecordModel(pathRec: payload , name: nameRecord));
   reminderDateTime( id,"","record",nameRecord,payload,context);
-  // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
-  //   return  RecorderPlayer(payload);
-  // }));
-
 }
 void saveNote(int id,bool edit ,String descriptionControllertext,String imgString,context) async {
     String titleData = descriptionControllertext.length > 12
@@ -107,7 +119,6 @@ void saveNote(int id,bool edit ,String descriptionControllertext,String imgStrin
           description: descriptionData,
           date:s,
           ));
-        // reminderDateTime( id,"","record",nameRecord,payload,context);  
       reminderDateTime( id,imgString,titleData,descriptionData,"note",context);
     
     } else if (edit == false) {

@@ -34,9 +34,10 @@ class AudioPLayerController extends BlocBase {
     });
     audioObject.musicActual = audioObject.localFilePath;
     inPlayer.add(audioObject);
-  }
+     }
   audioStop() {
-    audioObject.advancedPlayer.stop();
+   // audioObject.advancedPlayer.stop();
+    inPlayer.close();
   }
  durBPlayerStreamClose(){
    print("durb close"); 

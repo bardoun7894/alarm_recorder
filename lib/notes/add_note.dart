@@ -3,6 +3,7 @@ import 'dart:isolate';
 import 'dart:math';
 
 import 'package:alarm_recorder/Translate/app_localizations.dart';
+import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
@@ -98,7 +99,6 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
       activateFab();
     });
   }
-
   @override
   void dispose() {
     super.dispose();
@@ -184,7 +184,6 @@ print(e.toString());
     }
   }
 
-
   saveDatainEditText(String image,String body)async{
     SharedPreferences sh=await SharedPreferences.getInstance();
     sh.setString("imageSh", image);
@@ -198,105 +197,105 @@ print(e.toString());
     return WillPopScope(
       child: Scaffold(
         key: _scaffoldKey,
-
-        body: Stack(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.only(top: 10),
-              height: sizeConfig.screenHeight * .16,
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: sizeConfig.screenWidth * .02, left: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(Icons.arrow_back_ios,
-                              color: Color(0xFF417BFb),
-                              size: fontWidgetSize.icone - 5),
-                          onPressed: () {
-                            _onBackPressed();
-                          },
-                        ),
-                        isImageMapHide?Row(
-                          children: <Widget>[
-                            Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: saveButton()),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 18.0),
-                              child: IconButton(
-                                icon: Icon(
-                                  widget.camera == true
-
-                                      ? Icons.camera_enhance
-                                      : Icons.image,
-                                  color: Color(0xFF417BFb),
-                                  size: fontWidgetSize.icone - 3,
+        body: Container(
+          child: Stack(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(top: 10),
+                height: sizeConfig.screenHeight * .16,
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(
+                          top: sizeConfig.screenWidth * .02, left: 5),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+             IconButton(     icon: Icon(Icons.arrow_back_ios,   color: Color(0xFF417BFb),  size: fontWidgetSize.icone - 5),
+                            onPressed: () {
+                              _onBackPressed();
+                            },
+                          ),
+                          isImageMapHide?Row(
+                            children: <Widget>[
+                              Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: saveButton()),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 18.0),
+                                child: IconButton(
+                                  icon: Icon(
+                                    widget.camera == true
+                                        ? Icons.camera_enhance
+                                        : Icons.image,
+                                    color: Color(0xFF417BFb),
+                                    size: fontWidgetSize.icone - 3,
+                                  ),
+                                  onPressed: () {
+                                    try {
+                                      getPermissionPhotosStatus(putImageText(), requestPermission, permissionWidgetStatus);
+                                        } catch (e) {
+                                      print("exception" + e);
+                                        }
+                                  },
                                 ),
-                                onPressed: () {
-                                  try {
-                                    getPermissionPhotosStatus(putImageText(), requestPermission, permissionWidgetStatus);
-                                      } catch (e) {
-                                    print("exception" + e);
-                                      }
-                                },
                               ),
+                            ],
+                               ):Container()
+
+                        ],
+                      )
+                      ,
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                    top: sizeConfig.screenHeight * .1,
+                    right: sizeConfig.screenWidth * .02,
+                    left: sizeConfig.screenWidth * .02,
+                    bottom: sizeConfig.screenHeight * .005),
+                child:! isImageMapHide && widget.location ? locationStartButton(): Container(
+
+                  child: ListView(
+                    children: <Widget>[
+                      Text(  " ${formatDateTime()} ",
+                        style: TextStyle(
+                           fontSize: fontWidgetSize.bodyFontSize - 13,
+                           color: Colors.black45),
                             ),
-                          ],
-                             ):Container()
+                      SizedBox(
+                        height: 10,
+                      ),
+                      imgString == ""
+                          ? Container()
+                          : imageFromBase64String(imgString, 300, 300),
+                       TextFormField(
 
-                      ],
-                    )
-                    ,
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(
-                  top: sizeConfig.screenHeight * .1,
-                  right: sizeConfig.screenWidth * .02,
-                  left: sizeConfig.screenWidth * .02,
-                  bottom: sizeConfig.screenHeight * .005),
-             child:! isImageMapHide && widget.location ? locationStartButton(): ListView(
-                children: <Widget>[
-                  Text(
-                    "  ${formatDateTime()} ",
-                    style: TextStyle(
-                        fontSize: fontWidgetSize.bodyFontSize - 13,
-                        color: Colors.black45),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  imgString == ""
-                      ? Container()
-                      : imageFromBase64String(imgString, 300, 300),
-                  TextFormField(
-                    maxLengthEnforced: true,
-                    readOnly: cursor,
+                            maxLengthEnforced: true,
 
-                    onTap: () {
-                      setState(() {
-                        cursor = false;
-                      } ) ;
-                    } ,
-                    controller: descriptionController,
-                    cursorColor: Colors.amber,
-                    cursorRadius: Radius.circular(2),
-                    cursorWidth: 1,
-                    autofocus: false,
-                    style: TextStyle(color: Colors.grey[700], fontSize: 16,fontWeight: FontWeight.bold),
-                    maxLines: 100,
-                    keyboardType: TextInputType.multiline,
+                            onTap: () {
+                              setState(() {
+
+                              } ) ;
+                            } ,
+                            controller: descriptionController,
+                            cursorColor: Colors.white,
+                            cursorRadius: Radius.circular(2),
+                            cursorWidth: 1,
+                            autofocus: false,
+                            style: TextStyle(color: Colors.grey[700], fontSize: 16,fontWeight: FontWeight.bold),
+                            maxLines: 100,
+                            keyboardType: TextInputType.multiline,
+                          )
+
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       onWillPop: _onBackPressed,
@@ -319,10 +318,7 @@ print(e.toString());
         : descriptionController.text;
     String descriptionData = descriptionController.text;
     String s = DateFormat.yMMMd().format(DateTime.now());
-    if (descriptionController.text == "") {
-      _displaySnackBar(
-          AppLocalizations.of(context).translate("text_description_empty"));
-    } else {
+
       if (widget.edit == true) {
         NoteDatabaseProvider.db.updateNote(new Note(
             id: widget.note.id,
@@ -332,8 +328,8 @@ print(e.toString());
             date: s,
             time: firstDate.hour.toString()));
            getLocation.getData(widget.note.id , titleData, descriptionData, imgString, "location", xmeter);
-
-
+        showRichAlertDialog(context);
+        await Future.delayed(Duration(seconds: 3));
         Navigator.pop(context);
       } else if (widget.edit == false) {
         int id = await NoteDatabaseProvider.db.insertNote(
@@ -342,14 +338,15 @@ print(e.toString());
             title: titleData,
             description: descriptionData,
             date: s,
-            time: firstDate.hour.toString()
-            )
+            time: firstDate.hour.toString()      )
         );
-        getLocation.getData(id, titleData, descriptionData, imgString,"location $titleData", xmeter);
+      getLocation.getData(id,titleData,descriptionData, imgString,"location $titleData", xmeter);
+        showRichAlertDialog(context);
+        await Future.delayed(Duration(seconds: 3));
         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
-          return NoteList();
+          return MyHomePage();
         }));
-      }
+
     }
   }
   bool islocationForFirst(){
@@ -605,23 +602,22 @@ print(e.toString());
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(19),
                       border: Border.all(color: Colors.blueAccent,width: 3)
-                  ),
-              child: Center(    child:   Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 14),),
+                          ),
+         child: Center( child: Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 14),),
                   ),
                 )
     ) : InkWell(
             onTap: () {
-              if (descriptionController.text == "") {
-                _displaySnackBar(AppLocalizations.of(context)
-                    .translate("text_description_empty"));
-              } else { if (widget.edit == true) {
-                  saveNoteDialog(widget.note.id, widget.edit,
-                      descriptionController.text, imgString, context);
+               if (widget.edit == true) {
+                saveNote(widget.note.id,widget.edit,descriptionController.text,imgString,context);
+                //
+                // saveNoteDialog(widget.note.id, widget.edit,
+                //       descriptionController.text, imgString, context);
                 }else if (widget.edit == false) {
-                  saveNoteDialog(0, widget.edit, descriptionController.text,
-                      imgString, context);
+                saveNote(0,widget.edit,descriptionController.text,imgString,context);
+                  // saveNoteDialog(0, widget.edit, descriptionController.text,  imgString, context);
                         }}
-                  },
+                  ,
             child:Container(
               width: 50,
               height: 24,
@@ -658,4 +654,47 @@ print(e.toString());
                    }
 
 
+}
+
+class PagePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    //Setp 1
+    final paintgrey = Paint()..color = Colors.grey;
+    var rrectRed =  RRect.fromLTRBR(0, 0, size.width, size.height, Radius.circular(0.0));
+    canvas.drawRRect(rrectRed, paintgrey);
+   //Step 2
+    final paintWhite = Paint()..color = Colors.white;
+    var rrectWhite =
+    RRect.fromLTRBR(0, 0, size.width, size.height, Radius.circular(0.0));
+    canvas.drawRRect(rrectWhite, paintWhite);
+  //Step 3
+    final paintDarkgrey = Paint()
+      ..color = Colors.blueGrey
+      ..strokeWidth = 1.0;
+    // canvas.drawLine(Offset(0, size.height * .025),  Offset(size.width, size.height * .025), paintDarkgrey);
+     canv(canvas, size, paintDarkgrey);
+
+    final paintPink = Paint()
+      ..color = Colors.pinkAccent
+      ..strokeWidth = 2.5;
+    canvas.drawLine(Offset(size.width * .1, 0),
+        Offset(size.width * .1, size.height), paintPink);
+  }
+  canv(canvas,size,paintDarkgrey){
+
+   for(var i =0.25;i<size.height;i++){
+      print(i);
+     canvas.drawLine(Offset(0, size.height * i),  Offset(size.width, size.height * i), paintDarkgrey);
+      }
+  }
+  @override
+  bool shouldRepaint(PagePainter oldDelegate) {
+//TODO Implement shouldRepaint
+  }
+
+  @override
+  bool shouldRebuildSemantics(PagePainter oldDelegate) {
+//TODO Implement shouldRebuildSemantics
+  }
 }

@@ -271,18 +271,15 @@ class _NoteListState extends State<NoteList> {
                       padding: const EdgeInsets.all(8.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
-                                Text(
-                             note.date,  style: TextStyle(
-                                      color:  Colors.grey
-                                        ),
-                                ),
-                               Padding(
-                                 padding: const EdgeInsets.only(left: 10),
+                                Text(  note.date,  style: TextStyle(  color:  Colors.grey   ),   ),
+                                Padding(
+                                 padding: const EdgeInsets.only(left:60),
                                  child: Icon(
-               _selectedIndexList.contains(index) ? Icons.check_circle_outline : Icons.radio_button_unchecked,
+               _selectedIndexList.contains(index) ? Icons.cancel : Icons.radio_button_unchecked,
                  color: _selectedIndexList.contains(index) ? Colors.blueAccent : Colors.blueAccent,
-                        ),
+                           ),
                                ),
                               ],
                             ),
