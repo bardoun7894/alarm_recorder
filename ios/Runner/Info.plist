@@ -44,13 +44,23 @@
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>IwontForget need access to the location when open in the background for measure the distance to remind you if you navigate to another app .</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs access to location when open in the background for measure the distance to remind you if you navigate to another app.</string>
+	<string>Continued use of GPS running in the background can dramatically decrease battery life.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs access to location when open in the background for measure the distance to remind you if you navigate to another app</string>
+	<string>This app needs access to location when open in the background ,for measure the distance to remind you if you navigate to another app</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>IwontForget need access to the microphone to record your speech to use it to the reminder </string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>iWontForget Need access to the PhotoLibrary to upload Image into the note </string>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>googlegmail</string>
+        <string>x-dispatch</string>
+        <string>readdle-spark</string>
+        <string>airmail</string>
+        <string>ms-outlook</string>
+        <string>ymail</string>
+        <string>fastmail</string>
+    </array>
 	<key>UIBackgroundModes</key>
 	<array/>
 	<key>UILaunchStoryboardName</key>
