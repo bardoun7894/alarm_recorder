@@ -5,7 +5,6 @@ import background_locator
  
 func registerPlugins(registry: FlutterPluginRegistry) -> () {
     if (!registry.hasPlugin("BackgroundLocatorPlugin"))
-    
      {
         GeneratedPluginRegistrant.register(with: registry)
      }
@@ -29,8 +28,9 @@ func registerPlugins(registry: FlutterPluginRegistry) -> () {
 
     BackgroundLocatorPlugin.setPluginRegistrantCallback(registerPlugins)
     
-    GMSServices.provideAPIKey("AIzaSyCA63HJpE1k9ExLBvLZaGeoBZ0yvoPlzsI")
-    GeneratedPluginRegistrant.register(with: self)
+    GMSServices.provideAPIKey( "AIzaSyCA63HJpE1k9ExLBvLZaGeoBZ0yvoPlzsI" )
+    GeneratedPluginRegistrant.register( with: self )
+
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
