@@ -9,25 +9,18 @@ class AudioPLayerController extends BlocBase {
   Stream<AudioPlayerObject> get outPlayer => durB.stream;
   Sink<AudioPlayerObject> get inPlayer => durB.sink;
 
+
   AudioPlayer advancedPlayer = new AudioPlayer();
   AudioPlayerObject audioObject;
   AudioPLayerController() {
     audioObject = new AudioPlayerObject(
-        advancedPlayer,
-        new AudioCache(fixedPlayer: advancedPlayer),
-        "",
-        0,
-        new Duration(),
-        new Duration(),
-        "",
-        false,
-        "");
+        advancedPlayer,  new AudioCache(fixedPlayer: advancedPlayer),  "",   0,    new Duration(),   new Duration(),  "",  false,   "");
 
     audioObject.advancedPlayer.onDurationChanged.listen((d) {
       audioObject.duration = d;
       inPlayer.add(audioObject);
     });
-   
+
     audioObject.advancedPlayer.onAudioPositionChanged.listen((Duration p) {
       audioObject.position = p;
       inPlayer.add(audioObject);
@@ -36,11 +29,10 @@ class AudioPLayerController extends BlocBase {
     inPlayer.add(audioObject);
      }
   audioStop() {
-   // audioObject.advancedPlayer.stop();
     inPlayer.close();
   }
  durBPlayerStreamClose(){
-   print("durb close"); 
+   print("durb close");
       durB.close();
     }
   buttonPlayPause(data) {
@@ -60,7 +52,7 @@ class AudioPLayerController extends BlocBase {
     audioObject.tempoMusica = newValue.toStringAsFixed(0);
     audioObject.advancedPlayer.resume();
     audioObject.play = true;
-    inPlayer.add(audioObject); 
+    inPlayer.add(audioObject);
   }
 }
 

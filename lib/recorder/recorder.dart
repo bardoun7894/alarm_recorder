@@ -4,11 +4,15 @@ import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/permissions/GetPermission.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart';
+import 'package:alarm_recorder/utils/admob_service.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
 import 'package:alarm_recorder/utils/utils.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_admob/flutter_native_admob.dart';
+import 'package:flutter_native_admob/native_admob_controller.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'dart:io' as io;
 import 'package:file/file.dart';
@@ -29,7 +33,7 @@ class RecorderScreen extends StatefulWidget {
 }
 
 class _RecorderScreenState extends State<RecorderScreen> {
-
+  AdmobService mob =AdmobService();
   TextEditingController nameController=new TextEditingController();
   int currentIcon = 0;
   double height;
@@ -41,6 +45,8 @@ class _RecorderScreenState extends State<RecorderScreen> {
   RecordingStatus _currentStatus = RecordingStatus.Unset;
   String name ="";
   bool showFab=true;
+
+  var _nativecontroller =NativeAdmobController();
   @override
   void initState() { 
     super.initState();
@@ -53,6 +59,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
   }
 
   _init() async {
+
     try {
       if (await FlutterAudioRecorder.hasPermissions) {
         name = DateTime.now().millisecondsSinceEpoch.toString();
@@ -208,6 +215,7 @@ class _RecorderScreenState extends State<RecorderScreen> {
                   ],
                 ),
               ),
+
               Positioned(
                   bottom: sizeConfig.screenHeight * -0.1,
                   left: sizeConfig.screenWidth * (1 / 20),
@@ -324,8 +332,6 @@ changeIconPlay(){
 
       saveRecordDialog(context,result.path.toString(),nameController.text!=""?nameController.text+"${result.extension}":name+"."+"${result.extension}");
 
-
-      _init();
 
     });
 

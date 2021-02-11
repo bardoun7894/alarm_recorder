@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/model/recordModel.dart';
-import 'package:alarm_recorder/recorder/recorder.dart';
 import 'package:alarm_recorder/recorder/AudioPlayerController.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/utils.dart';
@@ -30,6 +29,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   bool inPicked=false;
   int pos = 0;
   List l = [];
+  bool selectAll = false ;
   bool isSelected = false;
   Widget cont = Container(
     width: 10,
@@ -72,14 +72,38 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
       _buttons.add(
         Padding(
           padding: const EdgeInsets.only(right:10.0),
-          child: IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () {
-              for(int i =0; i<_selectedIndexList.length;i++){
-                //delete selected index
-            recordProvider.deleteRecordWithId(_recordList[_selectedIndexList[i]].id);
-              }
-             }),
+          child: Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () {
+                  for(int i =0; i<_selectedIndexList.length;i++){
+                    //delete selected index
+                recordProvider.deleteRecordWithId(_recordList[_selectedIndexList[i]].id);
+                  }
+                 }),   IconButton(
+                  icon: Icon(Icons.select_all,color:Colors.white,),
+                  onPressed: () {
+                    setState(() {
+                      if(selectAll == false){
+                        for(int i = 0;i<_recordList.length;i++){
+                          print("i+"+i.toString());
+                          _selectedIndexList.add(i);
+                        }
+                        selectAll =true;
+
+                      }else{
+                       _selectedIndexList.clear();
+                        selectAll =false;
+
+                      }
+
+                      print(selectAll);
+                    });
+
+                  }),
+            ],
+          ),
            ));
           }else{
          _buttons.add(
@@ -113,10 +137,10 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                                     height: sizeConfig.screenHeight * .72,
                                     child: getRegisterList( futuresnapshot.data, audioC),
                                   ),
-                                ),
+                          ),
           _player( snapshot.data.play, snapshot.data.duration.inMinutes.toString(), (snapshot.data.duration.inSeconds - (snapshot.data.duration.inMinutes * 60)
-          ) .toString(), snapshot.data,  futuresnapshot.data,  pos)
-                              ],
+            ) .toString(), snapshot.data,  futuresnapshot.data,  pos)
+                        ],
                             );
                           } else {
                             return Container();
@@ -157,6 +181,7 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
   }
 
   Widget _player(isPlay, minute, seconds, AudioPlayerObject object,List<RecordModel> data, int i) {
+
     return Positioned(
       bottom: 0,
       left: 0,
@@ -188,13 +213,11 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                           audioC.buttonPlayPause(data[i].pathRec);
                         }
                       }
-
                     });
                   },
                   iconSize: fontWidgetSize.icone + 15,
-                  icon: isPlay == true
-                      ? Icon(Icons.pause_circle_filled)
-                      : Icon(Icons.play_circle_filled),
+                  icon:isPlay == true
+                   ? Icon(Icons.pause_circle_filled) : Icon(Icons.play_circle_filled) ,
                   color: Colors.white,
                   focusColor: Colors.pinkAccent,
                 ),
@@ -343,7 +366,6 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
           onLongPress: (){
           setState(() {
              _changeSelection(enable: false,index: -1);
-        
           });
              },
               leading: Icon(
@@ -360,14 +382,9 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
         );
       },
     );
- 
   }
-
-
-
 }
-
-class AudioPlayerObject {
+class AudioPlayerObject  {
   AudioPlayer _advancedPlayer;
   AudioCache _audioCache;
   String _localFilePath;
@@ -375,7 +392,7 @@ class AudioPlayerObject {
   Duration _duration;
   Duration _position;
   String _tempoMusica = "";
-  bool _play = false;
+  bool _play = false ;
   String _musicActual = "";
 
   AudioCache get audioCache => _audioCache;
@@ -392,14 +409,11 @@ class AudioPlayerObject {
       this._tempoMusica,
       this._play,
       this._musicActual);
-
   String get musicActual => _musicActual;
-
   set musicActual(String value) {
     _musicActual = value;
   }
-
-  bool get play => _play;
+  bool get play => _play ;
 
   set play(bool value) {
     _play = value;

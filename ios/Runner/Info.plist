@@ -23,7 +23,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-3940256099942544~1458002511 </string>
+	<string>ca-app-pub-2529431792707464~8838597133</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>googlegmail</string>
@@ -55,6 +55,8 @@
 	<string>IwontForget need access to the location for measure the distance between your current location and your destination  to remind you with note </string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>IwontForget need access to the microphone to record your speech to use it to the reminder </string>
+	<key>NSMotionUsageDescription</key>
+	<string>Motion activity is used to increase battery life by intelligently toggling location-services off when device is stationary</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>iWontForget Need access to the PhotoLibrary to upload Image into the note </string>
 	<key>UIBackgroundModes</key>
@@ -68,7 +70,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>

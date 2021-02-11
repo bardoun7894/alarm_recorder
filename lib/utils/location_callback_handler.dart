@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
-
-import 'package:background_locator/location_dto.dart';
+//
+// import 'package:background_locator/location_dto.dart';
+//
+// import 'package:background_locator/location_dto.dart';
 
 import 'geoLocatorClass.dart';
 
@@ -29,18 +31,18 @@ class LocationCallbackHandler {
    IsolateNameServer.removePortNameMapping(isolateName);
   }
 
-  static Future<void> callback(LocationDto locationDto) async {
-    final SendPort send = IsolateNameServer.lookupPortByName(isolateName);
-    send?.send(locationDto);
-  }
+  // static Future<void> callback(LocationDto locationDto) async {
+  //   final SendPort send = IsolateNameServer.lookupPortByName(isolateName);
+  //   send?.send(locationDto);
+  // }
 
   static Future<void> notificationCallback() async {
 
     print(' *** notificationCallback ');
 
     Future.delayed(Duration(seconds: 5), (){
-
-      getLocation.onStop();
+      //
+    // getLocation.onStop();
 
     });
 

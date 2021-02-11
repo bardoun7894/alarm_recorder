@@ -5,29 +5,28 @@ import 'dart:ui';
 
 import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/utils/geoLocatorClass.dart';
-
+// import 'package:background_locator/background_locator.dart';
+// import 'package:background_locator/location_dto.dart';
+// import 'package:background_locator/settings/android_settings.dart';
+// import 'package:background_locator/settings/ios_settings.dart';
+// import 'package:background_locator/settings/locator_settings.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg;
 import 'package:alarm_recorder/utils/screen_size.dart';
 
 import 'package:android_intent/android_intent.dart';
-import 'package:background_locator/background_locator.dart';
-import 'package:background_locator/location_dto.dart';
-import 'package:background_locator/settings/android_settings.dart';
-import 'package:background_locator/settings/ios_settings.dart';
-import 'package:background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location_permissions/location_permissions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../main.dart';
 import 'location_callback_handler.dart';
 class GetLocation  extends ChangeNotifier{
   double currentlat ;
   double currentlong ;
   String logStr = '';
   bool isRunning;
-  LocationDto lastLocation;
+  // LocationDto lastLocation;
   DateTime lastTimeLocation;
-
+List  list  ;
   ReceivePort port = ReceivePort();
 
  bool _fabClicked=false;
@@ -43,55 +42,112 @@ GetLocation(){
   _fabEventController.stream.listen(mapEventToState);
 
 }
+  addDoubleToSF(double odometer) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setDouble('odometer', odometer);
+  }
+getData(int id, String title, String body, String imgString, String payload, double xMeter)  {
+  addDoubleToSF(0);
+  list =[];
+  if(Platform.isIOS){
+    bg.BackgroundGeolocation.ready(bg.Config(
+        desiredAccuracy: bg.Config.PERSIST_MODE_LOCATION,
+        distanceFilter:25 ,
+        preventSuspend: true,
+        showsBackgroundLocationIndicator:true,
 
-getData(int id, String title, String body, String imgString, String payload, double xMeter){
-  onStart();
-  LocationCallbackHandler.getPort().listen(
-        (dynamic data) async {
-      if (data == null) return;
-      await BackgroundLocator.updateNotificationText(
-          title: "new location received",
-          msg: "${DateTime.now()}",
-          bigMsg: "${data.latitude}, ${data.longitude}");
-      if (data != null) {
-        print("location found");
-        print(data);
-        logStr += ' ${data.latitude}, ${data.longitude}, ${data.isMocked}, ' +
-            DateTime.now().hour.toString() +
-            ":" +
-            DateTime.now().minute.toString() +
-            ":" +
-            DateTime.now().second.toString() +
-            "\n";
-        var point = LatLng(data.latitude, data.longitude);
-        points.add(point);
-        print("location 1  found");
-        print(imgString);
-        if(id != null && title != null){
-          getdistanceBetween(points.first.latitude,points.first.longitude,points.last.latitude,points.last.longitude,id,title, body, imgString, payload,xMeter)  ;
-        }
+        debug: true ,
+    )).then((bg.State state) {
+     if(state.enabled){
+       print("stop en");
+  bg.BackgroundGeolocation.stop();
+         }
+      if (!state.enabled) {
+        print("istart enab");
 
+        bg.BackgroundGeolocation.start();
+        print("is start");
+        bg.BackgroundGeolocation.setOdometer(0);
+        bg.BackgroundGeolocation.onMotionChange((m) {
+         bg.BackgroundGeolocation.onLocation((loc) async{
+
+              if (m.isMoving) {
+                print('[onMotionChange] Device has just started MOVING ${m}');
+                addDoubleToSF(loc.odometer);
+                print("odometer ${loc.odometer}");
+              } else {
+                print('[onMotionChange] Device has just STOPPED:  ${m}');
+                 }
+
+              if(id != null && title != null ){
+
+                  getdistanceBetween(id,title, body, imgString, payload, xMeter ,list);
+
+               }
+
+            });
+
+
+          });
+
+
+        }else{
+        bg.BackgroundGeolocation.stop();
       }
 
-    },
+
+        }
   );
-  initPlatformState();
+  }else{
+    // onStart();
+    // LocationCallbackHandler.getPort().listen(
+    //       (dynamic data) async {
+    //     if (data == null) return;
+    //     await BackgroundLocator.updateNotificationText(
+    //         title: "new location received",
+    //         msg: "${DateTime.now()}",
+    //         bigMsg: "${data.latitude}, ${data.longitude}");
+    //     if (data != null) {
+    //       print("location found");
+    //       print(data);
+    //       logStr += ' ${data.latitude}, ${data.longitude}, ${data.isMocked}, ' +
+    //           DateTime.now().hour.toString() +
+    //           ":" +
+    //           DateTime.now().minute.toString() +
+    //           ":" +
+    //           DateTime.now().second.toString() +
+    //           "\n";
+    //       var point = LatLng(data.latitude, data.longitude);
+    //       points.add(point);
+    //       print("location 1  found");
+    //       print(imgString);
+    //       if(id != null && title != null){
+    //         getdistanceBetween(id,title, body, imgString, payload,xMeter,points);
+    //       }
+    //     }
+    //   },
+    //  );
+    // initPlatformState();
+  }
+
+
+
+
 }
 
 
 
-
-  void onStart() async {
-    if (await _checkLocationPermission()) {
-      _startLocator();
-      final _isRunning = await BackgroundLocator.isServiceRunning();
-        isRunning = _isRunning;
-      print('Running ${isRunning.toString()}');
-    } else {
-      // show error
-    }
-  }
-
+  //
+  // void onStart() async {
+  //   if (await _checkLocationPermission()) {
+  //     _startLocator();
+  //     final _isRunning = await BackgroundLocator.isServiceRunning();
+  //       isRunning = _isRunning;
+  //     print('Running ${isRunning.toString()}');
+  //   } else {
+  //     // show error
+  //   }
+  // }
   Future<bool> _checkLocationPermission() async {
     final access = await LocationPermissions().checkPermissionStatus();
     switch (access) {
@@ -134,22 +190,22 @@ getData(int id, String title, String body, String imgString, String payload, dou
     _inFabClick.add(_fabClicked);
           }
 
-
-  void onStop() async {
-    BackgroundLocator.unRegisterLocationUpdate();
-    IsolateNameServer.removePortNameMapping(LocationCallbackHandler.isolateName);
-    final _isRunning = await BackgroundLocator.isServiceRunning();
-      isRunning = _isRunning;
-    print('Running ${isRunning.toString()}');
-  }
-
-
-
+  //
+  // void onStop() async {
+  //   BackgroundLocator.unRegisterLocationUpdate();
+  //   IsolateNameServer.removePortNameMapping(LocationCallbackHandler.isolateName);
+  //   final _isRunning = await BackgroundLocator.isServiceRunning();
+  //     isRunning = _isRunning;
+  //   print('Running ${isRunning.toString()}');
+  // }
+  //
+  //
+  //
 
 
 
   disposeLocation() {
-    BackgroundLocator.unRegisterLocationUpdate();
+    // BackgroundLocator.unRegisterLocationUpdate();
     IsolateNameServer.removePortNameMapping(LocationCallbackHandler.isolateName);
   }
   disposeFab(){
@@ -272,37 +328,38 @@ getData(int id, String title, String body, String imgString, String payload, dou
       await LocationPermissions().openAppSettings();
     }
   }
-  Future<void> initPlatformState() async {
-    print('Initializing...');
-    await BackgroundLocator.initialize();
-    print('Initialization done');
-    final _isRunning = await BackgroundLocator.isServiceRunning();
-      isRunning = _isRunning;
-    print('Running ${isRunning.toString()}');
-  }
-
-  void _startLocator( ) {
-    BackgroundLocator.registerLocationUpdate(LocationCallbackHandler.callback,
-        initCallback: LocationCallbackHandler.initCallback,
-
-        disposeCallback: LocationCallbackHandler.disposeCallback,
-        autoStop: true,
-
-        iosSettings: IOSSettings(
-            accuracy: LocationAccuracy.BALANCED,
-            distanceFilter: 10),
-        androidSettings: AndroidSettings(
-            accuracy: LocationAccuracy.BALANCED,
-            interval: 5,
-            distanceFilter: 0,
-            androidNotificationSettings: AndroidNotificationSettings(
-                notificationChannelName: 'App Location tracking',
-                notificationTitle: 'App Location Tracking',
-                notificationMsg: 'Track location in background',
-                notificationBigMsg:
-                'App uses Background location to keep the app up-tp-date with your location. This is required for main features to work properly when App is not running.',
-                notificationIcon: '',
-                notificationIconColor: Colors.grey,
-                notificationTapCallback: LocationCallbackHandler.notificationCallback)));
-  }
+  // Future<void> initPlatformState() async {
+  //   print('Initializing...');
+  //   await BackgroundLocator.initialize();
+  //   print('Initialization done');
+  //   final _isRunning = await BackgroundLocator.isServiceRunning();
+  //     isRunning = _isRunning;
+  //   print('Running ${isRunning.toString()}');
+  // }
+  //
+  // void _startLocator( ) {
+  //   BackgroundLocator.registerLocationUpdate(
+  //       LocationCallbackHandler.callback,
+  //       initCallback: LocationCallbackHandler.initCallback,
+  //       disposeCallback: LocationCallbackHandler.disposeCallback,
+  //       iosSettings: IOSSettings(
+  //         showsBackgroundLocationIndicator: true,
+  //          accuracy: LocationAccuracy.BALANCED,
+  //           distanceFilter: 0),
+  //
+  //       androidSettings: AndroidSettings(
+  //           accuracy: LocationAccuracy.BALANCED,
+  //           interval: 5,
+  //           distanceFilter: 0,
+  //           androidNotificationSettings: AndroidNotificationSettings(
+  //               notificationChannelName: 'App Location tracking',
+  //               notificationTitle: 'App Location Tracking',
+  //               notificationMsg: 'Track location in background',
+  //               notificationBigMsg:
+  //               'App uses Background location to keep the app up-tp-date with your location. This is required for main features to work properly when App is not running.',
+  //               notificationIcon: '',
+  //               notificationIconColor: Colors.grey,
+  //               notificationTapCallback: LocationCallbackHandler.notificationCallback))
+  //   );
+  // }
 }

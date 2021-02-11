@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:isolate';
 import 'dart:math';
 
 import 'package:alarm_recorder/Translate/app_localizations.dart';
@@ -8,16 +7,13 @@ import 'package:alarm_recorder/model/Note.dart';
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/permissions/GetPermission.dart';
-import 'package:alarm_recorder/utils/geoLocatorClass.dart';
+import 'package:alarm_recorder/utils/dataControl.dart';
 import 'package:alarm_recorder/utils/getlocation.dart';
-import 'package:alarm_recorder/utils/location_callback_handler.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
-import 'package:background_locator/background_locator.dart';
-import 'package:background_locator/location_dto.dart';
+// import 'package:background_locator/location_dto.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -28,7 +24,6 @@ import 'package:alarm_recorder/utils/utils.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../main.dart';
 
 class AddNotes extends StatefulWidget {
   final Note note;
@@ -43,25 +38,25 @@ class AddNotes extends StatefulWidget {
 }
 
 class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
-
+  DataControl dc = new DataControl();
   List<LatLng> points = List();
-  double currentlat ;
-  double currentlong ;
+  double currentlat;
+  double currentlong;
   String logStr = '';
   bool isRunning;
-  LocationDto lastLocation;
+  // LocationDto lastLocation;
   DateTime lastTimeLocation;
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _formKey = GlobalKey<FormState>();
-  GetLocation getLocation ;
+  GetLocation getLocation;
   String textAfterGetImage = "";
   File _image;
-  bool isFabClicked=false ;
-
-  bool isHideFAB = false ;
-  bool isImageMapHide=false;
-  bool isNormalNote=false;
+  bool isFabClicked = false;
+  bool hideIcons = false;
+  bool isHideFAB = false;
+  bool isImageMapHide = false;
+  bool isNormalNote = false;
   String imgString = "";
   Note note;
   List<Note> list = [];
@@ -74,35 +69,42 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
   _AddNotesState(this.note);
   bool cursor = true;
   DateTime firstDate = DateTime.now().add(Duration(minutes: 1));
+
   @override
-  void initState()  {
+  void initState() {
     super.initState();
     if (widget.edit == true) {
       descriptionController.text = widget.note.description;
       imgString = widget.note.imagePath;
     }
     if (widget.camera == true) {
-      getPermissionPhotosStatus(putImageText(), requestPermission, permissionWidgetStatus);
+      getPermissionPhotosStatus(
+          putImageText(), requestPermission, permissionWidgetStatus);
     }
-    if(widget.location){
-      getLocation=GetLocation();
-
-      isImageMapHide=false;
-        isNormalNote=false;
-
-    }else{
-      isHideFAB=true;
-      isImageMapHide=true;
-      isNormalNote=true;
+    if (widget.location) {
+      getLocation = GetLocation();
+      isImageMapHide = false;
+      isNormalNote = false;
+    } else {
+      isHideFAB = true;
+      isImageMapHide = true;
+      isNormalNote = true;
     }
     setState(() {
       activateFab();
     });
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // TODO: implement didChangeAppLifecycleState
+    super.didChangeAppLifecycleState(state);
+    print(state);
+  }
   @override
   void dispose() {
     super.dispose();
-    if(widget.location){
+    if (widget.location) {
       getLocation.disposeFab();
     }
     descriptionController.dispose();
@@ -113,9 +115,58 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
     return imageFromBase64String(
         image, sizeConfig.screenHeight * .13, sizeConfig.screenWidth * .50);
   }
-  Future getImage(source) async {
-    try{
-      var image = await ImagePicker.pickImage(source: source);
+
+  Future getCamera() async {
+    try {
+      var image = await ImagePicker.platform.pickImage(source: ImageSource.camera).catchError((onError){
+        print(onError.toString());
+      });
+      if (image != null) {
+        File croppedFile = await ImageCropper.cropImage(
+            sourcePath: image.path,
+            compressQuality: 100,
+            maxWidth: 480,
+            maxHeight: 480,
+            aspectRatioPresets: [
+
+              CropAspectRatioPreset.square,
+              CropAspectRatioPreset.ratio3x2,
+              CropAspectRatioPreset.original,
+              CropAspectRatioPreset.ratio4x3,
+              CropAspectRatioPreset.ratio16x9
+            ],
+            androidUiSettings: AndroidUiSettings(
+                toolbarTitle: AppLocalizations.of(context).translate("cropper"),
+                toolbarColor: Colors.blueAccent,
+                toolbarWidgetColor: Colors.white,
+                initAspectRatio: CropAspectRatioPreset.original,
+                lockAspectRatio: false),
+            iosUiSettings: IOSUiSettings(
+           showCancelConfirmationDialog: true,
+              minimumAspectRatio: 1.0,
+               )).catchError((e){
+                 print(e);
+                 });
+        setState(() {
+          if (croppedFile != null) {
+            _image = croppedFile;
+            if (_image != null) {
+              imgString = base64String(_image.readAsBytesSync());
+            }
+          } else {
+            return;
+          }
+        });
+      }
+    } catch (e) {}
+    print(e.toString());
+  }
+
+  Future getImageFromGallery()async{
+    try {
+      var image = await ImagePicker.pickImage(source: ImageSource.gallery).catchError((onError){
+        print(onError.toString());
+      });
       if (image != null) {
         File croppedFile = await ImageCropper.cropImage(
             sourcePath: image.path,
@@ -136,8 +187,12 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
                 initAspectRatio: CropAspectRatioPreset.original,
                 lockAspectRatio: false),
             iosUiSettings: IOSUiSettings(
+              showCancelConfirmationDialog: true,
               minimumAspectRatio: 1.0,
-            ));
+            )).catchError((onError){
+              print("$onError");
+
+        });
         setState(() {
           if (croppedFile != null) {
             _image = croppedFile;
@@ -149,34 +204,37 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
           }
         });
       }
-    }catch(e){}
-print(e.toString());
+    } catch (e) {
+      print(e.toString());
+    }
+    print(e.toString());
   }
+
   putImageText() {
     textAfterGetImage = descriptionController.text;
-    widget.camera == true
-        ? getImage(ImageSource.camera)
-        : getImage(ImageSource.gallery);
+    widget.camera == true ? getCamera() : getImageFromGallery();
     descriptionController.text = textAfterGetImage;
   }
+
   requestPermission() async {
     await Permission.camera.request();
     await Permission.photos.request();
   }
+
   activateFab() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     bool fab = sharedPreferences.getBool("fabClicked");
     if (fab == true) {
       isFabClicked = true;
       print("fabClicked true");
-     } else {
+    } else {
       isFabClicked = false;
       print("fabClicked false");
     }
   }
 
-  permissionWidgetStatus(status) async{
-    if (widget.camera == true && widget.location==false) {
+  permissionWidgetStatus(status) async {
+    if (widget.camera == true && widget.location == false) {
       status = await Permission.camera.status;
     }
     if (widget.camera == false) {
@@ -184,10 +242,10 @@ print(e.toString());
     }
   }
 
-  saveDatainEditText(String image,String body)async{
-    SharedPreferences sh=await SharedPreferences.getInstance();
+  saveDatainEditText(String image, String body) async {
+    SharedPreferences sh = await SharedPreferences.getInstance();
     sh.setString("imageSh", image);
-    sh.setString("bodySh",body);
+    sh.setString("bodySh", body);
   }
 
   @override
@@ -207,45 +265,103 @@ print(e.toString());
                   children: <Widget>[
                     Padding(
                       padding: EdgeInsets.only(
-                          top: sizeConfig.screenWidth * .02, left: 5),
+                          top: sizeConfig.screenHeight * .022, left: 5),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-             IconButton(     icon: Icon(Icons.arrow_back_ios,   color: Color(0xFF417BFb),  size: fontWidgetSize.icone - 5),
+                          IconButton(
+                            icon: Icon(Icons.arrow_back_ios,
+                                color: Color(0xFF417BFb),
+                                size: fontWidgetSize.icone - 5),
                             onPressed: () {
                               _onBackPressed();
                             },
                           ),
-                          isImageMapHide?Row(
-                            children: <Widget>[
-                              Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: saveButton()),
-                              Padding(
-                                padding: const EdgeInsets.only(right: 18.0),
-                                child: IconButton(
-                                  icon: Icon(
-                                    widget.camera == true
-                                        ? Icons.camera_enhance
-                                        : Icons.image,
-                                    color: Color(0xFF417BFb),
-                                    size: fontWidgetSize.icone - 3,
-                                  ),
-                                  onPressed: () {
-                                    try {
-                                      getPermissionPhotosStatus(putImageText(), requestPermission, permissionWidgetStatus);
-                                        } catch (e) {
-                                      print("exception" + e);
-                                        }
-                                  },
-                                ),
-                              ),
-                            ],
-                               ):Container()
-
+                          isImageMapHide  ? dc.changeIconsStatus(hideIcons) == false
+                                  ? Row(
+                                      children: <Widget>[
+                                        Padding(
+                                            padding: const EdgeInsets.only(
+                                                right: 8.0),
+                                            child: saveButton()),
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 18.0),
+                                          child: widget.camera == true
+                                              ? Row(
+                                                  children: [
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        Icons.camera_enhance,
+                                                        color:
+                                                            Color(0xFF417BFb),
+                                                        size: fontWidgetSize
+                                                                .icone -
+                                                            3,
+                                                      ),
+                                                      onPressed: () {
+                                                        try {
+                                                          getPermissionPhotosStatus(
+                                                              putImageText(),
+                                                              requestPermission,
+                                                              permissionWidgetStatus);
+                                                        } catch (e) {
+                                                          print(
+                                                              "exception" + e);
+                                                        }
+                                                      },
+                                                    ),
+                                                    IconButton(
+                                                      icon: Icon(
+                                                        Icons.image,
+                                                        color:
+                                                            Color(0xFF417BFb),
+                                                        size: fontWidgetSize
+                                                                .icone -
+                                                            3,
+                                                      ),
+                                                      onPressed: () {
+                                                        try {
+                                                          textAfterGetImage =
+                                                              descriptionController
+                                                                  .text;
+                                                          getImageFromGallery();
+                                                          descriptionController
+                                                                  .text =
+                                                              textAfterGetImage;
+                                                        } catch (e) {
+                                                          print(
+                                                              "exception" + e);
+                                                        }
+                                                      },
+                                                    ),
+                                                  ],
+                                                )
+                                              : IconButton(
+                                                  icon: Icon(
+                                                    Icons.image,
+                                                    color: Color(0xFF417BFb),
+                                                    size: fontWidgetSize.icone -
+                                                        3,
+                                                  ),
+                                                  onPressed: () {
+                                                    try {
+                                                      getPermissionPhotosStatus(
+                                                          putImageText(),
+                                                          requestPermission,
+                                                          permissionWidgetStatus);
+                                                    } catch (e) {
+                                                      print("exception" + e);
+                                                    }
+                                                  },
+                                                ),
+                                        ),
+                                      ],
+                                    )
+                                  : Container()
+                              : Container()
                         ],
-                      )
-                      ,
+                      ),
                     ),
                   ],
                 ),
@@ -256,43 +372,40 @@ print(e.toString());
                     right: sizeConfig.screenWidth * .02,
                     left: sizeConfig.screenWidth * .02,
                     bottom: sizeConfig.screenHeight * .005),
-                child:! isImageMapHide && widget.location ? locationStartButton(): Container(
-
-                  child: ListView(
-                    children: <Widget>[
-                      Text(  " ${formatDateTime()} ",
-                        style: TextStyle(
-                           fontSize: fontWidgetSize.bodyFontSize - 13,
-                           color: Colors.black45),
+                child: !isImageMapHide && widget.location
+                    ? locationStartButton()
+                    : Container(
+                        child: ListView(
+                          children: <Widget>[
+                            Text(
+                              " ${formatDateTime()} ",
+                              style: TextStyle(
+                                  fontSize: fontWidgetSize.bodyFontSize - 13,
+                                  color: Colors.black45),
                             ),
-                      SizedBox(
-                        height: 10,
+                            SizedBox(
+                              height: 10,
+                            ),
+                            imgString == ""
+                                ? Container()
+                                : imageFromBase64String(imgString, 300, 300),
+                            TextFormField(
+                              maxLengthEnforced: true,
+                              controller: descriptionController,
+                              cursorColor: Colors.white,
+                              cursorRadius: Radius.circular(2),
+                              cursorWidth: 1,
+                              autofocus: false,
+                              style: TextStyle(
+                                  color: Colors.grey[700],
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold),
+                              maxLines: 100,
+                              keyboardType: TextInputType.multiline,
+                            )
+                          ],
+                        ),
                       ),
-                      imgString == ""
-                          ? Container()
-                          : imageFromBase64String(imgString, 300, 300),
-                       TextFormField(
-
-                            maxLengthEnforced: true,
-
-                            onTap: () {
-                              setState(() {
-
-                              } ) ;
-                            } ,
-                            controller: descriptionController,
-                            cursorColor: Colors.white,
-                            cursorRadius: Radius.circular(2),
-                            cursorWidth: 1,
-                            autofocus: false,
-                            style: TextStyle(color: Colors.grey[700], fontSize: 16,fontWeight: FontWeight.bold),
-                            maxLines: 100,
-                            keyboardType: TextInputType.multiline,
-                          )
-
-                    ],
-                  ),
-                ),
               ),
             ],
           ),
@@ -301,8 +414,9 @@ print(e.toString());
       onWillPop: _onBackPressed,
     );
   }
+
   String formatDateTime() {
-    String firstD = DateFormat("MM MMMM  HH:mm").format(firstDate).toString() + " PM";
+    String firstD = DateFormat("dd MMMM  HH:mm a").format(firstDate).toString();
     return firstD;
   }
 
@@ -310,91 +424,81 @@ print(e.toString());
     note.description = descriptionController.text;
   }
 
-
   saveLocationNote(double xmeter) async {
-
     String titleData = descriptionController.text.length > 12
         ? descriptionController.text.substring(0, 12)
         : descriptionController.text;
     String descriptionData = descriptionController.text;
     String s = DateFormat.yMMMd().format(DateTime.now());
-
-      if (widget.edit == true) {
-        NoteDatabaseProvider.db.updateNote(new Note(
-            id: widget.note.id,
-            imagePath: imgString,
-            title: titleData,
-            description: descriptionData,
-            date: s,
-            time: firstDate.hour.toString()));
-           getLocation.getData(widget.note.id , titleData, descriptionData, imgString, "location", xmeter);
-        showRichAlertDialog(context);
-        await Future.delayed(Duration(seconds: 3));
-        Navigator.pop(context);
-      } else if (widget.edit == false) {
-        int id = await NoteDatabaseProvider.db.insertNote(
-            new Note(
-            imagePath: imgString,
-            title: titleData,
-            description: descriptionData,
-            date: s,
-            time: firstDate.hour.toString()      )
-        );
-      getLocation.getData(id,titleData,descriptionData, imgString,"location $titleData", xmeter);
-        showRichAlertDialog(context);
-        await Future.delayed(Duration(seconds: 3));
-        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
-          return MyHomePage();
-        }));
-
+    if (widget.edit == true) {
+      NoteDatabaseProvider.db.updateNote(new Note(
+          id: widget.note.id,
+          imagePath: imgString,
+          title: titleData,
+          description: descriptionData,
+          date: s,
+          time: firstDate.hour.toString()));
+      getLocation.getData(widget.note.id, titleData, descriptionData, imgString,
+          "location", xmeter);
+      showRichAlertDialog(context);
+      await Future.delayed(Duration(seconds: 3));
+      Navigator.pop(context);
+    } else if (widget.edit == false) {
+      int id = await NoteDatabaseProvider.db.insertNote(new Note(
+          imagePath: imgString,
+          title: titleData,
+          description: descriptionData,
+          date: s,
+          time: firstDate.hour.toString()));
+      getLocation.getData(id, titleData, descriptionData, imgString,
+          "location $titleData", xmeter);
+      showRichAlertDialog(context);
+      await Future.delayed(Duration(seconds: 3));
+      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {   return MyHomePage();  }));
     }
   }
-  bool islocationForFirst(){
-   if( widget.location ){
-      return true ;
-    }else{
-        return false;
-    }
-     }
 
-  Widget  locationStartButton() {
+  bool islocationForFirst() {
+    if (widget.location) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Widget locationStartButton() {
     return Container(
       child: Center(
           child: Column(
         children: <Widget>[
-       Padding(
+          Padding(
             child: Image.asset(
               "assets/locationMap.png",
-              width: sizeConfig.screenWidth*.8 ,
-              height: sizeConfig.screenHeight*.5,
+              width: sizeConfig.screenWidth * .8,
+              height: sizeConfig.screenHeight * .5,
             ),
             padding: EdgeInsets.only(top: sizeConfig.screenHeight * .1),
-          )    ,
-         Padding(
+          ),
+          Padding(
             child: Text(
               AppLocalizations.of(context).translate("welcome_location"),
-              style:           TextStyle(
+              style: TextStyle(
                 color: Colors.grey[500],
                 fontWeight: FontWeight.bold,
-                                 ),
-                         ),
-
+              ),
+            ),
             padding: EdgeInsets.only(top: sizeConfig.screenHeight * .001),
           ),
-
-         Padding(
+          Padding(
             padding: EdgeInsets.only(top: sizeConfig.screenHeight * .05),
-            child:
-             Container(
+            child: Container(
                 height: 35,
                 width: 100,
                 decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors:<Color>[Colors.blue[300], Colors.blueAccent]
-                    ),
+                    gradient: LinearGradient(
+                        colors: <Color>[Colors.blue[300], Colors.blueAccent]),
                     borderRadius: BorderRadius.circular(20)),
-                child:
-             FlatButton(
+                child: FlatButton(
                     child: Text(
                       AppLocalizations.of(context).translate("start_location"),
                       style: TextStyle(
@@ -403,26 +507,23 @@ print(e.toString());
                           fontWeight: FontWeight.bold),
                     ),
                     onPressed: () {
-                       setState(() {
-                         setState(() {
-                           try {
-                             isFabClicked=true;
-                           } catch (e) {
-                             print(e);
-                           }
-                         });
-                        if(isFabClicked){
-                        isHideFAB = true;
-                        isImageMapHide=true;
-                        _displaySnackBar(AppLocalizations.of(context).translate("snack_message"));
-                        }
+                      setState(() {
+                        setState(() {
+                          try {
+                            isFabClicked = true;
+                          } catch (e) {
+                            print(e);
+                          }
                         });
-
-                    })
-
-            ),
+                        if (isFabClicked) {
+                          isHideFAB = true;
+                          isImageMapHide = true;
+                          _displaySnackBar(AppLocalizations.of(context)
+                              .translate("snack_message"));
+                        }
+                      });
+                    })),
           )
-
         ],
       )),
     );
@@ -495,14 +596,10 @@ print(e.toString());
                         FlatButton(
                           onPressed: () {
                             setState(() {
+                              double meter =   double.parse(meterController?.text);
 
-                              double meter = double.parse(meterController?.text);
-
-
-                            if (_formKey.currentState.validate()) {
-
-                                 saveLocationNote(meter);
-
+                              if (_formKey.currentState.validate()) {
+                                saveLocationNote(meter);
                               }
                             });
                           },
@@ -556,16 +653,15 @@ print(e.toString());
                 fontWeight: FontWeight.bold,
                 color: Colors.blueAccent,
                 fontSize: fontWidgetSize.bodyFontSize - 5),
-            onChanged: (value){
-
-            },
+            onChanged: (value) {},
             validator: (value) {
               if (value.isEmpty) {
                 _validate = true;
-                return AppLocalizations.of(context).translate("hint_distance_error");
+                return AppLocalizations.of(context)
+                    .translate("hint_distance_error");
               }
-              if (double.parse(value)<100){
-               return AppLocalizations.of(context).translate("hint_100_error");
+              if (double.parse(value) < 100) {
+                return AppLocalizations.of(context).translate("hint_100_error");
               }
               return null;
             },
@@ -589,71 +685,115 @@ print(e.toString());
       ),
     );
   }
+
   _displaySnackBar(String text) {
-    final snackBar = SnackBar(backgroundColor: Colors.blueAccent, content: Text(text));
+    final snackBar =
+        SnackBar(backgroundColor: Colors.blueAccent, content: Text(text));
     _scaffoldKey.currentState.showSnackBar(snackBar);
   }
+
   Widget saveButton() {
-    return widget.location == true ? InkWell(
-                onTap : () { locationDialog(); },
-                child :  Container(
-                  width: 50,
-                  height: 24,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(19),
-                      border: Border.all(color: Colors.blueAccent,width: 3)
-                          ),
-         child: Center( child: Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 14),),
-                  ),
-                )
-    ) : InkWell(
+    return widget.location == true
+        ? InkWell(
             onTap: () {
-               if (widget.edit == true) {
-                saveNote(widget.note.id,widget.edit,descriptionController.text,imgString,context);
-                //
-                // saveNoteDialog(widget.note.id, widget.edit,
-                //       descriptionController.text, imgString, context);
-                }else if (widget.edit == false) {
-                saveNote(0,widget.edit,descriptionController.text,imgString,context);
-                  // saveNoteDialog(0, widget.edit, descriptionController.text,  imgString, context);
-                        }}
-                  ,
-            child:Container(
+              setState(() {
+                hideIcons = true;
+                dc.changeIconsStatus(hideIcons);
+                print(dc.changeIconsStatus(hideIcons));
+              });
+              locationDialog();
+            },
+            child: Container(
               width: 50,
               height: 24,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(19),
-                  border: Border.all(color: Colors.blueAccent,width: 3)
-              ),
+                  border: Border.all(color: Colors.blueAccent, width: 3)),
               child: Center(
-                child:   Text(AppLocalizations.of(context).translate("save"),style: TextStyle(color: Colors.blueAccent,fontWeight: FontWeight.bold,fontSize: 14),),
+                child: Text(
+                  AppLocalizations.of(context).translate("save"),
+                  style: TextStyle(
+                      color: Colors.blueAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
+                ),
+              ),
+            ))
+        : InkWell(
+            onTap: () {
+              setState(() {
+                hideIcons = true;
+                dc.changeIconsStatus(hideIcons);
+                print(dc.changeIconsStatus(hideIcons));
+              });
+              String textS = AppLocalizations.of(context).translate("image_dc");
+              if (widget.edit == true) {
+                if (descriptionController.text == "") {
+                  saveNote( widget.note.id, widget.edit, textS, imgString, context,widget.camera,widget.location);
+                } else {
+                  saveNote(widget.note.id, widget.edit, descriptionController.text, imgString, context,widget.camera,widget.location);
+                }
+              } else if (widget.edit == false) {
+                if (descriptionController.text == "") {
+                  // saveNote(widget.note.id,widget.edit,descriptionController.text,imgString,context);
+                  saveNote(0, widget.edit, textS, imgString, context,widget.camera,widget.location);
+                } else {
+                  saveNote(0, widget.edit, descriptionController.text,
+                      imgString, context,widget.camera,widget.location);
+                }
+              }
+            },
+            child: Container(
+              width: 50,
+              height: 24,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(19),
+                  border: Border.all(color: Colors.blueAccent, width: 3)),
+              child: Center(
+                child: Text(
+                  AppLocalizations.of(context).translate("save"),
+                  style: TextStyle(
+                      color: Colors.blueAccent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14),
+                ),
               ),
             ));
-           }
-  Future<bool> _onBackPressed() async{
-    if( descriptionController.text.length!=0){
-      saveAnyway();
-    }
-       Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) { return NoteList();}));
-       return false;
   }
 
-  saveAnyway()async {
+  Future<bool> _onBackPressed() async {
+    if (descriptionController.text.length != 0) {
+      saveAnyway();
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (BuildContext context) {
+        return NoteList();
+      }));
+    } else {
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (BuildContext context) {
+        return MyHomePage();
+      }));
+    }
+    return false;
+  }
+
+  saveAnyway() async {
     String titleData = descriptionController.text.length > 12
-        ? descriptionController.text.substring(0, 12) : descriptionController
-        .text;
+        ? descriptionController.text.substring(0, 12)
+        : descriptionController.text;
     String descriptionData = descriptionController.text;
     String s = DateFormat.yMMMd().format(DateTime.now());
-    if(widget.edit==false){
-      if(titleData.length!=0 || descriptionData.length!=0){
-        await NoteDatabaseProvider.db.insertNote(
-            new Note( imagePath: imgString,title:titleData,description: descriptionData, date: s, time: firstDate.hour.toString()    ));
+    if (widget.edit == false) {
+      if (titleData.length != 0 || descriptionData.length != 0) {
+        await NoteDatabaseProvider.db.insertNote(new Note(
+            imagePath: imgString,
+            title: titleData,
+            description: descriptionData,
+            date: s,
+            time: firstDate.hour.toString()));
       }
     }
-
-                   }
-
-
+  }
 }
 
 class PagePainter extends CustomPainter {
@@ -661,19 +801,20 @@ class PagePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     //Setp 1
     final paintgrey = Paint()..color = Colors.grey;
-    var rrectRed =  RRect.fromLTRBR(0, 0, size.width, size.height, Radius.circular(0.0));
+    var rrectRed =
+        RRect.fromLTRBR(0, 0, size.width, size.height, Radius.circular(0.0));
     canvas.drawRRect(rrectRed, paintgrey);
-   //Step 2
+    //Step 2
     final paintWhite = Paint()..color = Colors.white;
     var rrectWhite =
-    RRect.fromLTRBR(0, 0, size.width, size.height, Radius.circular(0.0));
+        RRect.fromLTRBR(0, 0, size.width, size.height, Radius.circular(0.0));
     canvas.drawRRect(rrectWhite, paintWhite);
-  //Step 3
+    //Step 3
     final paintDarkgrey = Paint()
       ..color = Colors.blueGrey
       ..strokeWidth = 1.0;
     // canvas.drawLine(Offset(0, size.height * .025),  Offset(size.width, size.height * .025), paintDarkgrey);
-     canv(canvas, size, paintDarkgrey);
+    canv(canvas, size, paintDarkgrey);
 
     final paintPink = Paint()
       ..color = Colors.pinkAccent
@@ -681,13 +822,15 @@ class PagePainter extends CustomPainter {
     canvas.drawLine(Offset(size.width * .1, 0),
         Offset(size.width * .1, size.height), paintPink);
   }
-  canv(canvas,size,paintDarkgrey){
 
-   for(var i =0.25;i<size.height;i++){
+  canv(canvas, size, paintDarkgrey) {
+    for (var i = 0.25; i < size.height; i++) {
       print(i);
-     canvas.drawLine(Offset(0, size.height * i),  Offset(size.width, size.height * i), paintDarkgrey);
-      }
+      canvas.drawLine(Offset(0, size.height * i),
+          Offset(size.width, size.height * i), paintDarkgrey);
+    }
   }
+
   @override
   bool shouldRepaint(PagePainter oldDelegate) {
 //TODO Implement shouldRepaint

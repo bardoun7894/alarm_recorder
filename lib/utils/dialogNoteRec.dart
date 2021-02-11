@@ -1,28 +1,32 @@
- 
-import 'package:alarm_recorder/model/recordModel.dart';
+
 import 'package:alarm_recorder/recorder/AudioPlayerController.dart';
+import 'package:alarm_recorder/recorder/recorder.dart';
 import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/utils.dart';
 import 'package:flutter/material.dart'; 
 import '../Translate/app_localizations.dart';
 
+
 class MyChoice extends StatefulWidget {
   final String result;
   final String nameRecord;
   final String note;
-final int id;
-final bool edit ;
-final String descriptionControllertext;
-final String imgString;
+  final int id;
+  final bool edit ;
+  final bool camera ;
+  final bool location ;
+  final String descriptionControllertext;
+  final String imgString;
 bool isRecorder = false ;
-MyChoice({this.result, this.nameRecord,this.id,this.edit,this.descriptionControllertext,this.imgString,this.note});
+MyChoice({this.result, this.nameRecord,this.id,this.edit,this.camera,this.location,this.descriptionControllertext,this.imgString,this.note});
   @override
   _MyChoiceState createState() => _MyChoiceState();
 }
 
 
 class _MyChoiceState extends State<MyChoice> {
+
   WidgetSize fontWidgetSize;
   SizeConfig sizeConfig;
 
@@ -30,19 +34,18 @@ class _MyChoiceState extends State<MyChoice> {
   Widget build(BuildContext context) {
     sizeConfig = SizeConfig(context);
     fontWidgetSize = WidgetSize(sizeConfig);
-    return dialog(widget.result, context, widget.nameRecord);
+    return dialog(widget.result, context, widget.nameRecord,widget.edit,widget.camera,widget.location);
   }
-
-
 Widget streamPLayer(data){
   return StreamBuilder(
-
       stream: audioC.outPlayer,
-      builder:  (context, AsyncSnapshot<AudioPlayerObject> snapshot) {
+      builder: (context, AsyncSnapshot<AudioPlayerObject> snapshot) {
       if (snapshot.hasData) {
+        print("ddddddd"+snapshot.data.play.toString());
        return Stack(
-            children: <Widget>[
-      _player( snapshot.data.play, snapshot.data.duration.inMinutes.toString(),(snapshot.data.duration.inSeconds - (snapshot.data.duration.inMinutes * 60)
+       children: <Widget>[
+      _player( snapshot.data.play, snapshot.data.duration.inMinutes.toString(),
+          (snapshot.data.duration.inSeconds - (snapshot.data.duration.inMinutes * 60)
               ) .toString(), snapshot.data,  data,  0)
             ],
           );
@@ -50,7 +53,7 @@ Widget streamPLayer(data){
           else
           {
           return Container();
-            }
+           }
       });
 }
   Widget _player(isPlay, minute, seconds, AudioPlayerObject object,  data, int i) {
@@ -65,7 +68,7 @@ Widget streamPLayer(data){
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {} ,
                   iconSize: fontWidgetSize.icone + 5,
                   icon: Icon(Icons.skip_previous),
                   color: Colors.white,
@@ -74,25 +77,22 @@ Widget streamPLayer(data){
                 IconButton(
                   onPressed:(){
                     setState((){
-                      if(data==null){
+                   if(data==null){
                         print("data is empty");
-                        }else{
-                         if (data!="") {
-                           audioC.buttonPlayPause(data);
-                              }
-                      }
+                   }else{
 
-                    });
-                  },
+                  if (data!="") {
+                       audioC.buttonPlayPause(data);
+                    }
+
+                }});
+                        },
                   iconSize: fontWidgetSize.icone + 15,
-                  icon: isPlay == true
-                      ? Icon(Icons.pause_circle_filled)
-                      : Icon(Icons.play_circle_filled),
+                  icon: isPlay  ? Icon(Icons.pause_circle_filled)  : Icon(Icons.play_circle_filled),
                   color: Colors.white,
                   focusColor: Colors.pinkAccent,
-                ),
-                IconButton(
-                    onPressed: () {},
+                   ),
+                IconButton( onPressed: () {  },
                     color: Colors.white,
                     iconSize: fontWidgetSize.icone + 5,
                     icon: Icon(Icons.skip_next)),
@@ -135,21 +135,17 @@ Widget streamPLayer(data){
   }
 
   Widget retornarTempoSound(Duration position) {
-    String seconds = (position.inMinutes >= 1
-        ? ((position.inSeconds - position.inMinutes * 60))
-        : position.inSeconds)
-        .toString();
+    String seconds = (position.inMinutes >= 1  ? ((position.inSeconds - position.inMinutes * 60))   : position.inSeconds).toString();
     if (position.inSeconds < 10) {
       seconds = "0" + seconds;
-    }
+      }
+
     String tempoSounds = position.inMinutes.toString() + ":" + seconds;
-    return Text(
-      tempoSounds,
-      style: TextStyle(color: Colors.white),
+    return Text(  tempoSounds,  style: TextStyle(color: Colors.white),
     );
   }
 
-   Widget dialog(String result, context, nameRecord) {
+   Widget dialog(String result, context, nameRecord,edit,camera,location) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
       child: Container(
@@ -208,9 +204,8 @@ Widget streamPLayer(data){
           FlatButton(
                   onPressed: () {
                   if(widget.note=="note"){
-                   saveNote(widget.id,widget.edit,widget.descriptionControllertext,widget.imgString,context);
+                    saveNote(widget.id,widget.edit,widget.descriptionControllertext,widget.imgString,context,camera,location);
                       }else{
-                     
                     saveRecord(result, context, nameRecord);
                      }
                      },
@@ -221,16 +216,13 @@ Widget streamPLayer(data){
                       style: TextStyle(
                           color: Colors.white,
                           fontSize:fontWidgetSize.bodyFontSize-8,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
+                          fontWeight: FontWeight.bold), ),  ), ),
            FlatButton(
                   onPressed: () {
-                    Navigator.of(context).pop();
-                 audioC.audioObject.play=false;
-                 audioC.audioObject.advancedPlayer.pause();
-                  },
+                     audioC.audioObject.play=false;
+                    audioC.audioObject.advancedPlayer.stop();
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) { return RecorderScreen();  }));
+                     },
                   color: Colors.grey,
                   child: Center(
                     child: Text(

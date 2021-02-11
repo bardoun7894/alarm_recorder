@@ -8,12 +8,6 @@ class DataControl extends ChangeNotifier{
    return isIconHide;
   }
 
- changePlayerStatus(bool isPlay){
-
-    notifyListeners();
-    return isPlay;
-
-  }
 
 
 }

@@ -34,7 +34,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                     padding: const EdgeInsets.symmetric(horizontal:38.0),
                     child: InkWell(
                       onTap: (){
-                 appLanguage.changeLanguage(Locale("en"));
+                 appLanguage.changeLanguage(Locale("ar"));
                 Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
                 return MyHomePage();
                 }));
@@ -47,7 +47,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                             Icon(Icons.translate,color: Colors.blue,)
                               ,backgroundColor: Colors.white,),
                             SizedBox(width: 50,),
-                            Text('English',style:
+                            Text('العربية',style:
                             TextStyle(color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),)
@@ -61,7 +61,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                     padding: const EdgeInsets.symmetric(horizontal:38.0),
                     child: InkWell(
                       onTap: (){
-                        appLanguage.changeLanguage(Locale("ar"));
+                        appLanguage.changeLanguage(Locale("en"));
                   Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
                  return MyHomePage();
                 }));
@@ -76,7 +76,7 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
                             Icon(Icons.translate,color: Colors.teal,)
                               ,backgroundColor: Colors.white,),
                             SizedBox(width: 50,),
-                            Text("العربي",style:
+                            Text("English",style:
                             TextStyle(color: Colors.white,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),)

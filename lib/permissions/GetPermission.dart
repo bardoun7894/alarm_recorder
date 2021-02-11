@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 GetLocation location =new GetLocation();
 
-
 getPermissionRecorderStatus(Function fn) async {
   Map<Permission, PermissionStatus> statuses = await [
     Permission.microphone,

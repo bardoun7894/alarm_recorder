@@ -1,4 +1,5 @@
 
+import 'package:alarm_recorder/Translate/app_language.dart';
 import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/home_page/homepage.dart';
 import 'package:alarm_recorder/model/Note.dart';
@@ -27,14 +28,21 @@ class _NoteListState extends State<NoteList> {
 
   List<int> _selectedIndexList = List();
   bool _selectionMode = false;
-   List<Note> _noteList = List();  
+   List<Note> _noteList = List();
+   bool selectAll = false;
+
+
  void _changeSelection({bool enable, int index}) {
-    _selectionMode = enable;
-    _selectedIndexList.add(index);
-    if (index == -1) {
-    _selectedIndexList.clear();
-    }
+
+    _selectionMode = enable ;
+
+    _selectedIndexList.add(index) ;
+
+    if ( index == -1 ) {
+     _selectedIndexList.clear();
+     }
   }
+
  Future<bool> _onBackPressed() async{
    Navigator.pushReplacement(context, MaterialPageRoute(builder: (BuildContext context) {    return MyHomePage();}));
    return false;
@@ -46,14 +54,37 @@ class _NoteListState extends State<NoteList> {
     fontWidgetSize = WidgetSize(sizeConfig);
     List<Widget> _buttons = List();
     if (_selectionMode) {
-      _buttons.add(IconButton(
-        icon: Icon(Icons.delete,color:Colors.blueAccent,),
-       onPressed: () {
-         for(int i = 0;i<_selectedIndexList.length;i++){
-             //remove selected note
-             noteProvider.deleteNoteWithId(_noteList[_selectedIndexList[i]].id);
+      _buttons.add(Row(
+        children: [
+          IconButton(
+            icon: Icon(Icons.delete,color:Colors.blueAccent,),
+           onPressed: () {
+             for(int i = 0;i<_selectedIndexList.length;i++){
+                 //remove selected note
+                 noteProvider.deleteNoteWithId(_noteList[_selectedIndexList[i]].id);
 
-                  }  }));
+               }
+            }),
+          IconButton(
+            icon: Icon(Icons.select_all,color:Colors.blueAccent,),
+           onPressed: () {
+              setState(() {
+                if(selectAll == false){
+                  for(int i = 0;i<_noteList.length;i++){
+
+                    _selectedIndexList.add(i);
+                  }
+                  selectAll =true;
+                }else{
+                  _selectedIndexList.clear();
+                  selectAll =false;
+                }
+
+              });
+
+               }),
+           ],
+          ));
     }
         return WillPopScope(
             child: Scaffold(
@@ -66,13 +97,13 @@ class _NoteListState extends State<NoteList> {
               elevation: 0,
               backgroundColor: Colors.grey[200],
              actions: _buttons,
-      ),
-      body: Container(
-          color: Colors.grey[200],
-          child: FutureBuilder<List<Note>>(
-            future: noteProvider.getAllNotes(),
-            builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
-            if(snapshot.hasData){
+                ),
+            body: Container(
+              color: Colors.grey[200],
+             child: FutureBuilder<List<Note>>(
+             future: noteProvider.getAllNotes(),
+             builder: (BuildContext context, AsyncSnapshot<List<Note>> snapshot) {
+             if(snapshot.hasData){
               if(snapshot.data.length==0){
                 return Container(
                     child: Padding(
@@ -97,14 +128,15 @@ class _NoteListState extends State<NoteList> {
                   color: Colors.white,
                  );
               }
-
             },
           ),
       ),
-      floatingActionButton: FloatingActionButton(
+
+      floatingActionButton: FloatingActionButton (
           onPressed: () {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-     builder: (BuildContext context) => AddNotes(false,false,false)));
+       Navigator.of(context).pushReplacement(MaterialPageRoute(
+
+        builder: (BuildContext context) => AddNotes(false,false,false)));
           },
           child: Icon(Icons.add, color: Colors.white),
           backgroundColor: mainTheme.primaryColorDark,
@@ -126,16 +158,14 @@ class _NoteListState extends State<NoteList> {
         crossAxisCount: 4,
         itemCount: notelist.length,
         itemBuilder: (BuildContext context, int index) {
-    
-          _noteList=notelist;
-          Note note = notelist[index];
-          
+           _noteList=notelist;
+            Note note = notelist[index];
+
           if(_selectionMode){
          return  makemultiSelection(note,index);
           }else{
           return showNoteContainer(note,index);
           }
-        
         },
         staggeredTileBuilder: (int index) =>
         
@@ -147,15 +177,14 @@ class _NoteListState extends State<NoteList> {
     );
   }
 
- 
   Widget showNoteContainer(Note note,int index){
 
       return  InkWell(
         onLongPress: (){
           setState(() {
-      _changeSelection(enable: true, index: index);
+          _changeSelection(enable: true, index: index);
           });
-        },
+           },
           onTap: () {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (BuildContext context) => AddNotes( true,  false,false, note: note )));
@@ -218,23 +247,23 @@ class _NoteListState extends State<NoteList> {
   }
 
  Widget  makemultiSelection(Note note,int index){
+
       return  InkWell(
         onLongPress: (){
           setState(() {
-             _changeSelection(enable: false,index: -1);
-        
-          });
+            _changeSelection(enable: false,index: -1);
+             });
              },
-        onTap: () { 
-                setState(() {
+        onTap: () {
+          setState(() {
                 if(_selectedIndexList.contains(index)){
-                  _selectedIndexList.remove(index);
-                } else {
-                  _selectedIndexList.add(index);
-                }
+                   _selectedIndexList.remove(index);
+                 } else {
+                   _selectedIndexList.add(index);
+                  }
               });
             },
-            child: Padding(
+        child: Padding(
               padding: const EdgeInsets.all(4.0),
               child: new Container(
                   decoration: BoxDecoration(
@@ -264,33 +293,95 @@ class _NoteListState extends State<NoteList> {
                           ),
                         ],
                       )
-                  ,
+                  ,Positioned(bottom: 5,  left: 10,child:   Text(  note.date,  style: TextStyle(  color:  Colors.grey   ),)   ),
                       Positioned(
-
                      child: Padding(
                       padding: const EdgeInsets.all(8.0),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
-                                Text(  note.date,  style: TextStyle(  color:  Colors.grey   ),   ),
-                                Padding(
-                                 padding: const EdgeInsets.only(left:60),
-                                 child: Icon(
-               _selectedIndexList.contains(index) ? Icons.cancel : Icons.radio_button_unchecked,
-                 color: _selectedIndexList.contains(index) ? Colors.blueAccent : Colors.blueAccent,
+                                Icon(
+                 _selectedIndexList.contains(index) ? Icons.cancel : Icons.radio_button_unchecked,
+                         color: _selectedIndexList.contains(index) ? Colors.blueAccent : Colors.blueAccent,
                            ),
-                               ),
                               ],
                             ),
                           ),
-                          bottom: 10,
-                          left: 10)
+                          bottom: .1,right: 5,
+                        )
                     ],
                   )),
             ),
           );
        
+  }
+ Widget  makemultiSelectionAll(Note note,int index){
+
+      return  InkWell(
+
+        onTap: () {
+          setState(() {
+                if(_selectedIndexList.contains(index)){
+                   _selectedIndexList.remove(index);
+                 } else {
+                   _selectedIndexList.add(index);
+                  }
+
+              });
+            },
+        child: Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: new Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [BoxShadow(
+                      color: Colors.black
+                    )],
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Stack(
+                    children: <Widget>[
+                      Column(
+                        children: <Widget>[
+                          note.imagePath != null
+                              ? ClipRRect(
+                              borderRadius: BorderRadius.only(topLeft: Radius.circular(12),topRight: Radius.circular(12)),
+                              child: note.imagePath ==""? Container():imageFr(note.imagePath))
+                              : Container(),
+                          SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              note.imagePath =="" ? Padding(padding: EdgeInsets.only(top:sizeConfig.screenHeight*.04),child: Text(note.description.length > 17
+                                  ? note.description.substring(0, 17)
+                                  :note.description,style: TextStyle( color: Colors.blueGrey,fontWeight: FontWeight.bold,),maxLines: 2)):Text(note.title,style: TextStyle( color: Colors.blueGrey,fontWeight: FontWeight.bold),)
+                            ],
+                          ),
+                        ],
+                      )
+                  ,Positioned(bottom: 5,  left: 10,child:   Text(  note.date,  style: TextStyle(  color:  Colors.grey   ),)   ),
+                      Positioned(
+                     child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Icon(
+                 _selectedIndexList.contains(index) ? Icons.cancel : Icons.radio_button_unchecked,
+                         color: _selectedIndexList.contains(index) ? Colors.blueAccent : Colors.blueAccent,
+                           ),
+                              ],
+                            ),
+                          ),
+                          bottom: .1,right: 5,
+                        )
+                    ],
+                  )),
+            ),
+          );
+
   }
 
 

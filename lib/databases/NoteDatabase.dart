@@ -15,13 +15,11 @@ static final NoteDatabaseProvider db =NoteDatabaseProvider._();
 
 Note note;
 Database _database;
-
 Future<Database> get database async {
       if(_database !=null) return _database;
       _database =await getDatabaseInstance();
       return _database;
-    }
-
+ }
 
   Future<Database> getDatabaseInstance() async {
       Directory directory =await getApplicationDocumentsDirectory();
@@ -64,15 +62,11 @@ Future<Note> getNoteWithId(int id) async{
 }
 
   deleteNoteWithId(int id) async{
-final db =await database;
-notifyListeners();
-return db.delete("note",where: "id=?",whereArgs: [id]);
+    final db =await database;
+    notifyListeners();
+   return db.delete("note",where: "id=?",whereArgs: [id]);
   }
-// deleteAllNotes() async{
-//final db =await database;
-//db.delete("note");
-//notifyListeners();
-//  }
+
   updateNote(Note note) async{
   final db =await database;
   var response=await db.update("note", note.toMap(),where: "id=?",whereArgs: [note.id]);

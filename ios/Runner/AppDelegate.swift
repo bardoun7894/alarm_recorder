@@ -1,23 +1,16 @@
 import UIKit
 import Flutter
 import GoogleMaps
-import background_locator
- 
-func registerPlugins(registry: FlutterPluginRegistry) -> () {
-    if (!registry.hasPlugin("BackgroundLocatorPlugin"))
-     {
-        GeneratedPluginRegistrant.register(with: registry)
-     }
-}
-
+import Firebase
+  
 @UIApplicationMain
 @objc class AppDelegate : FlutterAppDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [ UIApplication.LaunchOptionsKey: Any]?
-
      ) -> Bool {
     
+    FirebaseApp.configure()
      if #available(iOS 10.0, *) {
        UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
      }
@@ -26,8 +19,8 @@ func registerPlugins(registry: FlutterPluginRegistry) -> () {
         UserDefaults.standard.set(true, forKey: "Notification")
     }
 
-    BackgroundLocatorPlugin.setPluginRegistrantCallback(registerPlugins)
-    
+//    BackgroundLocatorPlugin.setPluginRegistrantCallback(registerPlugins)
+
     GMSServices.provideAPIKey( "AIzaSyCA63HJpE1k9ExLBvLZaGeoBZ0yvoPlzsI" )
     GeneratedPluginRegistrant.register( with: self )
 
@@ -36,5 +29,4 @@ func registerPlugins(registry: FlutterPluginRegistry) -> () {
 
 
 }
-
 

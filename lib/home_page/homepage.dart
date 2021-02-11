@@ -1,13 +1,17 @@
+import 'dart:async';
 import 'dart:io';
 
+// import 'package:admob_flutter/admob_flutter.dart';
 import 'package:alarm_recorder/notes/mapmpa.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/permissions/GetPermission.dart';
 import 'package:alarm_recorder/recorder/recorder.dart';
-import 'package:alarm_recorder/recorder/recorder_player.dart'; 
+import 'package:alarm_recorder/recorder/recorder_player.dart';
+import 'package:alarm_recorder/utils/admob_service.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
+import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,10 +28,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
-  //TODO add ads
-//  AdmobBannerSize bannerSize;
-//  AdmobInterstitial interstitialAd;
-//  AdmobReward rewardAd;
+
   GlobalKey<ScaffoldState> scaffoldState = GlobalKey() ;
   WidgetSize fontWidgetSize ;
   SizeConfig sizeConfig ;
@@ -37,30 +38,22 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
     minLaunches: 7 ,
     remindDays: 2 ,
     remindLaunches: 5 ,
-    //appStoreIdentifier: '' ,
+    // appStoreIdentifier: 'iwontforget.note.com.alarmRecorder' ,
     googlePlayIdentifier:'iwontforget.note.com.alarm_recorder',
            );
+
+  AdmobService mob =AdmobService();
+
   @override
   void initState() {
     // TODO: ADmob 
     super.initState();
-    firstPermissionGet();
-//    bannerSize = AdmobBannerSize.BANNER;
-//    interstitialAd = AdmobInterstitial(
-//      adUnitId: getInterstitialAdUnitId(),
-//      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-//        if (event == AdmobAdEvent.closed) interstitialAd.load();
-//      },
-//    );
-//    rewardAd = AdmobReward(
-//        adUnitId: getRewardBasedVideoAdUnitId(),
-//        listener: (AdmobAdEvent event, Map<String, dynamic> args) {
-//          if (event == AdmobAdEvent.closed) rewardAd.load();
-//        });
-//    interstitialAd.load();
-//    rewardAd.load();
-
-  _rateMyApp.init().then(
+    FirebaseAdMob.instance.initialize(appId: mob.getAdmobAppId());
+    Timer(Duration(days: 3),(){
+      mob.bannerAd = mob.createBannerAd(AdSize.smartBanner)..load();
+    });
+     firstPermissionGet();
+    _rateMyApp.init().then(
      (_) {
         if (_rateMyApp.shouldOpenDialog) {
           launchAppRating(context,AppLocalizations.of(context).translate("rate_title"),AppLocalizations.of(context).translate("rate_message"));
@@ -87,19 +80,16 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
 
     @override
   void dispose() {
-    //TODO add ads
-//    interstitialAd.dispose();
-//    rewardAd.dispose();
     super.dispose();
   }
-
-
    @override
    Widget build(BuildContext context) {
      SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
        statusBarColor: Colors.transparent,
      ));
-     sizeConfig = SizeConfig(context);
+
+
+    sizeConfig  = SizeConfig(context);
      fontWidgetSize = WidgetSize(sizeConfig);
      double raduis = sizeConfig.screenWidth * 0.10;
      return Scaffold(
@@ -156,6 +146,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                ),
                ListTile(
                  onTap: () {
+
                    Navigator.of(context)
                        .push(MaterialPageRoute(builder: (BuildContext context) {
                      return RecorderPlayer("");
@@ -180,14 +171,14 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                        children: <Widget>[
                          Divider(),
                          ListTile(
-                           subtitle: Text("dardmna@gmail.com"),
-                             leading: Icon(Icons.help,color: Colors.blueAccent,size: 34),
-                             title: Text(AppLocalizations.of(context).translate("contact_us"),style: TextStyle(color: Colors.blueAccent),)),
-                       ],
-                     ))),
-           ],
-         ),
-       ),
+                           subtitle: Text("darmna@hotmail.com"),
+                           leading: Icon(Icons.help,color: Colors.blueAccent,size: 34),
+                           title: Text(AppLocalizations.of(context).translate("contact_us"),style: TextStyle(color: Colors.blueAccent),)),
+                         ],  )
+                 )),
+               ],
+              ),
+           ),
        body: Container(
          child: Column(
            children: <Widget>[
@@ -213,7 +204,9 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                    children: <Widget>[
                      Padding(
                        padding: EdgeInsets.only(
-                           top: sizeConfig.screenWidth * .03),
+                           top: sizeConfig.screenWidth * .1
+
+                       ),
                        child: Row(
                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                          crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,6 +287,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                              child: noteContainer()),
                          InkWell(
                            onTap: () {
+                             mob.bannerAd.dispose();
                              Navigator.of(context)
                                  .push(MaterialPageRoute(builder: (context) {
                                return RecorderScreen();
@@ -481,31 +475,6 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
             );
           }
 
-//  String getBannerAdUnitId() {
-//    if (Platform.isIOS) {
-//      return 'ca-app-pub-3940256099942544/2934735716';
-//    } else if (Platform.isAndroid) {
-//      return 'ca-app-pub-3940256099942544/6300978111';
-//    }
-//    return null;
-//  }
-//
-//  String getInterstitialAdUnitId() {
-//    if (Platform.isIOS) {
-//      return 'ca-app-pub-3940256099942544/4411468910';
-//    } else if (Platform.isAndroid) {
-//      return 'ca-app-pub-3940256099942544/1033173712';
-//    }
-//    return null;
-//  }
-//
-//  String getRewardBasedVideoAdUnitId() {
-//    if (Platform.isIOS) {
-//      return 'ca-app-pub-3940256099942544/1712485313';
-//    } else if (Platform.isAndroid) {
-//      return 'ca-app-pub-3940256099942544/5224354917';
-//    }
-//    return null;
-//  }
+
 
 }

@@ -1,15 +1,17 @@
- 
+
+import 'dart:io';
+
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/Translate/app_language.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/recorder/recorder.dart';
+import 'package:alarm_recorder/utils/dataControl.dart';
 import 'package:alarm_recorder/utils/getlocation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'Translate/app_localizations.dart'; 
@@ -29,23 +31,18 @@ final BehaviorSubject<String> selectNotificationSubject =  BehaviorSubject<Strin
  NotificationAppLaunchDetails notificationAppLaunchDetails;
 String customPayload = "";
 Note customNote = Note();
-
-
-
 Future<void> main() async {
 // needed if you intend to initialize in the `main` function
   WidgetsFlutterBinding.ensureInitialized();
 
-  //TODO Admob
- // Admob.initialize(getAppId());
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
    AppLanguage appLanguage = AppLanguage();
     await appLanguage.fetchLocale();
   runApp(  MyApp(appLanguage: appLanguage),
     );
 
 }
+
 class ReceivedNotification {
   final int id;
   final String title;
@@ -71,22 +68,23 @@ class _MyAppState extends State<MyApp> {
   AndroidInitializationSettings initializationSettingsAndroid;
   IOSInitializationSettings initializationSettingsIOS;
   InitializationSettings initializationSettings;
-  GetLocation getLocation=GetLocation();
+  GetLocation getLocation = GetLocation();
 
 
   @override
   void initState() {
     super.initState();
-
      initNotificSettings();
     _requestIOSPermissions();
     _configureDidReceiveLocalNotificationSubject();
     _configureSelectNotificationSubject();
-// _appRatingService.promptAppRating(context);
+
   }
   @override
   void dispose() {
-    getLocation.disposeLocation();
+    if(Platform.isAndroid){
+      getLocation.disposeLocation();
+    }
     super.dispose();
     didReceiveLocalNotificationSubject.close();
     selectNotificationSubject.close();
@@ -120,6 +118,7 @@ class _MyAppState extends State<MyApp> {
          .resolvePlatformSpecificImplementation<
           IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
+
           alert: true,
           badge: true,
           sound: true,   );
@@ -145,7 +144,7 @@ class _MyAppState extends State<MyApp> {
         customNote = note;
       try{
         await navigatorKey.currentState.pushReplacementNamed('/textField',arguments: customNote);
-         }
+      }
       catch(e){ e.toString();}
          }
       else{
@@ -164,6 +163,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider( create:(_) =>  RegisterDatabaseProvider.db,),
         ChangeNotifierProvider( create:(_) =>  NoteDatabaseProvider.db,),
         ChangeNotifierProvider( create:(_) =>  GetLocation()),
+        ChangeNotifierProvider( create:(_) =>  DataControl())
         ],
         child: Consumer<AppLanguage>(
           builder: (context, model, child) {
@@ -180,9 +180,7 @@ class _MyAppState extends State<MyApp> {
              '/recordPlayer': (context) => RecorderPlayer(customPayload),
              '/recorderScreen': (context) => RecorderScreen(),
              '/showAlarmScreen': (context) => RecorderScreen(),
-             '/noteList':(context)=>NoteList()
-                     },
-
+             '/noteList':(context)=>NoteList()  },
             locale: model.appLocal,
             supportedLocales: [
               Locale('en','US'),
@@ -207,57 +205,85 @@ class LocalNotification {
 
   void showNotificationAfter(int day, int hour, int minute, int id,
       String imgPath, String title, String body, String payload) async {
-    await notificationAfter(  day, hour, minute, id, imgPath, title, body, payload);
+    await notificationAfter(
+        day,
+        hour,
+        minute,
+        id,
+        imgPath,
+        title,
+        body,
+        payload);
   }
 
-  Future<void> notificationAfter(int day, int hour, int minute, int id,  String imgPath, String title, String body, String payload) async {
+  Future<void> notificationAfter(int day, int hour, int minute, int id,
+      String imgPath, String title, String body, String payload) async {
     String customPayload = "";
-    var timeDelayed =  DateTime.now().add(Duration(days: day, hours: hour, minutes: minute));
+    var timeDelayed = DateTime.now().add(
+        Duration(days: day, hours: hour, minutes: minute));
     var androidNotificationDetails = AndroidNotificationDetails(
         '$id',
-         title,
-           body,
+        title,
+        body,
+        sound: RawResourceAndroidNotificationSound('so_no.aiff'),
         importance: Importance.max,
         priority: Priority.high,
         enableLights: true,
         enableVibration: true,
-        ticker:'test ticker',
+        ticker: 'test ticker',
         playSound: true);
-    IOSNotificationDetails iosNotificationDetails =   IOSNotificationDetails(presentSound: true);
+    IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails(
+        presentSound: true,
+        sound: 'so_no.aiff',
+        presentAlert: true,
+        presentBadge: true);
+    Note newNote;
     if (payload == "note") {
-      Note newNote = Note(id: id, imagePath: imgPath, title: title, description: body);
+      if (body == "image" || body == "صورة") {
+        newNote =
+            Note(id: id, imagePath: imgPath, title: title, description: "");
+      } else {
+        newNote =
+            Note(id: id, imagePath: imgPath, title: title, description: body);
+      }
       customPayload = newNote.toRawJson();
     } else {
       customPayload = payload;
     }
-    NotificationDetails notificationDetails =  NotificationDetails(android: androidNotificationDetails, iOS: iosNotificationDetails);
-    await myApp.flutterLocalNotificationsPlugin.schedule(  id, title, body, timeDelayed, notificationDetails, payload: customPayload);}
-
-   showNotification( int id, String title, String body,imgString,String payload) async {
-    await notification(id, title, body,imgString,payload);
+    NotificationDetails notificationDetails = NotificationDetails(
+        android: androidNotificationDetails, iOS: iosNotificationDetails);
+    await myApp.flutterLocalNotificationsPlugin.schedule(
+        id, title, body, timeDelayed, notificationDetails,
+        payload: customPayload);
   }
-  Future<void> notification(  int id, String title, String body,String imgPath, String payload) async {
+
+  showNotification(int id, String title, String body, imgString,
+      String payload) async {
+    await notification(id, title, body, imgString, payload);
+  }
+
+  Future<void> notification(int id, String title, String body, String imgPath,
+      String payload) async {
     var androidNotificationDetails = AndroidNotificationDetails(
         '$id', title, body,
         importance: Importance.max,
         priority: Priority.high,
-        ongoing: true ,
+        ongoing: true,
         enableVibration: true,
         ticker: 'test ticker',
+        sound: RawResourceAndroidNotificationSound('so_no.aiff'),
         playSound: true);
-    IOSNotificationDetails iosNotificationDetails =  IOSNotificationDetails(presentSound: true);
-    NotificationDetails notificationDetails =  NotificationDetails(android: androidNotificationDetails, iOS: iosNotificationDetails);
-    Note newNote = Note(id: id, imagePath: imgPath, title: title, description: body);
+    IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails(
+        presentSound: true,
+        presentAlert: true,
+        presentBadge: true,
+        sound: 'so_no.aiff');
+    NotificationDetails notificationDetails = NotificationDetails(
+        android: androidNotificationDetails, iOS: iosNotificationDetails);
+    Note newNote = Note(
+        id: id, imagePath: imgPath, title: title, description: body);
     payload = newNote.toRawJson();
-    await myApp.flutterLocalNotificationsPlugin.show(id, title, body, notificationDetails, payload: payload);
+    await myApp.flutterLocalNotificationsPlugin.show(
+        id, title, body, notificationDetails, payload: payload);
   }
 }
-// String getAppId() {
-//   //Todo 
-//   if (Platform.isIOS) {
-//     return 'ca-app-pub-3940256099942544~1458002511';
-//   } else if (Platform.isAndroid) {
-//     return 'ca-app-pub-3940256099942544~3347511713';
-//   }
-//   return null;
-// }

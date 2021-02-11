@@ -13,6 +13,7 @@
   "cancel": "cancel",
   "no": "no",
   "add_note": "add note",
+  "image_dc": "image",
   "note": "note",
   "all_notes": " all notes",
   "record_voice": "record voice",
@@ -35,6 +36,7 @@
    "start_location": "Start ",
    "save": "save",
    "saved_succesfully": "note has added successfully",
+   "location_on_background": "Continued use of GPS running in the background can dramatically decrease battery life .then don't forget to turn off your GPS after the notification is popup",
    "rate_title": "Enjoying our Reminder App?",
    "rate_message": "It would mean a lot to us, if you leave a rating.",
    "snack_message": "your location is activated you will be reminded after write a note and enter the distance ."
