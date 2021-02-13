@@ -8,33 +8,24 @@ import 'package:alarm_recorder/utils/admob_service.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
 import 'package:alarm_recorder/utils/utils.dart';
-import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_admob/flutter_native_admob.dart';
-import 'package:flutter_native_admob/native_admob_controller.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'dart:io' as io;
 import 'package:file/file.dart';
 import 'package:file/local.dart'; 
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
- 
-  
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class RecorderScreen extends StatefulWidget {
   final LocalFileSystem localFileSystem;
-  RecorderScreen({localFileSystem})
-      : this.localFileSystem = localFileSystem ?? LocalFileSystem();
-
+  RecorderScreen({localFileSystem})  : this.localFileSystem = localFileSystem ?? LocalFileSystem();
   @override
   _RecorderScreenState createState() => _RecorderScreenState();
 }
 
 class _RecorderScreenState extends State<RecorderScreen> {
-  AdmobService mob =AdmobService();
-  TextEditingController nameController=new TextEditingController();
+  TextEditingController nameController = new TextEditingController();
   int currentIcon = 0;
   double height;
   double width;
@@ -45,8 +36,6 @@ class _RecorderScreenState extends State<RecorderScreen> {
   RecordingStatus _currentStatus = RecordingStatus.Unset;
   String name ="";
   bool showFab=true;
-
-  var _nativecontroller =NativeAdmobController();
   @override
   void initState() { 
     super.initState();
@@ -154,9 +143,6 @@ class _RecorderScreenState extends State<RecorderScreen> {
                           InkWell(
                             onTap: (){
                               print(_current);
-                              // if(_current==1){
-                              //   _stop();
-                              // }
 
                      Navigator.of(context).push(MaterialPageRoute(
                        builder: (BuildContext context) {  return MySettings();}));
@@ -312,14 +298,15 @@ changeIconPlay(){
         });
 
       });
-    } catch (e) {
-      print(e);
-    }
-  }
+    } catch (e)
+       {
+     print(e) ;
+       }
+     }
   void setStateIfMounted(f) {
     if (mounted) setState(f);
-  }
-  _stop() async {
+     }
+ _stop() async {
     showFab=true;
     var result = await _recorder.stop();
     print("Stop recording: ${result.path}");
@@ -329,11 +316,8 @@ changeIconPlay(){
     setStateIfMounted((){
       _current = result;
       _currentStatus = _current.status;
-
-      saveRecordDialog(context,result.path.toString(),nameController.text!=""?nameController.text+"${result.extension}":name+"."+"${result.extension}");
-
-
-    });
+     saveRecordDialog(context,result.path.toString(),nameController.text!=""?nameController.text+"${result.extension}":name+"."+"${result.extension}");
+      });
 
   }
   

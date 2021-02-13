@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 // import 'package:admob_flutter/admob_flutter.dart';
-import 'package:alarm_recorder/notes/mapmpa.dart';
+import 'package:alarm_recorder/location/mapmpa.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
 import 'package:alarm_recorder/permissions/GetPermission.dart';
@@ -41,9 +41,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
     // appStoreIdentifier: 'iwontforget.note.com.alarmRecorder' ,
     googlePlayIdentifier:'iwontforget.note.com.alarm_recorder',
            );
-
   AdmobService mob =AdmobService();
-
   @override
   void initState() {
     // TODO: ADmob 
@@ -281,17 +279,19 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                        children: <Widget>[
                          InkWell(
-                             onTap: () {
-                               navigateToAddNote(false,false,false);
-                             },
+                          onTap: () {
+                          navigateToAddNote(false,false,false);
+                            },
                              child: noteContainer()),
                          InkWell(
-                           onTap: () {
-                             mob.bannerAd.dispose();
-                             Navigator.of(context)
-                                 .push(MaterialPageRoute(builder: (context) {
-                               return RecorderScreen();
-                             }));
+                         onTap: () {
+                         if(mob.bannerAd!=null){
+                           mob.bannerAd.dispose();
+                         }
+
+                         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                             return RecorderScreen();
+                          }));
                            },
                            child: recordContainer(),
                          ),
@@ -308,7 +308,8 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                              onTap: () {
                         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
                           return  MapSample();
-                        }));
+                                }
+                        ));
                              },
                              child: locationContainer()),
                           InkWell(

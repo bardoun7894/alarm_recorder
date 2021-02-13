@@ -8,7 +8,7 @@ import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/permissions/GetPermission.dart';
 import 'package:alarm_recorder/utils/dataControl.dart';
-import 'package:alarm_recorder/utils/getlocation.dart';
+import 'package:alarm_recorder/location/getlocation.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 // import 'package:background_locator/location_dto.dart';
 import 'package:flutter/cupertino.dart';
@@ -105,15 +105,14 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
   void dispose() {
     super.dispose();
     if (widget.location) {
-      getLocation.disposeFab();
+     getLocation.disposeFab();
     }
     descriptionController.dispose();
     meterController.dispose();
   }
-
   Widget imageFr(String image) {
     return imageFromBase64String(
-        image, sizeConfig.screenHeight * .13, sizeConfig.screenWidth * .50);
+    image, sizeConfig.screenHeight * .13, sizeConfig.screenWidth * .50);
   }
 
   Future getCamera() async {

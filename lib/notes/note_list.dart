@@ -181,9 +181,9 @@ class _NoteListState extends State<NoteList> {
 
       return  InkWell(
         onLongPress: (){
-          setState(() {
+         setState(() {
           _changeSelection(enable: true, index: index);
-          });
+             });
            },
           onTap: () {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -230,8 +230,8 @@ class _NoteListState extends State<NoteList> {
                               children: <Widget>[
                                 Text(
                              note.date,  style: TextStyle(
-                                      color:  Colors.grey
-                                        ),
+                                 color:  Colors.grey
+                             ),
                                 ),
                                cont
                               ],

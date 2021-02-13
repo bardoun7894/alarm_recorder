@@ -1,6 +1,5 @@
 
 import 'dart:io';
-
 import 'package:alarm_recorder/databases/NoteDatabase.dart';
 import 'package:alarm_recorder/databases/RegisterDatabase.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
@@ -8,7 +7,7 @@ import 'package:alarm_recorder/Translate/app_language.dart';
 import 'package:alarm_recorder/notes/note_list.dart';
 import 'package:alarm_recorder/recorder/recorder.dart';
 import 'package:alarm_recorder/utils/dataControl.dart';
-import 'package:alarm_recorder/utils/getlocation.dart';
+import 'package:alarm_recorder/location/getlocation.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,7 +33,6 @@ Note customNote = Note();
 Future<void> main() async {
 // needed if you intend to initialize in the `main` function
   WidgetsFlutterBinding.ensureInitialized();
-
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
    AppLanguage appLanguage = AppLanguage();
     await appLanguage.fetchLocale();

@@ -1,4 +1,4 @@
-import 'package:alarm_recorder/utils/getlocation.dart';
+import 'package:alarm_recorder/location/getlocation.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

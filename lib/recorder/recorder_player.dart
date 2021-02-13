@@ -136,9 +136,9 @@ class _RecorderPlayerState extends State<RecorderPlayer> {
                                   child: Container(
                                     height: sizeConfig.screenHeight * .72,
                                     child: getRegisterList( futuresnapshot.data, audioC),
-                                  ),
-                          ),
-          _player( snapshot.data.play, snapshot.data.duration.inMinutes.toString(), (snapshot.data.duration.inSeconds - (snapshot.data.duration.inMinutes * 60)
+                            ),
+                              ),
+           _player( snapshot.data.play, snapshot.data.duration.inMinutes.toString(), (snapshot.data.duration.inSeconds - (snapshot.data.duration.inMinutes * 60)
             ) .toString(), snapshot.data,  futuresnapshot.data,  pos)
                         ],
                             );

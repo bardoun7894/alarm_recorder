@@ -4,7 +4,7 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:alarm_recorder/Translate/app_localizations.dart';
-import 'package:alarm_recorder/utils/geoLocatorClass.dart';
+import 'package:alarm_recorder/location/geoLocatorClass.dart';
 // import 'package:background_locator/background_locator.dart';
 // import 'package:background_locator/location_dto.dart';
 // import 'package:background_locator/settings/android_settings.dart';
@@ -52,11 +52,10 @@ getData(int id, String title, String body, String imgString, String payload, dou
   if(Platform.isIOS){
     bg.BackgroundGeolocation.ready(bg.Config(
         desiredAccuracy: bg.Config.PERSIST_MODE_LOCATION,
-        distanceFilter:25 ,
+        distanceFilter:25,
         preventSuspend: true,
         showsBackgroundLocationIndicator:true,
-
-        debug: true ,
+        debug: false ,
     )).then((bg.State state) {
      if(state.enabled){
        print("stop en");
@@ -69,7 +68,7 @@ getData(int id, String title, String body, String imgString, String payload, dou
         print("is start");
         bg.BackgroundGeolocation.setOdometer(0);
         bg.BackgroundGeolocation.onMotionChange((m) {
-         bg.BackgroundGeolocation.onLocation((loc) async{
+         bg.BackgroundGeolocation.onLocation((loc) async{ 
 
               if (m.isMoving) {
                 print('[onMotionChange] Device has just started MOVING ${m}');
@@ -91,11 +90,7 @@ getData(int id, String title, String body, String imgString, String payload, dou
           });
 
 
-        }else{
-        bg.BackgroundGeolocation.stop();
-      }
-
-
+        }
         }
   );
   }else{

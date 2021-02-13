@@ -57,13 +57,11 @@ initMap() async{
           }));
         });
             });
-
     // if(mounted) {
     //   Future.delayed(Duration(second: 10000)).then(
     //           (value) => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
     //         return AddNotes(false, false, true);
     //       })));
     // }
-
   }
 }

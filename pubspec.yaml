@@ -59,7 +59,7 @@ dependencies:
   rate_my_app: 0.7.2
   google_maps_flutter: ^1.1.1
   rich_alert: ^0.1.32
-dev_dependencies:
+dev_dependencies: 
   flutter_test:
     sdk: flutter
 flutter_icons:

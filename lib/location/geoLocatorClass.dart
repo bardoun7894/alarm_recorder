@@ -5,7 +5,7 @@ import 'dart:ui';
 // import 'package:background_locator/background_locator.dart';
 // import 'package:background_locator/settings/ios_settings.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg ;
-import 'package:alarm_recorder/utils/getlocation.dart';
+import 'package:alarm_recorder/location/getlocation.dart';
 import 'package:flutter_background_geolocation/flutter_background_geolocation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -112,7 +112,9 @@ void getdistanceBetween (int id, String title, String body, String imgString, St
       bg.BackgroundGeolocation.destroyLocations();
       bg.BackgroundGeolocation.stop();
     }
-  } else {
+     }
+     else
+     {
     double distanceInMeters = await Geolocator.distanceBetween(
         list.first.latitude, list.first.longitude, list.last.latitude, list.last.longitude);
     print("distance meter $distanceInMeters");
@@ -125,10 +127,6 @@ void getdistanceBetween (int id, String title, String body, String imgString, St
     }
   }
 }
-
-
-
-
 notif(int id, String title, String body, String imgString, String payload, double xMeter) async {
     _localNotification.showNotification( id, title, body, imgString, payload) ;
       }
