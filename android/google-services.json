@@ -30,10 +30,18 @@
             {
               "client_id": "850379409433-d0om2ud2n2kr72stsbql64i0d9h3b0a9.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "850379409433-oriqls1gmbo5l6qp0jrupqij8u1tatbt.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.bundle.recorder1234"
+              }
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-2529431792707464~2909762150"
     }
   ],
   "configuration_version": "1"

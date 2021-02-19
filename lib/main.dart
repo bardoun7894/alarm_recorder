@@ -223,13 +223,13 @@ class LocalNotification {
         '$id',
         title,
         body,
-        sound: RawResourceAndroidNotificationSound('so_no.aiff'),
+        sound: RawResourceAndroidNotificationSound('so_no'),
         importance: Importance.max,
         priority: Priority.high,
         enableLights: true,
         enableVibration: true,
         ticker: 'test ticker',
-        playSound: true);
+        playSound: true) ;
     IOSNotificationDetails iosNotificationDetails = IOSNotificationDetails(
         presentSound: true,
         sound: 'so_no.aiff',

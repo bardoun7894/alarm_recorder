@@ -47,9 +47,10 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
     // TODO: ADmob 
     super.initState();
     FirebaseAdMob.instance.initialize(appId: mob.getAdmobAppId());
-    Timer(Duration(days: 3),(){
-      mob.bannerAd = mob.createBannerAd(AdSize.smartBanner)..load();
-    });
+    // Timer(Duration(days: 3),(){
+    // });
+    mob.bannerAd = mob.createBannerAd(AdSize.smartBanner)..load();
+
      firstPermissionGet();
     _rateMyApp.init().then(
      (_) {

@@ -127,7 +127,6 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
             maxWidth: 480,
             maxHeight: 480,
             aspectRatioPresets: [
-
               CropAspectRatioPreset.square,
               CropAspectRatioPreset.ratio3x2,
               CropAspectRatioPreset.original,
@@ -439,7 +438,7 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
           time: firstDate.hour.toString()));
       getLocation.getData(widget.note.id, titleData, descriptionData, imgString,
           "location", xmeter);
-      showRichAlertDialog(context);
+      showRichAlertDialog(widget.location,context);
       await Future.delayed(Duration(seconds: 3));
       Navigator.pop(context);
     } else if (widget.edit == false) {
@@ -451,7 +450,7 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
           time: firstDate.hour.toString()));
       getLocation.getData(id, titleData, descriptionData, imgString,
           "location $titleData", xmeter);
-      showRichAlertDialog(context);
+      showRichAlertDialog(widget.location,context);
       await Future.delayed(Duration(seconds: 3));
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {   return MyHomePage();  }));
     }

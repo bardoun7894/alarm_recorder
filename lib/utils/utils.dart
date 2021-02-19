@@ -59,18 +59,17 @@ reminderDateTime(id,imageString,title,description,payload,context,bool edit,bool
                minute = selectedTime.minute - DateTime.now().minute;
                _localNotification.showNotificationAfter(day,hour,minute,id,imageString,title,description,payload);
                if(title=="record"){
-                 showRichAlertDialog(context);
-                 await Future.delayed(Duration(seconds: 3));
+                 showRichAlertDialog(location,context) ;
+                 await Future.delayed( Duration(seconds: 3) );
                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){
                    return  MyHomePage();
                  }));
                }  if(payload=="note"){
-                 showRichAlertDialog(context);
+                 showRichAlertDialog(location,context);
                  await Future.delayed(Duration(seconds: 3));
                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context){  return MyHomePage();}));
                }
-
-             }else{
+            }else{
                ifDateAndTimeCancel(payload,context,id,imageString,title,description,camera,location);
              }
 
@@ -79,7 +78,6 @@ reminderDateTime(id,imageString,title,description,payload,context,bool edit,bool
           print(e);
         }) ;
       }else{
-
         ifDateAndTimeCancel(payload,context,id,imageString,title,description,camera,location);
 
       }
@@ -106,18 +104,18 @@ Future<bool> saveNoteDialog(int id,bool edit ,String descriptionControllertext,S
       barrierDismissible: true,
       builder: (BuildContext context) {
       return MyChoice(id:id,edit: edit,descriptionControllertext: descriptionControllertext,imgString: imgString,note:note,camera:camera,location:location);
-
             });
 }
-Future<bool> showRichAlertDialog(context)async {
+Future<bool> showRichAlertDialog(location,context)async {
   showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext context){
         return RichAlertDialog(
           //uses the custom alert dialog
           alertTitle: richTitle(AppLocalizations.of(context).translate("saved_succesfully")),
-          alertSubtitle: richSubtitle(AppLocalizations.of(context).translate("location_on_background")),
-          alertType: RichAlertType.SUCCESS,alertButtonText: AppLocalizations.of(context).translate("cancel"),
+          alertSubtitle: location==true ? richSubtitle(AppLocalizations.of(context).translate("location_on_background")): richSubtitle(""),
+          alertType: RichAlertType.SUCCESS,
+          alertButtonText: AppLocalizations.of(context).translate("cancel"),
            );
       }
      );
@@ -148,8 +146,9 @@ void saveNote(int id,bool edit ,String descriptionControllertext,String imgStrin
           description: descriptionData,
           date:s,
           ));
-
-    } else if (edit == false) {
+       }
+    else if (edit == false)
+       {
       int ids = await NoteDatabaseProvider.db.insertNote(new Note(
           imagePath: imgString,
           title: titleData,
