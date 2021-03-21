@@ -328,8 +328,7 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
                                                                   .text =
                                                               textAfterGetImage;
                                                         } catch (e) {
-                                                          print(
-                                                              "exception" + e);
+                                                          print(  "exception" + e);
                                                         }
                                                       },
                                                     ),
@@ -436,9 +435,10 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
           description: descriptionData,
           date: s,
           time: firstDate.hour.toString()));
-      getLocation.getData(widget.note.id, titleData, descriptionData, imgString,
-          "location", xmeter);
-      showRichAlertDialog(widget.location,context);
+      getLocation.getData(widget.note.id, titleData, descriptionData, imgString,   "location", xmeter);
+
+        showRichAlertDialog(widget.location,context);
+
       await Future.delayed(Duration(seconds: 3));
       Navigator.pop(context);
     } else if (widget.edit == false) {
@@ -450,7 +450,7 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
           time: firstDate.hour.toString()));
       getLocation.getData(id, titleData, descriptionData, imgString,
           "location $titleData", xmeter);
-      showRichAlertDialog(widget.location,context);
+          showRichAlertDialog(widget.location,context);
       await Future.delayed(Duration(seconds: 3));
       Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {   return MyHomePage();  }));
     }
@@ -506,18 +506,20 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
                     ),
                     onPressed: () {
                       setState(() {
+
                         setState(() {
+
                           try {
                             isFabClicked = true;
                           } catch (e) {
                             print(e);
                           }
+
                         });
                         if (isFabClicked) {
                           isHideFAB = true;
                           isImageMapHide = true;
-                          _displaySnackBar(AppLocalizations.of(context)
-                              .translate("snack_message"));
+                          _displaySnackBar(AppLocalizations.of(context).translate("snack_message"));
                         }
                       });
                     })),

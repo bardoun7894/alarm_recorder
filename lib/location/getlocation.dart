@@ -44,7 +44,6 @@ Sink<bool> get fabClickEventSink =>_fabEventController.sink;
 
 GetLocation(){
   _fabEventController.stream.listen(mapEventToState);
-
 }
   // addDoubleToSF(double odometer) async {
   //   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -121,7 +120,6 @@ getData(int id, String title, String body, String imgString, String payload, dou
           print("location 1  found");
           print(imgString);
           if(id != null && title != null){
-
             getdistanceBetween(id,title, body, imgString, payload,xMeter,points);
           }
         }
@@ -198,11 +196,6 @@ getData(int id, String title, String body, String imgString, String payload, dou
       isRunning = _isRunning;
     print('Running ${isRunning.toString()}');
   }
-
-
-
-
-
 
   disposeLocation() {
     BackgroundLocator.unRegisterLocationUpdate();
@@ -281,7 +274,6 @@ getData(int id, String title, String body, String imgString, String payload, dou
                       FlatButton(
                         onPressed: () async {
                           settings(context);
-
                           mapEventToState(status.isGranted);},
                         color: Colors.teal,
                         child: Center(
@@ -317,11 +309,9 @@ getData(int id, String title, String body, String imgString, String payload, dou
           );
         });
   }
-
   Future settings(context) async {
     if (Platform.isAndroid) {
-      final AndroidIntent intent =
-          AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
+      final AndroidIntent intent  =  AndroidIntent(action: 'android.settings.LOCATION_SOURCE_SETTINGS');
       await intent.launch();
       Navigator.of(context, rootNavigator: true).pop();
     } else if (Platform.isIOS) {
@@ -339,14 +329,10 @@ getData(int id, String title, String body, String imgString, String payload, dou
 
   void _startLocator( ) {
     BackgroundLocator.registerLocationUpdate(
+
         LocationCallbackHandler.callback,
         initCallback: LocationCallbackHandler.initCallback,
-        disposeCallback: LocationCallbackHandler.disposeCallback,
-        iosSettings: IOSSettings(
-          showsBackgroundLocationIndicator: true,
-           accuracy: LocationAccuracy.BALANCED,
-            distanceFilter: 0),
-
+        disposeCallback: LocationCallbackHandler.disposeCallback ,
         androidSettings: AndroidSettings(
             accuracy: LocationAccuracy.BALANCED,
             interval: 5,

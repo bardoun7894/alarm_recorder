@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
+import 'package:alarm_recorder/Translate/app_localizations.dart';
 import 'package:alarm_recorder/notes/add_note.dart';
+import 'package:alarm_recorder/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -19,15 +22,22 @@ List<Marker> allMarker =[];
   @override
   void initState() {
     super.initState();
+
     initMap();
   }
-initMap() async{
-  Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+initMap() async {
+
+  Position position = await Geolocator.getCurrentPosition( desiredAccuracy: LocationAccuracy.high);
   _getUserLocation(position);
   _currentLocation(position);
+
 }
+
+
   void _getUserLocation(position) async {
-    allMarker.add(Marker(
+
+    allMarker.add(
+        Marker(
         markerId: MarkerId("myMarker"),
         draggable: true,
         position:LatLng(position.latitude,position.longitude)
@@ -57,11 +67,6 @@ initMap() async{
           }));
         });
             });
-    // if(mounted) {
-    //   Future.delayed(Duration(second: 10000)).then(
-    //           (value) => Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
-    //         return AddNotes(false, false, true);
-    //       })));
-    // }
+
   }
 }

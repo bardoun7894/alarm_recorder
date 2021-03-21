@@ -136,9 +136,10 @@ Widget streamPLayer(data){
 
   Widget retornarTempoSound(Duration position) {
     String seconds = (position.inMinutes >= 1  ? ((position.inSeconds - position.inMinutes * 60))   : position.inSeconds).toString();
-    if (position.inSeconds < 10) {
-      seconds = "0" + seconds;
-      }
+    if (position.inSeconds < 10)
+         {
+          seconds = "0" + seconds;
+         }
 
     String tempoSounds = position.inMinutes.toString() + ":" + seconds;
     return Text(  tempoSounds,  style: TextStyle(color: Colors.white),

@@ -11,6 +11,7 @@ import 'package:alarm_recorder/recorder/recorder_player.dart';
 import 'package:alarm_recorder/utils/admob_service.dart';
 import 'package:alarm_recorder/utils/screen_size.dart';
 import 'package:alarm_recorder/utils/settings.dart';
+import 'package:alarm_recorder/utils/utils.dart';
 import 'package:firebase_admob/firebase_admob.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -42,6 +43,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
     googlePlayIdentifier:'iwontforget.note.com.alarm_recorder',
            );
   AdmobService mob =AdmobService();
+  bool nextIsSelected =false;
   @override
   void initState() {
     // TODO: ADmob 
@@ -306,17 +308,21 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                        mainAxisAlignment: MainAxisAlignment.spaceAround,
                        children: <Widget>[
                          InkWell(
-                             onTap: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {
-                          return  MapSample();
-                                }
-                        ));
-                             },
+                             onTap:  () {
+                               // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {  return  MapSample(); }));
+                               if(Platform.isAndroid){
+                                 setState(() {
+                                   showLocationBackground(context);
+                                 });
+                                 }else{
+                             Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {  return  MapSample(); }));
+                               }
+                                },
                              child: locationContainer()),
                           InkWell(
                            onTap: () {
-                                 navigateToAddNote(false,true,false);
-                                             },
+                            navigateToAddNote(false,true,false);
+                                      },
                             child: cameraContainer(),
                                ),
                        ],
@@ -330,11 +336,50 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
        ),
      );
    }
-   navigateToAddNote(bool edit,bool camera,bool location){
-     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-       return AddNotes(edit,camera,location);
-     }));
+
+   navigateToAddNote (bool edit,bool camera,bool location) { Navigator.of(context).push(MaterialPageRoute(builder: (context) { return AddNotes(edit,camera,location);   }));
+
    }
+
+  Future showLocationBackground(context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return StatefulBuilder(builder: (context,setState){
+          return AlertDialog(
+            title: Text(AppLocalizations.of(context).translate("important"),style: TextStyle(color: Colors.red),),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>
+                [
+                  Text( nextIsSelected ? AppLocalizations.of(context).translate("location_on_background3"):AppLocalizations.of(context).translate("location_on_background2")   ,style: TextStyle(color: Colors.grey),),
+                ],
+              ),),
+            actions: <Widget>[
+              TextButton(
+                child: Text(AppLocalizations.of(context).translate("next")) ,
+                onPressed: ()  {
+                  setState(() {
+                    if(nextIsSelected){
+                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) {  return  MapSample(); }
+                      ));
+                      }
+                    else
+                      {
+                      nextIsSelected = true;
+                      print(nextIsSelected);
+                      }
+                  });
+                },
+              ),
+            ],
+          );
+        });
+
+      },
+    );
+  }
 
   Widget locationContainer() {
             return Padding(
@@ -344,10 +389,8 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                 width: sizeConfig.screenWidth * .4,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20.0),
-                  boxShadow: [
-                    BoxShadow(
-                        color: Colors.black26, offset: Offset(0, 2), blurRadius: 10.0)
-                  ],
+                  boxShadow:
+           [   BoxShadow( color: Colors.black26, offset: Offset(0, 2), blurRadius: 10.0)  ],
                   color: Color(0xFFF5F7FB),
                 ),
                 child: Column(
