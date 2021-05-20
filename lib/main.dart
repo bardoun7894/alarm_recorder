@@ -127,8 +127,7 @@ class _MyAppState extends State<MyApp> {
         Note note = Note.fromRawJson(receivedNotification.payload);
         customNote = note;
         await navigatorKey.currentState.popAndPushNamed('/textField', arguments: customNote);
-          }
-      else {
+          }  else {
          customPayload = receivedNotification.payload;
          await navigatorKey.currentState
         .popAndPushNamed('/recordPlayer', arguments: customPayload);

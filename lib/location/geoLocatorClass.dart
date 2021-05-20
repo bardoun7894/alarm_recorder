@@ -34,7 +34,6 @@ GetLocation getLocation =GetLocation();
 void getdistanceBetween (int id, String title, String body, String imgString, String payload, double xMeter,List list) async {
    // double odo = await getOdometer();
   if (Platform.isIOS) {
-
     //  print("run ${odo}");
     //  if (odo >= xMeter) {
     //  print(getOdometer());
