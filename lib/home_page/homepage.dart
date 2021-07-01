@@ -39,19 +39,25 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
     minLaunches: 7 ,
     remindDays: 2 ,
     remindLaunches: 5 ,
-    // appStoreIdentifier: 'iwontforget.note.com.alarmRecorder' ,
+    appStoreIdentifier: 'iwontforget.note.com.alarmRecorder' ,
     googlePlayIdentifier:'iwontforget.note.com.alarm_recorder',
            );
   AdmobService mob =AdmobService();
   bool nextIsSelected =false;
+  bool isAdLoad = false ;
   @override
   void initState() {
     // TODO: ADmob 
     super.initState();
     FirebaseAdMob.instance.initialize(appId: mob.getAdmobAppId());
-    // Timer(Duration(days: 3),(){
-    // });
-    mob.bannerAd = mob.createBannerAd(AdSize.smartBanner)..load();
+   Timer(Duration(days: 3),(){
+      mob.bannerAd = mob.createBannerAd(AdSize.banner)..load();
+      mob.bannerAd.isLoaded().then((value) {
+        print("ad  $value value");
+        isAdLoad = true ;
+      });
+
+    });
 
      firstPermissionGet();
     _rateMyApp.init().then(
@@ -61,6 +67,7 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
         }
       },
     );
+
   }
   void launchAppRating(BuildContext context,String title,String message) {
     _rateMyApp.showStarRateDialog(
@@ -89,14 +96,15 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
        statusBarColor: Colors.transparent,
      ));
 
-
     sizeConfig  = SizeConfig(context);
      fontWidgetSize = WidgetSize(sizeConfig);
      double raduis = sizeConfig.screenWidth * 0.10;
+
      return Scaffold(
+
        key: _scaffoldKey,
-       drawer:
-       Drawer(
+       drawer:    Drawer(
+
          child: Column(
            children: <Widget>[
              Expanded(child:
@@ -128,7 +136,6 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                    ],
                  ),
                ),
-
                ListTile(
                  onTap: () {
                    Navigator.of(context)
@@ -147,7 +154,6 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                ),
                ListTile(
                  onTap: () {
-
                    Navigator.of(context)
                        .push(MaterialPageRoute(builder: (BuildContext context) {
                      return RecorderPlayer("");
@@ -162,22 +168,23 @@ class _MyHomePageState extends State<MyHomePage>   with SingleTickerProviderStat
                    style: TextStyle(color: Colors.grey[700]),
                  ),
                ),
+               ( isAdLoad==true && isAdLoad!=null)?Container(): Container(
+                   child: Align(
+                       alignment: FractionalOffset.bottomCenter,
+                       child: Column(
+                         children: <Widget>[
+                           Divider(),
+                           ListTile(
+                               subtitle: Text("darmna@hotmail.com"),
+                               leading: Icon(Icons.help,color: Colors.blueAccent,size: 34),
+                               title: Text(AppLocalizations.of(context).translate("contact_us"),style: TextStyle(color: Colors.blueAccent),)),
+                         ],
+                       )
+                   )),
 
              ],),),
 
-             Container(
-                 child: Align(
-                     alignment: FractionalOffset.bottomCenter,
-                     child: Column(
-                       children: <Widget>[
-                         Divider(),
-                         ListTile(
-                           subtitle: Text("darmna@hotmail.com"),
-                           leading: Icon(Icons.help,color: Colors.blueAccent,size: 34),
-                           title: Text(AppLocalizations.of(context).translate("contact_us"),style: TextStyle(color: Colors.blueAccent),)),
-                         ],  )
-                 )),
-               ],
+       ],
               ),
            ),
        body: Container(

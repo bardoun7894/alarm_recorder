@@ -104,9 +104,9 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
   @override
   void dispose() {
     super.dispose();
-    if (widget.location) {
-     getLocation.disposeFab();
-    }
+    // if (widget.location) {
+    //  getLocation.disposeFab();
+    // }
     descriptionController.dispose();
     meterController.dispose();
   }
@@ -389,7 +389,7 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
                             TextFormField(
                               maxLengthEnforced: true,
                               controller: descriptionController,
-                              cursorColor: Colors.white,
+                              cursorColor: Colors.blueAccent,
                               cursorRadius: Radius.circular(2),
                               cursorWidth: 1,
                               autofocus: false,
@@ -660,7 +660,7 @@ class _AddNotesState extends State<AddNotes> with WidgetsBindingObserver {
                 return AppLocalizations.of(context)
                     .translate("hint_distance_error");
               }
-              if (double.parse(value) < 100) {
+              if (double.parse(value) < 20) {
                 return AppLocalizations.of(context).translate("hint_100_error");
               }
               return null;

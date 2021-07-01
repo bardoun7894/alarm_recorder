@@ -4,10 +4,8 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:alarm_recorder/Translate/app_localizations.dart';
+//import 'package:background_locator/background_locator.dart';
 // import 'package:background_locator/background_locator.dart';
-import 'package:background_locator/settings/android_settings.dart';
-import 'package:background_locator/settings/ios_settings.dart';
-import 'package:background_locator/location_dto.dart';
 // import 'package:background_locator/settings/android_settings.dart';
 // import 'package:background_locator/settings/ios_settings.dart';
 // import 'package:background_locator/settings/locator_settings.dart';
@@ -15,7 +13,7 @@ import 'package:flutter_background_geolocation/flutter_background_geolocation.da
 import 'package:alarm_recorder/utils/screen_size.dart';
 
 import 'package:android_intent/android_intent.dart';
-import 'package:background_locator/settings/locator_settings.dart';
+// import 'package:background_locator/settings/locator_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location_permissions/location_permissions.dart';
@@ -54,8 +52,10 @@ getData(int id, String title, String body, String imgString, String payload, dou
   if(Platform.isIOS){
     bg.BackgroundGeolocation.ready(bg.Config(
         desiredAccuracy: bg.Config.PERSIST_MODE_LOCATION,
-        distanceFilter:25,
+        distanceFilter:10,
         preventSuspend: true,
+        stopOnTerminate: false,
+        startOnBoot: true,
         showsBackgroundLocationIndicator:true,
         debug: false ,
     )).then((bg.State state) {
@@ -64,25 +64,15 @@ getData(int id, String title, String body, String imgString, String payload, dou
   bg.BackgroundGeolocation.stop();
          }
       if (!state.enabled) {
-        print("istart enab");
-
         bg.BackgroundGeolocation.start();
         print("is start");
         bg.BackgroundGeolocation.setOdometer(0);
         bg.BackgroundGeolocation.onMotionChange((m) {
          bg.BackgroundGeolocation.onLocation((loc) async{
 
-              if (m.isMoving) {
-                print('[onMotionChange] Device has just started MOVING ${m}');
-                addDoubleToSF(loc.odometer);
-                print("odometer ${loc.odometer}");
-              } else {
-                print('[onMotionChange] Device has just STOPPED:  ${m}');
-                 }
+               if(id != null && title != null ){
 
-              if(id != null && title != null ){
-
-                  getdistanceBetween(id,title, body, imgString, payload, xMeter ,list);
+                  getdistanceBetween(id,title, body, imgString, payload, xMeter);
 
                }
 
@@ -130,7 +120,7 @@ getData(int id, String title, String body, String imgString, String payload, dou
 
 
 }
-  //
+
   // void onStart() async {
   //   if (await _checkLocationPermission()) {
   //     _startLocator();
@@ -141,30 +131,29 @@ getData(int id, String title, String body, String imgString, String payload, dou
   //     // show error
   //   }
   // }
-  Future<bool> _checkLocationPermission() async {
-    final access = await LocationPermissions().checkPermissionStatus();
-    switch (access) {
-      case PermissionStatus.unknown:
-      case PermissionStatus.denied:
-      case PermissionStatus.restricted:
-        final permission = await LocationPermissions().requestPermissions(
-          permissionLevel: LocationPermissionLevel.locationAlways,
-        );
-        if (permission == PermissionStatus.granted) {
-          return true;
-        } else {
-          return false;
-        }
-        break;
-      case PermissionStatus.granted:
-        return true;
-        break;
-      default:
-        return false;
-        break;
-    }
-  }
-
+  // Future<bool> _checkLocationPermission() async {
+  //   final access = await LocationPermissions().checkPermissionStatus();
+  //   switch (access) {
+  //     case PermissionStatus.unknown:
+  //     case PermissionStatus.denied:
+  //     case PermissionStatus.restricted:
+  //       final permission = await LocationPermissions().requestPermissions(
+  //         permissionLevel: LocationPermissionLevel.locationAlways,
+  //       );
+  //       if (permission == PermissionStatus.granted) {
+  //         return true;
+  //       } else {
+  //         return false;
+  //       }
+  //       break;
+  //     case PermissionStatus.granted:
+  //       return true;
+  //       break;
+  //     default:
+  //       return false;
+  //       break;
+  //   }
+  // }
   void mapEventToState(bool event) async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
     var isDisabled = await permetIsDisabled() ;
@@ -182,8 +171,6 @@ getData(int id, String title, String body, String imgString, String payload, dou
           }
     _inFabClick.add(_fabClicked);
           }
-
-  //
   // void onStop() async {
   //   BackgroundLocator.unRegisterLocationUpdate();
   //   IsolateNameServer.removePortNameMapping(LocationCallbackHandler.isolateName);
@@ -191,15 +178,14 @@ getData(int id, String title, String body, String imgString, String payload, dou
   //     isRunning = _isRunning;
   //   print('Running ${isRunning.toString()}');
   // }
-  //
   // disposeLocation() {
   //   BackgroundLocator.unRegisterLocationUpdate();
   //   IsolateNameServer.removePortNameMapping(LocationCallbackHandler.isolateName);
   // }
-  disposeFab(){
-    _fabStateController.close();
-    _fabEventController.close();
-  }
+  // disposeFab(){
+  //   _fabStateController.close();
+  //   _fabEventController.close();
+  // }
 
   Future<bool> showSaveDialog( context, status, shared, isDisabled){
     SizeConfig sizeConfig = SizeConfig(context);
@@ -321,18 +307,18 @@ getData(int id, String title, String body, String imgString, String payload, dou
   //     isRunning = _isRunning;
   //   print('Running ${isRunning.toString()}');
   // }
-
+  //
   // void _startLocator( ) {
   //   BackgroundLocator.registerLocationUpdate(
   //
   //       LocationCallbackHandler.callback,
   //       initCallback: LocationCallbackHandler.initCallback,
   //       disposeCallback: LocationCallbackHandler.disposeCallback ,
-  //       androidSettings: AndroidSettings(
+  //        androidSettings: AndroidSettings(
   //           accuracy: LocationAccuracy.BALANCED,
-  //           interval: 5,
-  //           distanceFilter: 0,
-  //           androidNotificationSettings: AndroidNotificationSettings(
+  //            interval: 5,
+  //            distanceFilter: 0,
+  //            androidNotificationSettings: AndroidNotificationSettings(
   //               notificationChannelName: 'App Location tracking',
   //               notificationTitle: 'App Location Tracking',
   //               notificationMsg: 'Track location in background',

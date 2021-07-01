@@ -117,7 +117,7 @@ Future<bool> showRichAlertDialog(location,context)async {
         return RichAlertDialog(
           //uses the custom alert dialog
           alertTitle: richTitle(AppLocalizations.of(context).translate("saved_succesfully")),
-          alertSubtitle: location ?  (Platform.isIOS?richSubtitle(AppLocalizations.of(context).translate("location_on_background")) : richSubtitle(""))
+          alertSubtitle: (location == true && location!=null) ? (Platform.isIOS?richSubtitle(AppLocalizations.of(context).translate("location_on_background")) : richSubtitle(""))
            : richSubtitle(""),
           alertType: RichAlertType.SUCCESS,
           alertButtonText: AppLocalizations.of(context).translate("cancel"),

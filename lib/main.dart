@@ -68,7 +68,6 @@ class _MyAppState extends State<MyApp> {
   InitializationSettings initializationSettings;
   GetLocation getLocation = GetLocation();
 
-
   @override
   void initState() {
     super.initState();
@@ -80,9 +79,9 @@ class _MyAppState extends State<MyApp> {
   }
   @override
   void dispose() {
-    if(Platform.isAndroid){
-      getLocation.disposeLocation();
-    }
+    // if(Platform.isAndroid){
+    //   getLocation.disposeLocation();
+    // }
     super.dispose();
     didReceiveLocalNotificationSubject.close();
     selectNotificationSubject.close();

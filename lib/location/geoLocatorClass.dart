@@ -1,11 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
-//
 // import 'package:background_locator/background_locator.dart';
 // import 'package:background_locator/settings/ios_settings.dart';
-import 'package:background_locator/background_locator.dart';
-// import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg ;
+// import 'package:background_locator/background_locator.dart';
+import 'package:flutter_background_geolocation/flutter_background_geolocation.dart' as bg ;
 import 'package:alarm_recorder/location/getlocation.dart';
 // import 'package:flutter_background_geolocation/flutter_background_geolocation.dart';
 import 'package:geolocator/geolocator.dart';
@@ -31,33 +30,19 @@ GetLocation getLocation =GetLocation();
 //   double doubleValue = prefs.getDouble('odometer');
 //   return doubleValue;
 // }
-void getdistanceBetween (int id, String title, String body, String imgString, String payload, double xMeter,List list) async {
-   // double odo = await getOdometer();
+void getdistanceBetween (int id, String title, String body, String imgString, String payload, double xMeter) async {
+
   if (Platform.isIOS) {
-    //  print("run ${odo}");
-    //  if (odo >= xMeter) {
-    //  print(getOdometer());
-    //  bg.BackgroundGeolocation.setOdometer(0);
-    //   print("F");
-    //   notif(id, title, body, imgString, payload, xMeter);
-    //   bg.BackgroundGeolocation.destroyLocations();
-    //   bg.BackgroundGeolocation.stop();
-    // }
-     }
-     else
-     {
-    double distanceInMeters = await Geolocator.distanceBetween(
-    list.first.latitude, list.first.longitude, list.last.latitude, list.last.longitude);
-    print("distance meter $distanceInMeters");
-    print("$id $title $body");
+double odo =await bg.BackgroundGeolocation.odometer;
+     if ( odo >= xMeter) {
 
-    if (distanceInMeters >= xMeter) {
-      print(" you are so far");
+     bg.BackgroundGeolocation.setOdometer(0);
       notif(id, title, body, imgString, payload, xMeter);
-      getLocation.onStop();
-
+      bg.BackgroundGeolocation.destroyLocations();
+      bg.BackgroundGeolocation.stop();
     }
-  }
+     }
+
 }
 notif(int id, String title, String body, String imgString, String payload, double xMeter) async {
   _localNotification.showNotification( id, title, body, imgString, payload) ;

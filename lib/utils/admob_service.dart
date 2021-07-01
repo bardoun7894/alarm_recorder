@@ -8,8 +8,10 @@ class AdmobService{
     return BannerAd(
       adUnitId: getBannerId(),
       size: adsize,
+      targetingInfo: MobileAdTargetingInfo(childDirected: true),
+
       listener: (MobileAdEvent event) {
-        bannerAd..show();
+        bannerAd..show(anchorOffset: 20,horizontalCenterOffset:5);
         print("show");
       },
     );

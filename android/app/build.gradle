@@ -37,8 +37,8 @@ android {
         applicationId "iwontforget.note.com.alarm_recorder"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        versionCode 15
+        versionName "6.1.5"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 //        ndk {
 //            abiFilters 'armeabi-v7a'
